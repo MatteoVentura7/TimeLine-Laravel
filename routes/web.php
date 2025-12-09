@@ -11,6 +11,7 @@ Route::get('welcome', function (Request $request) {
 })->name('welcome');
 
 
+Route::post('dashboard', [TaskController::class, 'store'])->name('tasks.store');
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -21,6 +22,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         $tasks = \App\Models\Task::all(); // Recupera tutti i task dal database
+        
         return Inertia::render('dashboard', ['tasks' => $tasks]);
     })->name('dashboard');
 });
