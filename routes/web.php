@@ -22,8 +22,9 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         $tasks = \App\Models\Task::all(); 
-        
-        return Inertia::render('dashboard', ['tasks' => $tasks]);
+        $statistc = \App\Models\Task::all()->groupBy->completed->map->count();
+       
+        return Inertia::render('dashboard', ['tasks' => $tasks , 'statistc' => $statistc]);
     })->name('dashboard');
 
     Route::post('tasks', [TaskController::class, 'store'])->name('tasks.store');

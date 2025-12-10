@@ -1,4 +1,4 @@
-import { dashboard, login, register, welcome } from '@/routes';
+import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 
@@ -30,14 +30,14 @@ export default function Welcome({
                             </Link>
                         ) : (
                             <>
-                             <Link
+                             {/* <Link
                                     href={welcome({ 
                                         query: {name: 'Matteo'}
                                     })}
                                     className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
                                 >
                                     Welcome
-                                </Link>
+                                </Link> */}
 
                             
                                 <Link
@@ -58,17 +58,17 @@ export default function Welcome({
                         )}
                     </nav>
                 </header>
-                <div className="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
-                    <main className="flex w-full max-w-[335px] flex-col-reverse lg:max-w-4xl lg:flex-row">
+                <div className="flex max-w-2xl  items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
+                    <main className="flex   flex-col-reverse  lg:flex-row">
                         
-                        <div className="relative -mb-px aspect-[335/376] w-full shrink-0 overflow-hidden   lg:mb-0 lg:-ml-px lg:aspect-auto lg:w-[438px]  dark:bg-[#1D0002]">
+                        <div className="relative -mb-px aspect-[335/376] w-full shrink-0 overflow-hidden   lg:mb-0 lg:-ml-px lg:aspect-auto   dark:bg-[#1D0002]">
                            <img src="\LOGO_ARGOMEDIA.png" alt="" className='w-6xl' />
                             
-                            <div className="absolute inset-0 rounded-t-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-t-none lg:rounded-r-lg dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]" />
+                            
                         </div>
                     </main>
                 </div>
-                <div className="hidden h-14.5 lg:block"></div>
+               
             </div>
         </>
     );
