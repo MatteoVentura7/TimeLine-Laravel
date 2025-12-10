@@ -21,7 +21,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
-        $tasks = \App\Models\Task::all(); // Recupera tutti i task dal database
+        $tasks = \App\Models\Task::all(); 
         
         return Inertia::render('dashboard', ['tasks' => $tasks]);
     })->name('dashboard');
@@ -31,4 +31,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
 });
 
-require __DIR__.'/settings.php';
+require __DIR__.'/settings.php'; 
