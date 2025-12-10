@@ -8,12 +8,12 @@ use Inertia\Inertia;
 
 class TaskController extends Controller
 {
-    public function index()
-    {
-        return Inertia::render('Tasks/Index', [
-            'tasks' => Task::orderBy('id', 'desc')->get(),
-        ]);
-    }
+    // public function index()
+    // {
+    //     return Inertia::render('Tasks/Index', [
+    //         'tasks' => Task::orderBy('id', 'desc')->get(),
+    //     ]);
+    // }
 
     public function store(Request $request)
     {

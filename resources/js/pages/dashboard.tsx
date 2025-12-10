@@ -3,7 +3,8 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { route } from '@/wayfinder';
+import { queryParams } from '@/wayfinder';
+
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -22,11 +23,11 @@ export default function Dashboard({ tasks = [] }: { tasks: Task[] }) {
 
        const { data, setData, post, reset } = useForm({ title: "" });
 
-    const submit = (e) => {
+       const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route("tasks.store"), {
+        const url = `/tasks${queryParams({})}`;
+        post(url, {
             onSuccess: () => reset(),
-        
         });
     };
 
@@ -45,7 +46,7 @@ export default function Dashboard({ tasks = [] }: { tasks: Task[] }) {
                         </ul>
                     </div>
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border ">
-                       <form onSubmit={submit}  className="flex flex-col gap-2 mb-4 m-8">
+                       <form onSubmit={submit} className="flex flex-col gap-2 mb-4 m-8">
                 <input
                     value={data.title}
                     onChange={(e) => setData("title", e.target.value)}

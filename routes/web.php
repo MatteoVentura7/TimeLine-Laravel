@@ -11,7 +11,7 @@ Route::get('welcome', function (Request $request) {
 })->name('welcome');
 
 
-Route::post('dashboard', [TaskController::class, 'store'])->name('tasks.store');
+
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -25,6 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         return Inertia::render('dashboard', ['tasks' => $tasks]);
     })->name('dashboard');
+
+    Route::post('tasks', [TaskController::class, 'store'])->name('tasks.store');
 });
 
 require __DIR__.'/settings.php';
