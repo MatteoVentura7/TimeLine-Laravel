@@ -21,7 +21,7 @@ interface Task {
     completed: boolean;
 }
 
-export default function Dashboard({ tasks = [] }: { tasks: Task[] }) {
+export default function Dashboard({ tasks = [] , statistc   }: { tasks: Task[] , statistc: number[]}) {
 
        const { data, setData, post, reset, patch } = useForm({ title: "" });
 
@@ -106,14 +106,14 @@ export default function Dashboard({ tasks = [] }: { tasks: Task[] }) {
         <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow text-lg text-center">
             <span className="font-semibold">To Do</span>{" "}
             <h1 className="text-blue-600 font-bold text-4xl mt-3">
-                {tasks.filter(t => !t.completed).length}
+                {statistc[0] || 0}
             </h1>
         </div>
 
         <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow text-lg text-center">
             <span className="font-semibold">Done</span>{" "}
             <h1 className="text-green-600 font-bold text-4xl mt-3">
-                {tasks.filter(t => t.completed).length}
+                {statistc[1] || 0}
             </h1>
         </div>
     </div>

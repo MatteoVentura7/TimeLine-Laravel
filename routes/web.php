@@ -23,6 +23,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         $tasks = \App\Models\Task::all(); 
         $statistc = \App\Models\Task::all()->groupBy->completed->map->count();
+        //  $statistc = \App\Models\Task::all()
+        //     ->groupBy('completed')
+        //     ->mapWithKeys(function ($group, $key) {
+        //         return [$key ? 'true' : 'false' => $group->count()];
+        //     });
        
         return Inertia::render('dashboard', ['tasks' => $tasks , 'statistc' => $statistc]);
     })->name('dashboard');
