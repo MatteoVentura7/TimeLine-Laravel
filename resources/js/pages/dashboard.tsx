@@ -23,7 +23,7 @@ interface Task {
 
 export default function Dashboard({ tasks = [] }: { tasks: Task[] }) {
 
-       const { data, setData, post, reset } = useForm({ title: "" });
+       const { data, setData, post, reset, patch } = useForm({ title: "" });
 
        const submit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,10 +35,7 @@ export default function Dashboard({ tasks = [] }: { tasks: Task[] }) {
 
     const toggle = (id: number) => {
         const url = `/tasks/${id}/toggle${queryParams({})}`;
-        post(url, {
-            headers: {
-                'X-HTTP-Method-Override': 'PATCH',
-            },
+        patch(url, {
             onSuccess: () => console.log(`Toggled task with id: ${id}`),
         });
     };
@@ -56,7 +53,7 @@ export default function Dashboard({ tasks = [] }: { tasks: Task[] }) {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <h1 className='text-center mt-5 font-bold text-3xl text-blue-500 '>To Do</h1>
+                    <h1 className='text-center mt-5 font-bold text-3xl text-blue-500 '>List of tasks</h1>
                             <ul className="list-none p-0 m-8">
                 {tasks.map((task) => (
                     <li key={task.id} className="flex items-center mb-2">
@@ -86,11 +83,12 @@ export default function Dashboard({ tasks = [] }: { tasks: Task[] }) {
             </ul>
                     </div>
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border ">
+                    <h1 className='text-center mt-5 font-bold text-3xl text-blue-500 '>Add task form</h1>
                        <form onSubmit={submit} className="flex flex-col gap-2 mb-4 m-8">
                 <input
                     value={data.title}
                     onChange={(e) => setData("title", e.target.value)}
-                    placeholder="Aggiungi task..."
+                    placeholder="Add task..."
                     className="flex-grow p-2 border border-gray-300 rounded w-full"
                 />
                 <button
@@ -101,9 +99,25 @@ export default function Dashboard({ tasks = [] }: { tasks: Task[] }) {
                 </button>
             </form>
                     </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
+                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border ">
+    <h1 className="text-3xl font-bold mb-4 text-blue-500 text-center mt-5">Your progress chart</h1>
+
+    <div className="flex gap-4 justify-center">
+        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow text-lg text-center">
+            <span className="font-semibold">To Do</span>{" "}
+            <h1 className="text-blue-600 font-bold text-4xl mt-3">
+                {tasks.filter(t => !t.completed).length}
+            </h1>
+        </div>
+
+        <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow text-lg text-center">
+            <span className="font-semibold">Done</span>{" "}
+            <h1 className="text-green-600 font-bold text-4xl mt-3">
+                {tasks.filter(t => t.completed).length}
+            </h1>
+        </div>
+    </div>
+</div>
                 </div>
                 <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
                     <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
