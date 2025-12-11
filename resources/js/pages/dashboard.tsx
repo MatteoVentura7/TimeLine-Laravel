@@ -111,7 +111,7 @@ export default function Dashboard({
                             <div className="animate-fadeInUp mt-6 flex flex-col items-center justify-center">
                                 <img
                                     src="9264828.jpg"
-                                    className="w-56 opacity-90"
+                                    className="3xl:max-w-50 3xl:max-w-36 max-w-24 opacity-90 sm:max-w-36 lg:max-w-44 xl:max-w-18 2xl:max-w-30"
                                 />
                                 <p className="mt-4 text-xl text-gray-500">
                                     No activity found 🎉
