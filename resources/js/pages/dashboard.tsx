@@ -32,11 +32,18 @@ export default function Dashboard({
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isAdding, setIsAdding] = useState(false);
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        setIsAdding(true);
+
         const url = `/tasks${queryParams({})}`;
         post(url, {
             onSuccess: () => reset(),
+            onFinish: () => setIsAdding(false),
         });
     };
 
@@ -55,12 +62,17 @@ export default function Dashboard({
     const confirmDelete = () => {
         if (!taskToDelete) return;
 
+        setIsDeleting(true);
+
         const url = `/tasks/${taskToDelete}${queryParams({})}`;
         Inertia.delete(url, {
             onSuccess: () => {
                 console.log(`Removed task with id: ${taskToDelete}`);
                 setConfirmOpen(false);
                 setTaskToDelete(null);
+            },
+            onFinish: () => {
+                setIsDeleting(false);
             },
         });
     };
@@ -83,16 +95,18 @@ export default function Dashboard({
                         <div className="flex justify-center gap-3">
                             <button
                                 onClick={() => setConfirmOpen(false)}
-                                className="cursor-pointer rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+                                disabled={isDeleting}
+                                className="cursor-pointer rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600"
                             >
                                 Cancel
                             </button>
 
                             <button
                                 onClick={confirmDelete}
-                                className="cursor-pointer rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                                disabled={isDeleting}
+                                className="cursor-pointer rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                                Confirm
+                                {isDeleting ? 'Deleting...' : 'Confirm'}
                             </button>
                         </div>
                     </div>
@@ -186,9 +200,10 @@ export default function Dashboard({
                             />
                             <button
                                 type="submit"
-                                className="mt-2 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                                disabled={isAdding}
+                                className="mt-2 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                                Add
+                                {isAdding ? 'Adding...' : 'Add'}
                             </button>
                         </form>
                     </div>
