@@ -36,11 +36,17 @@ export default function Dashboard({
     const [isCheck, setIsCheck] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
 
+    // PAGINAZIONE
+    const [currentPage, setCurrentPage] = useState(1);
+    const tasksPerPage = 4;
+    const indexOfLastTask = currentPage * tasksPerPage;
+    const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+    const currentTasks = tasks.slice(indexOfFirstTask, indexOfLastTask);
+    const totalPages = Math.ceil(tasks.length / tasksPerPage);
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-
         setIsAdding(true);
-
         const url = `/tasks${queryParams({})}`;
         post(url, {
             onSuccess: () => reset(),
@@ -49,16 +55,11 @@ export default function Dashboard({
     };
 
     const toggle = (id: number) => {
-        setIsCheck(true)
+        setIsCheck(true);
         const url = `/tasks/${id}/toggle${queryParams({})}`;
         patch(url, {
             onSuccess: () => console.log(`Toggled task with id: ${id}`),
-            
-            onFinish: () => {
-                setIsCheck(false)
-            },
-            
-
+            onFinish: () => setIsCheck(false),
         });
     };
 
@@ -69,9 +70,7 @@ export default function Dashboard({
 
     const confirmDelete = () => {
         if (!taskToDelete) return;
-
         setIsDeleting(true);
-
         const url = `/tasks/${taskToDelete}${queryParams({})}`;
         Inertia.delete(url, {
             onSuccess: () => {
@@ -79,9 +78,6 @@ export default function Dashboard({
                 setConfirmOpen(false);
                 setTaskToDelete(null);
             },
-            // onFinish: () => {
-            //     setIsDeleting(false);
-            // },
         });
     };
 
@@ -89,7 +85,7 @@ export default function Dashboard({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
 
-            {/*  POP UP DI CONFERMA ELIMINAZIONE */}
+            {/* POP UP DI CONFERMA ELIMINAZIONE */}
             {confirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
                     <div className="w-80 rounded-lg bg-white p-6 text-center shadow-xl dark:bg-neutral-900">
@@ -99,7 +95,6 @@ export default function Dashboard({
                         <p className="mb-6 text-neutral-700 dark:text-neutral-300">
                             Are you sure you want to delete this task?
                         </p>
-
                         <div className="flex justify-center gap-3">
                             <button
                                 onClick={() => setConfirmOpen(false)}
@@ -108,7 +103,6 @@ export default function Dashboard({
                             >
                                 Cancel
                             </button>
-
                             <button
                                 onClick={confirmDelete}
                                 disabled={isDeleting}
@@ -124,73 +118,108 @@ export default function Dashboard({
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="grid auto-rows-min gap-4 xl:grid-cols-3">
                     {/* LISTA TASK */}
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-    <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
-        List of activity
-    </h1>
+                    <div className=" min-h-105 w-full relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                        <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
+                            List of activity
+                        </h1>
 
-    {tasks.length === 0 ? (
-        <div className="animate-fadeInUp mt-6 flex flex-col items-center justify-center">
-            <img
-                src="9264828.jpg"
-                className="3xl:max-w-50 3xl:max-w-36 max-w-24 opacity-90 sm:max-w-36 lg:max-w-44 xl:max-w-18 2xl:max-w-30"
-            />
-            <p className="mt-4 text-xl text-gray-500">
-                No activity found 🎉
-            </p>
-        </div>
-    ) : (
-        <ul className="m-8 max-h-100 space-y-3 overflow-y-auto p-0 pr-2 pb-4 hide-scrollbar">
-            {tasks.map((task) => (
-                <li
-                    key={task.id}
-                    className="flex items-center justify-between rounded-xl bg-white p-4 shadow transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800"
-                >
-                    <div className="flex items-center space-x-3">
-                        <input
-                            type="checkbox"
-                            disabled={isCheck}
-                            checked={task.completed}
-                            onChange={() => toggle(task.id)}
-                            className="h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400"
-                        />
-                        <span
-                            className={`font-medium text-gray-800 transition-colors duration-200 dark:text-gray-200 ${
-                                task.completed
-                                    ? 'text-gray-400 line-through dark:text-gray-500'
-                                    : ''
-                            }`}
-                        >
-                            {task.title}
-                        </span>
+                        {tasks.length === 0 ? (
+                            <div className="animate-fadeInUp mt-6 flex flex-col items-center justify-center">
+                                <img
+                                    src="9264828.jpg"
+                                    className="3xl:max-w-50 3xl:max-w-36 max-w-24 opacity-90 sm:max-w-36 lg:max-w-44 xl:max-w-18 2xl:max-w-30"
+                                />
+                                <p className="mt-4 text-xl text-gray-500">
+                                    No activity found 🎉
+                                </p>
+                            </div>
+                        ) : (
+                            <>
+                                <ul className="m-4 max-h-100 space-y-3 p-0 pr-2 pb-2">
+                                    {currentTasks.map((task) => (
+                                        <li
+                                            key={task.id}
+                                            className="flex items-center justify-between rounded-xl bg-white p-4 shadow transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800"
+                                        >
+                                            <div className="flex items-center space-x-3">
+                                                <input
+                                                    type="checkbox"
+                                                    disabled={isCheck}
+                                                    checked={task.completed}
+                                                    onChange={() => toggle(task.id)}
+                                                    className="h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400"
+                                                />
+                                                <span
+                                                    className={`font-medium text-gray-800 transition-colors duration-200 dark:text-gray-200 ${
+                                                        task.completed
+                                                            ? 'text-gray-400 line-through dark:text-gray-500'
+                                                            : ''
+                                                    }`}
+                                                >
+                                                    {task.title}
+                                                </span>
+                                            </div>
+                                            <button
+                                                onClick={() => remove(task.id)}
+                                                className="cursor-pointer text-red-500 transition-colors duration-200 hover:text-red-600"
+                                                title="Delete task"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-5 w-5"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                    strokeWidth={2}
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        d="M6 18L18 6M6 6l12 12"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {/* PAGINAZIONE */}
+                                {tasks.length > tasksPerPage && (
+                                    <div className="flex justify-center gap-2 mt-2">
+                                        <button
+                                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                                            disabled={currentPage === 1}
+                                            className="px-3 py-1 rounded border disabled:opacity-50"
+                                        >
+                                         <h1 className='text-xl'> &lt;&lt; </h1>  
+
+
+                                        </button>
+
+                                        {Array.from({ length: totalPages }, (_, i) => (
+                                            <button
+                                                key={i + 1}
+                                                onClick={() => setCurrentPage(i + 1)}
+                                                className={`px-3 py-1 rounded border ${
+                                                    currentPage === i + 1 ? 'bg-blue-500 text-white' : ''
+                                                }`}
+                                            >
+                                                {i + 1}
+                                            </button>
+                                        ))}
+
+                                        <button
+                                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                                            disabled={currentPage === totalPages}
+                                            className="px-3 py-1 rounded border disabled:opacity-50"
+                                        >
+                                            <h1 className='text-xl'> &gt;&gt; </h1>  
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        )}
                     </div>
-
-                    <button
-                        onClick={() => remove(task.id)}
-                        className="cursor-pointer text-red-500 transition-colors duration-200 hover:text-red-600"
-                        title="Delete task"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button>
-                </li>
-            ))}
-        </ul>
-    )}
-</div>
-
 
                     {/* FORM AGGIUNTA TASK */}
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
@@ -199,7 +228,6 @@ export default function Dashboard({
                         </h1>
                         <form
                             onSubmit={submit}
-                          
                             className="m-8 mb-4 flex flex-col gap-2"
                         >
                             <input
@@ -226,7 +254,6 @@ export default function Dashboard({
                         <h1 className="mt-5 mb-4 text-center text-3xl font-bold text-blue-500">
                             Your progress chart
                         </h1>
-
                         <div className="flex justify-center gap-4">
                             <div className="rounded-lg bg-white p-4 text-center text-lg shadow dark:bg-neutral-800">
                                 <span className="font-semibold">To Do</span>{' '}
@@ -234,7 +261,6 @@ export default function Dashboard({
                                     {statistc[0] || 0}
                                 </h1>
                             </div>
-
                             <div className="rounded-lg bg-white p-4 text-center text-lg shadow dark:bg-neutral-800">
                                 <span className="font-semibold">Done</span>{' '}
                                 <h1 className="mt-3 text-4xl font-bold text-green-600">
