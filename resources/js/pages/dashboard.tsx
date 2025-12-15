@@ -36,7 +36,7 @@ export default function Dashboard({
     const [isCheck, setIsCheck] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
 
-    // PAGINAZIONE
+    
     const [currentPage, setCurrentPage] = useState(1);
     const tasksPerPage = 4;
     const indexOfLastTask = currentPage * tasksPerPage;
@@ -159,26 +159,18 @@ export default function Dashboard({
                                                     {task.title}
                                                 </span>
                                             </div>
+                                            <div>
+                                            <button className='cursor-pointer text-yellow-500 transition-colors duration-200 hover:text-yellow-600 mr-3'>
+                                                <i className="fa-solid fa-pencil"></i></button>
                                             <button
                                                 onClick={() => remove(task.id)}
                                                 className="cursor-pointer text-red-500 transition-colors duration-200 hover:text-red-600"
                                                 title="Delete task"
                                             >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="h-5 w-5"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2}
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M6 18L18 6M6 6l12 12"
-                                                    />
-                                                </svg>
+                                                <i className="fa-solid fa-trash"></i>
                                             </button>
+                                            </div>
+                                            
                                         </li>
                                     ))}
                                 </ul>
