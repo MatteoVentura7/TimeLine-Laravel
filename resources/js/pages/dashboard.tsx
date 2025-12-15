@@ -33,6 +33,7 @@ export default function Dashboard({
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isCheck, setIsCheck] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
 
     const submit = (e: React.FormEvent) => {
@@ -48,9 +49,16 @@ export default function Dashboard({
     };
 
     const toggle = (id: number) => {
+        setIsCheck(true)
         const url = `/tasks/${id}/toggle${queryParams({})}`;
         patch(url, {
             onSuccess: () => console.log(`Toggled task with id: ${id}`),
+            
+            onFinish: () => {
+                setIsCheck(false)
+            },
+            
+
         });
     };
 
@@ -71,9 +79,9 @@ export default function Dashboard({
                 setConfirmOpen(false);
                 setTaskToDelete(null);
             },
-            onFinish: () => {
-                setIsDeleting(false);
-            },
+            // onFinish: () => {
+            //     setIsDeleting(false);
+            // },
         });
     };
 
@@ -81,7 +89,7 @@ export default function Dashboard({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
 
-            {/*  MODALE DI CONFERMA ELIMINAZIONE */}
+            {/*  POP UP DI CONFERMA ELIMINAZIONE */}
             {confirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
                     <div className="w-80 rounded-lg bg-white p-6 text-center shadow-xl dark:bg-neutral-900">
@@ -141,6 +149,7 @@ export default function Dashboard({
                                         <div className="flex items-center space-x-3">
                                             <input
                                                 type="checkbox"
+                                                disabled={isCheck}
                                                 checked={task.completed}
                                                 onChange={() => toggle(task.id)}
                                                 className="h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400"
@@ -188,6 +197,7 @@ export default function Dashboard({
                         </h1>
                         <form
                             onSubmit={submit}
+                          
                             className="m-8 mb-4 flex flex-col gap-2"
                         >
                             <input
@@ -196,7 +206,8 @@ export default function Dashboard({
                                     setData('title', e.target.value)
                                 }
                                 placeholder="Add activity..."
-                                className="w-full flex-grow rounded border border-gray-300 p-2"
+                                className="w-full grow rounded border border-gray-300 p-2"
+                                required
                             />
                             <button
                                 type="submit"
@@ -232,7 +243,7 @@ export default function Dashboard({
                     </div>
                 </div>
 
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
+                <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
                     <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                 </div>
             </div>
