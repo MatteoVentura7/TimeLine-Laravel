@@ -125,70 +125,72 @@ export default function Dashboard({
                 <div className="grid auto-rows-min gap-4 xl:grid-cols-3">
                     {/* LISTA TASK */}
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
-                            List of activity
-                        </h1>
+    <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
+        List of activity
+    </h1>
 
-                        {tasks.length === 0 ? (
-                            <div className="animate-fadeInUp mt-6 flex flex-col items-center justify-center">
-                                <img
-                                    src="9264828.jpg"
-                                    className="3xl:max-w-50 3xl:max-w-36 max-w-24 opacity-90 sm:max-w-36 lg:max-w-44 xl:max-w-18 2xl:max-w-30"
-                                />
-                                <p className="mt-4 text-xl text-gray-500">
-                                    No activity found 🎉
-                                </p>
-                            </div>
-                        ) : (
-                            <ul className="m-8 space-y-3 p-0">
-                                {tasks.map((task) => (
-                                    <li
-                                        key={task.id}
-                                        className="flex items-center justify-between rounded-xl bg-white p-4 shadow transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800"
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <input
-                                                type="checkbox"
-                                                disabled={isCheck}
-                                                checked={task.completed}
-                                                onChange={() => toggle(task.id)}
-                                                className="h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400"
-                                            />
-                                            <span
-                                                className={`font-medium text-gray-800 transition-colors duration-200 dark:text-gray-200 ${
-                                                    task.completed
-                                                        ? 'text-gray-400 line-through dark:text-gray-500'
-                                                        : ''
-                                                }`}
-                                            >
-                                                {task.title}
-                                            </span>
-                                        </div>
-                                        <button
-                                            onClick={() => remove(task.id)}
-                                            className="cursor-pointer text-red-500 transition-colors duration-200 hover:text-red-600"
-                                            title="Delete task"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-5 w-5"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                strokeWidth={2}
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M6 18L18 6M6 6l12 12"
-                                                />
-                                            </svg>
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+    {tasks.length === 0 ? (
+        <div className="animate-fadeInUp mt-6 flex flex-col items-center justify-center">
+            <img
+                src="9264828.jpg"
+                className="3xl:max-w-50 3xl:max-w-36 max-w-24 opacity-90 sm:max-w-36 lg:max-w-44 xl:max-w-18 2xl:max-w-30"
+            />
+            <p className="mt-4 text-xl text-gray-500">
+                No activity found 🎉
+            </p>
+        </div>
+    ) : (
+        <ul className="m-8 max-h-100 space-y-3 overflow-y-auto p-0 pr-2 pb-4 hide-scrollbar">
+            {tasks.map((task) => (
+                <li
+                    key={task.id}
+                    className="flex items-center justify-between rounded-xl bg-white p-4 shadow transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800"
+                >
+                    <div className="flex items-center space-x-3">
+                        <input
+                            type="checkbox"
+                            disabled={isCheck}
+                            checked={task.completed}
+                            onChange={() => toggle(task.id)}
+                            className="h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400"
+                        />
+                        <span
+                            className={`font-medium text-gray-800 transition-colors duration-200 dark:text-gray-200 ${
+                                task.completed
+                                    ? 'text-gray-400 line-through dark:text-gray-500'
+                                    : ''
+                            }`}
+                        >
+                            {task.title}
+                        </span>
                     </div>
+
+                    <button
+                        onClick={() => remove(task.id)}
+                        className="cursor-pointer text-red-500 transition-colors duration-200 hover:text-red-600"
+                        title="Delete task"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                    </button>
+                </li>
+            ))}
+        </ul>
+    )}
+</div>
+
 
                     {/* FORM AGGIUNTA TASK */}
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
