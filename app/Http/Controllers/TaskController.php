@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Importa il facade Auth
+use Illuminate\Support\Facades\Auth; 
 
 class TaskController extends Controller
 {
@@ -21,7 +21,7 @@ class TaskController extends Controller
     {
         $request->validate(['title' => 'required']);
         $taskData = $request->only('title');
-        $taskData['user_id'] = Auth::user()->id; // Usa il facade Auth per ottenere l'utente loggato
+        $taskData['user_id'] = Auth::user()->id; 
         Task::create($taskData);
 
         return back();
