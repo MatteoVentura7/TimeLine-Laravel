@@ -6,7 +6,7 @@ export default function ChartCounter({
     statistc: number[];
 })
 {     return (
-        <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+        <div>
             <h1 className="mt-5 mb-4 text-center text-3xl font-bold text-blue-500">
                 Your progress chart
             </h1>
