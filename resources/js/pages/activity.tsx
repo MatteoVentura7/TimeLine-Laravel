@@ -19,7 +19,7 @@ interface Task {
     completed: boolean;
 }
 
-export default function Greetings({
+export default function Activity({
     tasks = [],
     statistc,
 }: {
