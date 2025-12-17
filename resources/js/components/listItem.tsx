@@ -51,9 +51,7 @@ export default function ListItem({ tasks = [] }: { tasks: Task[] }) {
 
     return (
         <div className="flex flex-col h-full">
-            <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
-                List of activity
-            </h1>
+           
 
             {tasks.length === 0 ? (
                 <div className="animate-fadeInUp mt-6 flex flex-col items-center justify-center">
@@ -106,7 +104,7 @@ export default function ListItem({ tasks = [] }: { tasks: Task[] }) {
 
                     {/* PAGINAZIONE */}
                     {tasks.length > tasksPerPage && (
-                        <div className="mt-auto flex justify-center gap-2 mb-5">
+                        <div className="mt-auto flex justify-center gap-2 mb-20">
                             <button
                                 onClick={() =>
                                     setCurrentPage((prev) =>
