@@ -11,7 +11,8 @@ class TaskController extends Controller
 {
     public function dashboard()
     {
-        $tasks = Auth::user()->tasks;
+
+        $tasks = Auth::user()->tasks()->latest()->get();
         $statistc = $tasks->groupBy('completed')->map->count();
         return Inertia::render('dashboard', [
             'tasks' => $tasks,
@@ -21,7 +22,7 @@ class TaskController extends Controller
 
     public function dashboardActivity()
     {
-        $tasks = Auth::user()->tasks;
+        $tasks = Auth::user()->tasks()->latest()->get();
         $statistc = $tasks->groupBy('completed')->map->count();
         return Inertia::render('dashboardActivity', [
             'tasks' => $tasks,
@@ -37,7 +38,7 @@ class TaskController extends Controller
         $taskData['user_id'] = Auth::user()->id;
         Task::create($taskData);
 
-        return back();
+        return Inertia::location(url()->previous());
 
     }
 
@@ -47,12 +48,12 @@ class TaskController extends Controller
             'completed' => !$task->completed,
         ]);
 
-        return back();
+        return Inertia::location(url()->previous());
     }
 
     public function destroy(Task $task)
     {
         $task->delete();
-        return back();
+        return Inertia::location(url()->previous());
     }
 }
