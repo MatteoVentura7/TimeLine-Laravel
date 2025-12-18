@@ -30,16 +30,6 @@ export default function Welcome({
                             </Link>
                         ) : (
                             <>
-                             {/* <Link
-                                    href={welcome({ 
-                                        query: {name: 'Matteo'}
-                                    })}
-                                    className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
-                                >
-                                    Welcome
-                                </Link> */}
-
-                            
                                 <Link
                                     href={login()}
                                     className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
@@ -58,20 +48,18 @@ export default function Welcome({
                         )}
                     </nav>
                 </header>
-                <div className="flex max-w-2xl  items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
-                    <main className="flex   flex-col-reverse  lg:flex-row">
-                        
-                        <div className="relative -mb-px aspect-335/376 w-full shrink-0 overflow-hidden   lg:mb-0 lg:-ml-px lg:aspect-auto   dark:bg-[#1D0002]">
-                           <img src="\LOGO_ARGOMEDIA.png" alt="" className='w-6xl' />
-                            
-                            
+                <div className="flex max-w-2xl items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
+                    <main className="flex flex-col-reverse lg:flex-row">
+                        <div className="relative -mb-px aspect-335/376 w-full shrink-0 overflow-hidden lg:mb-0 lg:-ml-px lg:aspect-auto dark:bg-[#1D0002]">
+                            <img
+                                src="\LOGO_ARGOMEDIA.png"
+                                alt=""
+                                className="w-6xl"
+                            />
                         </div>
                     </main>
                 </div>
-               
             </div>
         </>
     );
 }
-
-

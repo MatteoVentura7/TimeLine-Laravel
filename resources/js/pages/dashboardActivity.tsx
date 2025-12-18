@@ -1,15 +1,15 @@
-import { useState } from 'react';
 import ListItem from '@/components/listItem';
+import TaskForm from '@/components/taskForm';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
+import { dashboardActivity } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import TaskForm from '@/components/taskForm';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Activity',
-        href: dashboard().url,
+        href: dashboardActivity().url,
     },
 ];
 
@@ -19,7 +19,7 @@ interface Task {
     completed: boolean;
 }
 
-export default function Activity({
+export default function DashboardActivity({
     tasks = [],
     statistc,
 }: {
@@ -38,12 +38,16 @@ export default function Activity({
                         List of activity
                     </h1>
 
-                    <div className="mr-5 flex justify-end items-center">
-                        <span className='mr-3 text-blue-600 font-bold'>To Do : {statistc[0] ?? 0}</span>
-                        <span className='text-green-600 font-bold'>Done : {statistc[1] ?? 0}</span>
+                    <div className="mr-5 flex items-center justify-end">
+                        <span className="mr-3 font-bold text-blue-600">
+                            To Do : {statistc[0] ?? 0}
+                        </span>
+                        <span className="font-bold text-green-600">
+                            Done : {statistc[1] ?? 0}
+                        </span>
                         <button
                             onClick={() => setOpen(true)}
-                            className=" rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 ml-5 cursor-pointer"
+                            className="ml-5 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
                         >
                             Add Activity
                         </button>
@@ -53,21 +57,18 @@ export default function Activity({
                     {open && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                             <div className="w-full max-w-md rounded-lg bg-white p-2 shadow-lg">
-                                <div className='flex justify-end'>
-                                    
-                                 <button
+                                <div className="flex justify-end">
+                                    <button
                                         onClick={() => setOpen(false)}
-                                        className="text-red-500 hover:text-red-700 cursor-pointer"
+                                        className="cursor-pointer text-red-500 hover:text-red-700"
                                     >
                                         X
                                     </button>
-                                    </div>
+                                </div>
 
                                 <TaskForm />
 
-                                <div className="mt-4 flex justify-end">
-                                  
-                                </div>
+                                <div className="mt-4 flex justify-end"></div>
                             </div>
                         </div>
                     )}
