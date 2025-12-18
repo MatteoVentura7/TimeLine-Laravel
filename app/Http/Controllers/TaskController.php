@@ -12,8 +12,11 @@ class TaskController extends Controller
     public function dashboard()
     {
 
-        $tasks = Auth::user()->tasks()->latest()->get();
-        $statistc = $tasks->groupBy('completed')->map->count();
+        $tasks = Auth::user()->tasks()->latest()->paginate(4);
+        $statistc = [
+            'todo' => Auth::user()->tasks()->where('completed', false)->count(),
+            'done' => Auth::user()->tasks()->where('completed', true)->count(),
+        ];
         return Inertia::render('dashboard', [
             'tasks' => $tasks,
             'statistc' => $statistc,
@@ -22,8 +25,11 @@ class TaskController extends Controller
 
     public function dashboardActivity()
     {
-        $tasks = Auth::user()->tasks()->latest()->get();
-        $statistc = $tasks->groupBy('completed')->map->count();
+        $tasks = Auth::user()->tasks()->latest()->paginate(10);
+        $statistc = [
+            'todo' => Auth::user()->tasks()->where('completed', false)->count(),
+            'done' => Auth::user()->tasks()->where('completed', true)->count(),
+        ];
         return Inertia::render('dashboardActivity', [
             'tasks' => $tasks,
             'statistc' => $statistc,

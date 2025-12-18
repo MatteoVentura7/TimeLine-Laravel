@@ -19,12 +19,21 @@ interface Task {
     completed: boolean;
 }
 
+interface TaskPagination {
+    data: Task[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    links: { url: string | null; label: string; active: boolean }[];
+}
+
 export default function DashboardActivity({
-    tasks = [],
+    tasks,
     statistc,
 }: {
-    tasks: Task[];
-    statistc: number[];
+    tasks: TaskPagination;
+    statistc: { todo: number; done: number };
 }) {
     const [open, setOpen] = useState(false);
 
@@ -32,7 +41,7 @@ export default function DashboardActivity({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Activity" />
 
-            <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+            <div className="relative aspect-video min-h-220 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                 <div>
                     <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
                         List of activity
@@ -40,10 +49,10 @@ export default function DashboardActivity({
 
                     <div className="mr-5 flex items-center justify-end">
                         <span className="mr-3 font-bold text-blue-600">
-                            To Do : {statistc[0] ?? 0}
+                            To Do : {statistc.todo ?? 0}
                         </span>
                         <span className="font-bold text-green-600">
-                            Done : {statistc[1] ?? 0}
+                            Done : {statistc.done ?? 0}
                         </span>
                         <button
                             onClick={() => setOpen(true)}

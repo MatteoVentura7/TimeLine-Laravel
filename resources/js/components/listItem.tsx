@@ -1,5 +1,4 @@
 import { Inertia } from '@inertiajs/inertia';
-import { queryParams } from '@/wayfinder';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -9,24 +8,25 @@ interface Task {
     completed: boolean;
 }
 
-export default function ListItem({ tasks = [] }: { tasks: Task[] }) {
+interface TaskPagination {
+    data: Task[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    links: { url: string | null; label: string; active: boolean }[];
+}
+
+export default function ListItem({ tasks }: { tasks: TaskPagination }) {
     const { patch } = useForm({ title: '' });
     const [isCheck, setIsCheck] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const tasksPerPage = 4;
-    const indexOfLastTask = currentPage * tasksPerPage;
-    const indexOfFirstTask = indexOfLastTask - tasksPerPage;
-    const currentTasks = tasks.slice(indexOfFirstTask, indexOfLastTask);
-    const totalPages = Math.ceil(tasks.length / tasksPerPage);
 
     const toggle = (id: number) => {
         setIsCheck(true);
-        const url = `/tasks/${id}/toggle${queryParams({})}`;
-        patch(url, {
-            onSuccess: () => console.log(`Toggled task with id: ${id}`),
+        patch(`/tasks/${id}/toggle`, {
             onFinish: () => setIsCheck(false),
         });
     };
@@ -39,37 +39,31 @@ export default function ListItem({ tasks = [] }: { tasks: Task[] }) {
     const confirmDelete = () => {
         if (!taskToDelete) return;
         setIsDeleting(true);
-        const url = `/tasks/${taskToDelete}${queryParams({})}`;
-        Inertia.delete(url, {
-            onSuccess: () => {
-                console.log(`Removed task with id: ${taskToDelete}`);
+        Inertia.delete(`/tasks/${taskToDelete}`, {
+            onFinish: () => {
                 setConfirmOpen(false);
                 setTaskToDelete(null);
+                setIsDeleting(false);
             },
         });
     };
 
     return (
-        <div className="flex flex-col h-full">
-           
-
-            {tasks.length === 0 ? (
+        <div className="flex h-full flex-col">
+            {tasks.data.length === 0 ? (
                 <div className="animate-fadeInUp mt-6 flex flex-col items-center justify-center">
-                    <img
-                        src="9264828.jpg"
-                        className="3xl:max-w-50 3xl:max-w-36 max-w-24 opacity-90 sm:max-w-36 lg:max-w-44 xl:max-w-18 2xl:max-w-30"
-                    />
+                    <img src="9264828.jpg" className="max-w-36 opacity-90" />
                     <p className="mt-4 text-xl text-gray-500">
                         No activity found 🎉
                     </p>
                 </div>
             ) : (
                 <>
-                    <ul className="m-4 max-h-100 space-y-3 p-0 pr-2 pb-2 grow">
-                        {currentTasks.map((task) => (
+                    <ul className="m-4 max-h-220 grow space-y-3 p-0 pr-2 pb-2">
+                        {tasks.data.map((task) => (
                             <li
                                 key={task.id}
-                                className="flex items-center justify-between rounded-xl bg-white p-4 shadow transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800"
+                                className="flex items-center justify-between rounded-xl bg-white p-4 shadow hover:shadow-lg dark:bg-neutral-800"
                             >
                                 <div className="flex items-center space-x-3">
                                     <input
@@ -92,7 +86,7 @@ export default function ListItem({ tasks = [] }: { tasks: Task[] }) {
                                 <div>
                                     <button
                                         onClick={() => remove(task.id)}
-                                        className="cursor-pointer text-red-500 transition-colors duration-200 hover:text-red-600"
+                                        className="cursor-pointer text-red-500 hover:text-red-600"
                                         title="Delete task"
                                     >
                                         <i className="fa-solid fa-trash"></i>
@@ -102,51 +96,32 @@ export default function ListItem({ tasks = [] }: { tasks: Task[] }) {
                         ))}
                     </ul>
 
-                    {/* PAGINAZIONE */}
-                    {tasks.length > tasksPerPage && (
-                        <div className="mt-auto flex justify-center gap-2 mb-20">
-                            <button
-                                onClick={() =>
-                                    setCurrentPage((prev) =>
-                                        Math.max(prev - 1, 1),
-                                    )
-                                }
-                                disabled={currentPage === 1}
-                                className="rounded border px-3 py-1 disabled:opacity-50"
-                            >
-                                <h1 className="text-xl"> &lt;&lt; </h1>
-                            </button>
-
-                            {Array.from({ length: totalPages }, (_, i) => (
+                    {/* PAGINAZIONE SERVER */}
+                    {tasks.last_page > 1 && (
+                        <div className="mt-auto mb-20 flex justify-center gap-2">
+                            {tasks.links.map((link, index) => (
                                 <button
-                                    key={i + 1}
-                                    onClick={() => setCurrentPage(i + 1)}
+                                    key={index}
+                                    disabled={!link.url}
+                                    onClick={() =>
+                                        link.url && Inertia.get(link.url)
+                                    }
                                     className={`rounded border px-3 py-1 ${
-                                        currentPage === i + 1
+                                        link.active
                                             ? 'bg-blue-500 text-white'
                                             : ''
                                     }`}
-                                >
-                                    {i + 1}
-                                </button>
+                                    dangerouslySetInnerHTML={{
+                                        __html: link.label,
+                                    }}
+                                />
                             ))}
-
-                            <button
-                                onClick={() =>
-                                    setCurrentPage((prev) =>
-                                        Math.min(prev + 1, totalPages),
-                                    )
-                                }
-                                disabled={currentPage === totalPages}
-                                className="rounded border px-3 py-1 disabled:opacity-50"
-                            >
-                                <h1 className="text-xl"> &gt;&gt; </h1>
-                            </button>
                         </div>
                     )}
                 </>
             )}
-            {/* POP UP DI CONFERMA ELIMINAZIONE */}
+
+            {/* POPUP CONFERMA ELIMINAZIONE */}
             {confirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
                     <div className="w-80 rounded-lg bg-white p-6 text-center shadow-xl dark:bg-neutral-900">

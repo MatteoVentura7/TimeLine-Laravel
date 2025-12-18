@@ -20,12 +20,21 @@ interface Task {
     completed: boolean;
 }
 
+interface TaskPagination {
+    data: Task[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    links: { url: string | null; label: string; active: boolean }[];
+}
+
 export default function Dashboard({
-    tasks = [],
+    tasks,
     statistc,
 }: {
-    tasks: Task[];
-    statistc: number[];
+    tasks: TaskPagination;
+    statistc: { todo: number; done: number };
 }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -37,7 +46,7 @@ export default function Dashboard({
                         <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
                             List of activity
                         </h1>
-                        
+
                         <ListItem tasks={tasks} />
                     </div>
 
