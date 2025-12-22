@@ -5,7 +5,7 @@ import { dashboardActivity } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Inertia } from '@inertiajs/inertia';
 import { Head } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -38,6 +38,17 @@ export default function DashboardActivity({
 }) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
+    const [searchMessage, setSearchMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+        const storedSearch = localStorage.getItem('searchTerm');
+        if (storedSearch) {
+            setSearch(storedSearch);
+            setSearchMessage(
+                `Search results with the word : "${storedSearch}"`,
+            );
+        }
+    }, []);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
@@ -45,6 +56,15 @@ export default function DashboardActivity({
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (search) {
+            localStorage.setItem('searchTerm', search);
+            setSearchMessage(`Risultati per: "${search}"`);
+        } else {
+            localStorage.removeItem('searchTerm');
+            setSearchMessage(null);
+        }
+
         Inertia.get(
             dashboardActivity().url,
             { search },
@@ -61,46 +81,51 @@ export default function DashboardActivity({
                     <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
                         List of activity
                     </h1>
-                   
-                    <div className="flex  flex-col lg:flex-row mr-5 ml-5 items-center justify-between mt-3  ">
-                         {/* Barra di ricerca */}
-                    <form
-                        onSubmit={handleSearchSubmit}
-                        className="mb-3 lg:mb-0 mr-5 flex items-center justify-end "
-                    >
-                        <input
-                            type="text"
-                            placeholder="Search activity"
-                            value={search}
-                            onChange={handleSearchChange}
-                            className="rounded border px-4 py-2"
-                        />
-                        <button
-                            type="submit"
-                            className="ml-2 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+
+                    <div className="mt-3 mr-5 ml-5 flex flex-col items-center justify-between lg:flex-row">
+                        {/* Barra di ricerca */}
+                        <form
+                            onSubmit={handleSearchSubmit}
+                            className="mr-5 mb-3 flex items-center justify-end lg:mb-0"
                         >
-                        <i className="fa-solid fa-magnifying-glass"></i>
-                        </button>
-                    </form>
-                    <div>
-                        
-                            {' '}
+                            <input
+                                type="text"
+                                placeholder="Search activity"
+                                value={search}
+                                onChange={handleSearchChange}
+                                className="rounded border px-4 py-2"
+                            />
+                            <button
+                                type="submit"
+                                className="ml-2 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                            >
+                                <i className="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </form>
+
+                        <div>
                             <span className="mr-3 font-bold text-blue-600">
                                 To Do : {statistc.todo ?? 0}
                             </span>
                             <span className="font-bold text-green-600">
                                 Done : {statistc.done ?? 0}
                             </span>
-                        
 
-                        <button
-                            onClick={() => setOpen(true)}
-                            className="ml-5 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-                        >
-                            Add Activity
-                        </button>
+                            <button
+                                onClick={() => setOpen(true)}
+                                className="ml-5 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                            >
+                                Add Activity
+                            </button>
                         </div>
                     </div>
+
+                    {/* Messaggio di ricerca */}
+                    {searchMessage && (
+                        <div className="mt-3 p-2 text-center text-sm font-bold text-black">
+                            {searchMessage}
+                        </div>
+                    )}
 
                     {/* MODAL */}
                     {open && (
@@ -116,8 +141,6 @@ export default function DashboardActivity({
                                 </div>
 
                                 <TaskForm />
-
-                                <div className="mt-4 flex justify-end"></div>
                             </div>
                         </div>
                     )}
@@ -127,7 +150,7 @@ export default function DashboardActivity({
 
                     {/* PAGINAZIONE SERVER */}
                     {tasks.last_page > 1 && (
-                        <div className="mt-auto flex justify-center gap-2">
+                        <div className="mt-auto mb-3 flex justify-center gap-2">
                             {tasks.links.map((link, index) => (
                                 <button
                                     key={index}
