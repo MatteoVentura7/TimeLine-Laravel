@@ -3,9 +3,9 @@ import TaskForm from '@/components/taskForm';
 import AppLayout from '@/layouts/app-layout';
 import { dashboardActivity } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
+import { Inertia } from '@inertiajs/inertia';
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
-import { Inertia } from '@inertiajs/inertia';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -30,40 +30,76 @@ interface TaskPagination {
 }
 
 export default function DashboardActivity({
-    
     tasks,
-    
     statistc,
 }: {
-    
     tasks: TaskPagination;
     statistc: { todo: number; done: number };
 }) {
     const [open, setOpen] = useState(false);
+    const [search, setSearch] = useState('');
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+    };
+
+    const handleSearchSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        Inertia.get(
+            dashboardActivity().url,
+            { search },
+            { preserveState: true },
+        );
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Activity" />
 
-            <div className="relative  min-h-220 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+            <div className="relative min-h-220 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                 <div>
                     <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
                         List of activity
                     </h1>
+                   
+                    <div className="flex  flex-col lg:flex-row mr-5 ml-5 items-center justify-between mt-3  ">
+                         {/* Barra di ricerca */}
+                    <form
+                        onSubmit={handleSearchSubmit}
+                        className="mb-3 lg:mb-0 mr-5 flex items-center justify-end "
+                    >
+                        <input
+                            type="text"
+                            placeholder="Search activity"
+                            value={search}
+                            onChange={handleSearchChange}
+                            className="rounded border px-4 py-2"
+                        />
+                        <button
+                            type="submit"
+                            className="ml-2 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                        >
+                        <i className="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </form>
+                    <div>
+                        
+                            {' '}
+                            <span className="mr-3 font-bold text-blue-600">
+                                To Do : {statistc.todo ?? 0}
+                            </span>
+                            <span className="font-bold text-green-600">
+                                Done : {statistc.done ?? 0}
+                            </span>
+                        
 
-                    <div className="mr-5 flex items-center justify-end">
-                        <span className="mr-3 font-bold text-blue-600">
-                            To Do : {statistc.todo ?? 0}
-                        </span>
-                        <span className="font-bold text-green-600">
-                            Done : {statistc.done ?? 0}
-                        </span>
                         <button
                             onClick={() => setOpen(true)}
                             className="ml-5 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
                         >
                             Add Activity
                         </button>
+                        </div>
                     </div>
 
                     {/* MODAL */}
@@ -90,28 +126,27 @@ export default function DashboardActivity({
                     <ListItem tasks={tasks.data} />
 
                     {/* PAGINAZIONE SERVER */}
-                                        {tasks.last_page > 1 && (
-                                            <div className="mt-auto  flex justify-center gap-2">
-                                                {tasks.links.map((link, index) => (
-                                                    <button
-                                                        key={index}
-                                                        disabled={!link.url}
-                                                        onClick={() =>
-                                                            link.url && Inertia.get(link.url)
-                                                        }
-                                                        className={`rounded border px-3 py-1 cursor-pointer ${
-                                                            link.active
-                                                                ? 'bg-blue-500 text-white'
-                                                                : ''
-                                                        }`}
-                                                        dangerouslySetInnerHTML={{
-                                                            __html: link.label,
-                                                        }}
-                                                    />
-                                                ))}
-                                            </div>
-                                        )}
-                                
+                    {tasks.last_page > 1 && (
+                        <div className="mt-auto flex justify-center gap-2">
+                            {tasks.links.map((link, index) => (
+                                <button
+                                    key={index}
+                                    disabled={!link.url}
+                                    onClick={() =>
+                                        link.url && Inertia.get(link.url)
+                                    }
+                                    className={`cursor-pointer rounded border px-3 py-1 ${
+                                        link.active
+                                            ? 'bg-blue-500 text-white'
+                                            : ''
+                                    }`}
+                                    dangerouslySetInnerHTML={{
+                                        __html: link.label,
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </AppLayout>
