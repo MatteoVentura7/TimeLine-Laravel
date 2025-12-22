@@ -8,16 +8,9 @@ interface Task {
     completed: boolean;
 }
 
-interface TaskPagination {
-    data: Task[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-    links: { url: string | null; label: string; active: boolean }[];
-}
 
-export default function ListItem({ tasks }: { tasks: TaskPagination }) {
+
+export default function ListItem({ tasks = [] }: { tasks: Task [] }) {
     const { patch } = useForm({ title: '' });
     const [isCheck, setIsCheck] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
@@ -50,7 +43,7 @@ export default function ListItem({ tasks }: { tasks: TaskPagination }) {
 
     return (
         <div className="flex h-full flex-col">
-            {tasks.data.length === 0 ? (
+            {tasks.length === 0 ? (
                 <div className="animate-fadeInUp mt-6 flex flex-col items-center justify-center">
                     <img src="9264828.jpg" className="max-w-36 opacity-90" />
                     <p className="mt-4 text-xl text-gray-500">
@@ -60,7 +53,7 @@ export default function ListItem({ tasks }: { tasks: TaskPagination }) {
             ) : (
                 <>
                     <ul className="m-4 max-h-220 grow space-y-3 p-0 pr-2 pb-2">
-                        {tasks.data.map((task) => (
+                        {tasks.map((task) => (
                             <li
                                 key={task.id}
                                 className="flex items-center justify-between rounded-xl bg-white p-4 shadow hover:shadow-lg dark:bg-neutral-800"
@@ -96,28 +89,7 @@ export default function ListItem({ tasks }: { tasks: TaskPagination }) {
                         ))}
                     </ul>
 
-                    {/* PAGINAZIONE SERVER */}
-                    {tasks.last_page > 1 && (
-                        <div className="mt-auto mb-20 flex justify-center gap-2">
-                            {tasks.links.map((link, index) => (
-                                <button
-                                    key={index}
-                                    disabled={!link.url}
-                                    onClick={() =>
-                                        link.url && Inertia.get(link.url)
-                                    }
-                                    className={`rounded border px-3 py-1 ${
-                                        link.active
-                                            ? 'bg-blue-500 text-white'
-                                            : ''
-                                    }`}
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    )}
+               
                 </>
             )}
 

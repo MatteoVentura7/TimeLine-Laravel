@@ -29,11 +29,12 @@ interface TaskPagination {
     links: { url: string | null; label: string; active: boolean }[];
 }
 
+
 export default function Dashboard({
     tasks,
     statistc,
 }: {
-    tasks: TaskPagination;
+    tasks : TaskPagination;
     statistc: { todo: number; done: number };
 }) {
     return (
@@ -47,7 +48,7 @@ export default function Dashboard({
                             List of activity
                         </h1>
 
-                        <ListItem tasks={tasks} />
+                        <ListItem tasks={tasks.data} />
                     </div>
 
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">

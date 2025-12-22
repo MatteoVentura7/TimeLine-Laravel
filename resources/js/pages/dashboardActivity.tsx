@@ -5,6 +5,7 @@ import { dashboardActivity } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
+import { Inertia } from '@inertiajs/inertia';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -29,9 +30,12 @@ interface TaskPagination {
 }
 
 export default function DashboardActivity({
+    
     tasks,
+    
     statistc,
 }: {
+    
     tasks: TaskPagination;
     statistc: { todo: number; done: number };
 }) {
@@ -41,7 +45,7 @@ export default function DashboardActivity({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Activity" />
 
-            <div className="relative aspect-video min-h-220 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+            <div className="relative  min-h-220 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                 <div>
                     <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
                         List of activity
@@ -83,7 +87,31 @@ export default function DashboardActivity({
                     )}
 
                     {/* LISTA TASK */}
-                    <ListItem tasks={tasks} />
+                    <ListItem tasks={tasks.data} />
+
+                    {/* PAGINAZIONE SERVER */}
+                                        {tasks.last_page > 1 && (
+                                            <div className="mt-auto  flex justify-center gap-2">
+                                                {tasks.links.map((link, index) => (
+                                                    <button
+                                                        key={index}
+                                                        disabled={!link.url}
+                                                        onClick={() =>
+                                                            link.url && Inertia.get(link.url)
+                                                        }
+                                                        className={`rounded border px-3 py-1 cursor-pointer ${
+                                                            link.active
+                                                                ? 'bg-blue-500 text-white'
+                                                                : ''
+                                                        }`}
+                                                        dangerouslySetInnerHTML={{
+                                                            __html: link.label,
+                                                        }}
+                                                    />
+                                                ))}
+                                            </div>
+                                        )}
+                                
                 </div>
             </div>
         </AppLayout>

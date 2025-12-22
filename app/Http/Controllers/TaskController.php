@@ -12,7 +12,7 @@ class TaskController extends Controller
     public function dashboard()
     {
 
-        $tasks = Auth::user()->tasks()->latest()->paginate(4);
+        $tasks = Auth::user()->tasks()->latest()->paginate(5);
         $statistc = [
             'todo' => Auth::user()->tasks()->where('completed', false)->count(),
             'done' => Auth::user()->tasks()->where('completed', true)->count(),
