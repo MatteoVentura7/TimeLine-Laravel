@@ -1,4 +1,4 @@
-import { Inertia } from '@inertiajs/inertia';
+import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
 

@@ -3,7 +3,7 @@ import TaskForm from '@/components/taskForm';
 import AppLayout from '@/layouts/app-layout';
 import { dashboardActivity } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Inertia } from '@inertiajs/inertia';
+import { router as Inertia } from '@inertiajs/core';
 import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
