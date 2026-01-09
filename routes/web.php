@@ -15,8 +15,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [TaskController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboardActivity', [TaskController::class, 'dashboardActivity'])->name('dashboardActivity');
     Route::post('tasks', [TaskController::class, 'store'])->name('tasks.store');
+    Route::patch('tasks/{task}', [TaskController::class, 'updateTitle'])->name('tasks.updateTitle');
     Route::patch('tasks/{task}/toggle', [TaskController::class, 'update'])->name('tasks.toggle');
-    Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+    Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy'); 
 });
 
 require __DIR__ . '/settings.php';

@@ -146,7 +146,7 @@ export default function DashboardActivity({
                     )}
 
                     {/* LISTA TASK */}
-                    <ListItem tasks={tasks.data} />
+                    <ListItem tasks={tasks.data} showEdit={true} />
 
                     {/* PAGINAZIONE SERVER */}
                     {tasks.last_page > 1 && (

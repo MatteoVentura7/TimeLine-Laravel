@@ -10,19 +10,45 @@ interface Task {
 
 
 
-export default function ListItem({ tasks = [] }: { tasks: Task [] }) {
+export default function ListItem({ tasks = [], showEdit = false }: { tasks: Task[]; showEdit?: boolean }) {
     const { patch } = useForm({ title: '' });
     const [isCheck, setIsCheck] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
+    // Inline edit state
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editTitle, setEditTitle] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+
+    const startEdit = (task: Task) => {
+        setEditingId(task.id);
+        setEditTitle(task.title);
+    };
+
+    const cancelEdit = () => {
+        setEditingId(null);
+        setEditTitle('');
+    };
+
+    const saveEdit = (id: number) => {
+        setIsSaving(true);
+        Inertia.patch(`/tasks/${id}`, { title: editTitle }, {
+            onFinish: () => {
+                setIsSaving(false);
+                setEditingId(null);
+                setEditTitle('');
+            },
+        });
+    };
+
     const toggle = (id: number) => {
         setIsCheck(true);
         patch(`/tasks/${id}/toggle`, {
             onFinish: () => setIsCheck(false),
         });
-    };
+    }; 
 
     const remove = (id: number) => {
         setTaskToDelete(id);
@@ -66,24 +92,67 @@ export default function ListItem({ tasks = [] }: { tasks: Task [] }) {
                                         onChange={() => toggle(task.id)}
                                         className="h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400"
                                     />
-                                    <span
-                                        className={`font-medium text-gray-800 transition-colors duration-200 dark:text-gray-200 ${
-                                            task.completed
-                                                ? 'text-gray-400 line-through dark:text-gray-500'
-                                                : ''
-                                        }`}
-                                    >
-                                        {task.title}
-                                    </span>
+                                    {editingId === task.id ? (
+                                        <input
+                                            value={editTitle}
+                                            onChange={(e) => setEditTitle(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') saveEdit(task.id);
+                                                if (e.key === 'Escape') cancelEdit();
+                                            }}
+                                            autoFocus
+                                            className="w-64 rounded border px-2 py-1"
+                                        />
+                                    ) : (
+                                        <span
+                                            className={`font-medium text-gray-800 transition-colors duration-200 dark:text-gray-200 ${
+                                                task.completed
+                                                    ? 'text-gray-400 line-through dark:text-gray-500'
+                                                    : ''
+                                            }`}
+                                        >
+                                            {task.title}
+                                        </span>
+                                    )}
                                 </div>
                                 <div>
+                                    {showEdit && (
+                                        editingId === task.id ? (
+                                            <>
+                                                <button
+                                                    onClick={() => saveEdit(task.id)}
+                                                    disabled={isSaving}
+                                                    className="mr-2 cursor-pointer text-green-500 hover:text-green-600"
+                                                    title="Save"
+                                                >
+                                                    <i className="fa-solid fa-check"></i>
+                                                </button>
+                                                <button
+                                                    onClick={cancelEdit}
+                                                    className="mr-3 cursor-pointer text-gray-500 hover:text-gray-600"
+                                                    title="Cancel"
+                                                >
+                                                    <i className="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <button
+                                                onClick={() => startEdit(task)}
+                                                className="mr-3 cursor-pointer text-yellow-500 hover:text-yellow-600"
+                                                title="Edit task"
+                                            >
+                                                <i className="fa-solid fa-pen"></i>
+                                            </button>
+                                        )
+                                    )}
                                     <button
                                         onClick={() => remove(task.id)}
                                         className="cursor-pointer text-red-500 hover:text-red-600"
                                         title="Delete task"
                                     >
                                         <i className="fa-solid fa-trash"></i>
-                                    </button>
+                                    </button> 
+                                   
                                 </div>
                             </li>
                         ))}

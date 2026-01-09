@@ -74,6 +74,14 @@ class TaskController extends Controller
         return Inertia::location(url()->previous());
     }
 
+    public function updateTitle(Request $request, Task $task)
+    {
+        $request->validate(['title' => 'required']);
+        $task->update(['title' => $request->input('title')]);
+
+        return Inertia::location(url()->previous());
+    }
+
     public function destroy(Task $task)
     {
         $task->delete();
