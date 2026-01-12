@@ -41,22 +41,20 @@ export default function Dashboard({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 xl:grid-cols-3">
-                    <div className="relative aspect-video min-h-105 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                <div className="grid auto-rows-min gap-4 lg:grid-cols-3">
+                    <div className="relative aspect-video min-h-95 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* LISTA TASK */}
-                        <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
-                            List of activity
-                        </h1>
+                      
 
                         <ListItem tasks={tasks.data} />
                     </div>
 
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border flex justify-center items-center "> 
                         {/* FORM AGGIUNTA TASK */}
                         <TaskForm />
                     </div>
 
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border flex justify-center items-center ">
                         {/* STATISTICHE */}
                         <ChartCounter statistc={statistc} />
                     </div>

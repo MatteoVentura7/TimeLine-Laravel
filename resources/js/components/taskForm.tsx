@@ -22,9 +22,7 @@ export default function TaskForm() {
 
     return (
         <div>
-            <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
-                Add activity form
-            </h1>
+           
             <form onSubmit={submit} className="m-8 mb-4 flex flex-col gap-2">
                 <input
                     value={data.title}

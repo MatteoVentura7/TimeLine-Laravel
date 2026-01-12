@@ -79,11 +79,9 @@ export default function DashboardActivity({
 
             <div className="relative min-h-220 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                 <div>
-                    <h1 className="mt-5 text-center text-3xl font-bold text-blue-500">
-                        List of activity
-                    </h1>
+                  
 
-                    <div className="mt-3 mr-5 ml-5 flex flex-col items-center justify-between lg:flex-row">
+                    <div className="mt-5 mr-5 ml-5 flex flex-col items-center justify-between lg:flex-row">
                         {/* BARRA DI RICERCA */}
                         <form
                             onSubmit={handleSearchSubmit}
@@ -159,7 +157,7 @@ export default function DashboardActivity({
 
                     {/* PAGINAZIONE */}
                     {tasks.last_page > 1 && (
-                        <div className="mt-auto mb-3 flex justify-center gap-2">
+                        <div className="mt-auto flex justify-center gap-2">
                             {tasks.links.map((link, index) => (
                                 <button
                                     key={index}
