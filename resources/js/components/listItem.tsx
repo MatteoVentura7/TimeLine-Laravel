@@ -8,10 +8,15 @@ interface Task {
     completed: boolean;
 }
 
-
-
-export default function ListItem({ tasks = [], showEdit = false }: { tasks: Task[]; showEdit?: boolean }) {
+export default function ListItem({
+    tasks = [],
+    showEdit = false,
+}: {
+    tasks: Task[];
+    showEdit?: boolean;
+}) {
     const { patch } = useForm({ title: '' });
+
     const [isCheck, setIsCheck] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -21,6 +26,8 @@ export default function ListItem({ tasks = [], showEdit = false }: { tasks: Task
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editTitle, setEditTitle] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+
+    const isEditing = editingId !== null;
 
     const startEdit = (task: Task) => {
         setEditingId(task.id);
@@ -34,13 +41,17 @@ export default function ListItem({ tasks = [], showEdit = false }: { tasks: Task
 
     const saveEdit = (id: number) => {
         setIsSaving(true);
-        Inertia.patch(`/tasks/${id}`, { title: editTitle }, {
-            onFinish: () => {
-                setIsSaving(false);
-                setEditingId(null);
-                setEditTitle('');
-            },
-        });
+        Inertia.patch(
+            `/tasks/${id}`,
+            { title: editTitle },
+            {
+                onFinish: () => {
+                    setIsSaving(false);
+                    setEditingId(null);
+                    setEditTitle('');
+                },
+            }
+        );
     };
 
     const toggle = (id: number) => {
@@ -48,7 +59,7 @@ export default function ListItem({ tasks = [], showEdit = false }: { tasks: Task
         patch(`/tasks/${id}/toggle`, {
             onFinish: () => setIsCheck(false),
         });
-    }; 
+    };
 
     const remove = (id: number) => {
         setTaskToDelete(id);
@@ -57,6 +68,7 @@ export default function ListItem({ tasks = [], showEdit = false }: { tasks: Task
 
     const confirmDelete = () => {
         if (!taskToDelete) return;
+
         setIsDeleting(true);
         Inertia.delete(`/tasks/${taskToDelete}`, {
             onFinish: () => {
@@ -77,56 +89,72 @@ export default function ListItem({ tasks = [], showEdit = false }: { tasks: Task
                     </p>
                 </div>
             ) : (
-                <>
-                    <ul className="m-4 max-h-220 grow space-y-3 p-0 pr-2 pb-2">
-                        {tasks.map((task) => (
+                <ul className="m-4 max-h-220 grow space-y-3 p-0 pr-2 pb-2">
+                    {tasks.map((task) => {
+                        const isThisEditing = editingId === task.id;
+
+                        return (
                             <li
                                 key={task.id}
-                                className="flex items-center justify-between rounded-xl bg-white p-4 shadow hover:shadow-lg dark:bg-neutral-800"
+                                className={`flex items-center justify-between rounded-xl bg-white p-4 shadow
+                                    hover:shadow-lg dark:bg-neutral-800
+                                    ${isEditing && !isThisEditing ? 'opacity-60' : ''}`}
                             >
                                 <div className="flex items-center space-x-3">
                                     <input
                                         type="checkbox"
-                                        disabled={isCheck}
                                         checked={task.completed}
+                                        disabled={isCheck || isEditing}
                                         onChange={() => toggle(task.id)}
-                                        className="h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400"
+                                        className="h-5 w-5 rounded border-gray-300 text-blue-500
+                                                   focus:ring-2 focus:ring-blue-400
+                                                   disabled:cursor-not-allowed disabled:opacity-50"
                                     />
-                                    {editingId === task.id ? (
+
+                                    {isThisEditing ? (
                                         <input
                                             value={editTitle}
-                                            onChange={(e) => setEditTitle(e.target.value)}
+                                            onChange={(e) =>
+                                                setEditTitle(e.target.value)
+                                            }
                                             onKeyDown={(e) => {
-                                                if (e.key === 'Enter') saveEdit(task.id);
-                                                if (e.key === 'Escape') cancelEdit();
+                                                if (e.key === 'Enter')
+                                                    saveEdit(task.id);
+                                                if (e.key === 'Escape')
+                                                    cancelEdit();
                                             }}
                                             autoFocus
                                             className="w-64 rounded border px-2 py-1"
                                         />
                                     ) : (
                                         <span
-                                            className={`font-medium text-gray-800 transition-colors duration-200 dark:text-gray-200 ${
+                                            className={`font-medium transition-colors duration-200 dark:text-gray-200 ${
                                                 task.completed
                                                     ? 'text-gray-400 line-through dark:text-gray-500'
-                                                    : ''
+                                                    : 'text-gray-800'
                                             }`}
                                         >
                                             {task.title}
                                         </span>
                                     )}
                                 </div>
+
                                 <div>
-                                    {showEdit && (
-                                        editingId === task.id ? (
+                                    {showEdit &&
+                                        (isThisEditing ? (
                                             <>
                                                 <button
-                                                    onClick={() => saveEdit(task.id)}
+                                                    onClick={() =>
+                                                        saveEdit(task.id)
+                                                    }
                                                     disabled={isSaving}
-                                                    className="mr-2 cursor-pointer text-green-500 hover:text-green-600"
+                                                    className="mr-2 cursor-pointer text-green-500 hover:text-green-600
+                                                               disabled:cursor-not-allowed disabled:opacity-50"
                                                     title="Save"
                                                 >
                                                     <i className="fa-solid fa-check"></i>
                                                 </button>
+
                                                 <button
                                                     onClick={cancelEdit}
                                                     className="mr-3 cursor-pointer text-gray-500 hover:text-gray-600"
@@ -138,28 +166,29 @@ export default function ListItem({ tasks = [], showEdit = false }: { tasks: Task
                                         ) : (
                                             <button
                                                 onClick={() => startEdit(task)}
-                                                className="mr-3 cursor-pointer text-yellow-500 hover:text-yellow-600"
+                                                disabled={isEditing}
+                                                className="mr-3 cursor-pointer text-yellow-500 hover:text-yellow-600
+                                                           disabled:cursor-not-allowed disabled:opacity-50"
                                                 title="Edit task"
                                             >
                                                 <i className="fa-solid fa-pen"></i>
                                             </button>
-                                        )
-                                    )}
+                                        ))}
+
                                     <button
                                         onClick={() => remove(task.id)}
-                                        className="cursor-pointer text-red-500 hover:text-red-600"
+                                        disabled={isEditing}
+                                        className="cursor-pointer text-red-500 hover:text-red-600
+                                                   disabled:cursor-not-allowed disabled:opacity-50"
                                         title="Delete task"
                                     >
                                         <i className="fa-solid fa-trash"></i>
-                                    </button> 
-                                   
+                                    </button>
                                 </div>
                             </li>
-                        ))}
-                    </ul>
-
-               
-                </>
+                        );
+                    })}
+                </ul>
             )}
 
             {/* POPUP CONFERMA ELIMINAZIONE */}
@@ -176,14 +205,18 @@ export default function ListItem({ tasks = [], showEdit = false }: { tasks: Task
                             <button
                                 onClick={() => setConfirmOpen(false)}
                                 disabled={isDeleting}
-                                className="cursor-pointer rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+                                className="rounded bg-gray-300 px-4 py-2
+                                           hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50
+                                           dark:bg-neutral-700 dark:hover:bg-neutral-600"
                             >
                                 Cancel
                             </button>
+
                             <button
                                 onClick={confirmDelete}
                                 disabled={isDeleting}
-                                className="cursor-pointer rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="rounded bg-red-500 px-4 py-2 text-white
+                                           hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {isDeleting ? 'Deleting...' : 'Confirm'}
                             </button>
