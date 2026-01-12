@@ -1,5 +1,6 @@
 import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
+import { on } from 'events';
 import { useState } from 'react';
 
 interface Task {
@@ -11,9 +12,11 @@ interface Task {
 export default function ListItem({
     tasks = [],
     showEdit = false,
+    onEditChange,
 }: {
     tasks: Task[];
     showEdit?: boolean;
+    onEditChange?: (value: boolean) => void;
 }) {
     const { patch } = useForm({ title: '' });
 
@@ -32,11 +35,13 @@ export default function ListItem({
     const startEdit = (task: Task) => {
         setEditingId(task.id);
         setEditTitle(task.title);
+        onEditChange?.(true);
     };
 
     const cancelEdit = () => {
         setEditingId(null);
         setEditTitle('');
+        onEditChange?.(false);
     };
 
     const saveEdit = (id: number) => {
@@ -49,6 +54,7 @@ export default function ListItem({
                     setIsSaving(false);
                     setEditingId(null);
                     setEditTitle('');
+                    onEditChange?.(false);
                 },
             }
         );

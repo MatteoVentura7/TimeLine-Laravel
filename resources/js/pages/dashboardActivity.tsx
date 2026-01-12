@@ -39,6 +39,7 @@ export default function DashboardActivity({
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [searchMessage, setSearchMessage] = useState<string | null>(null);
+    const [isEditing, setIsEditing] = useState(false); // 👈 NEW
 
     useEffect(() => {
         const storedSearch = localStorage.getItem('searchTerm');
@@ -83,7 +84,7 @@ export default function DashboardActivity({
                     </h1>
 
                     <div className="mt-3 mr-5 ml-5 flex flex-col items-center justify-between lg:flex-row">
-                        {/* Barra di ricerca */}
+                        {/* BARRA DI RICERCA */}
                         <form
                             onSubmit={handleSearchSubmit}
                             className="mr-5 mb-3 flex items-center justify-end lg:mb-0"
@@ -93,11 +94,14 @@ export default function DashboardActivity({
                                 placeholder="Search activity"
                                 value={search}
                                 onChange={handleSearchChange}
-                                className="rounded border px-4 py-2"
+                                disabled={isEditing}
+                                className="rounded border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
                             />
                             <button
                                 type="submit"
-                                className="ml-2 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                                disabled={isEditing}
+                                className="ml-2 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white
+                                           hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <i className="fa-solid fa-magnifying-glass"></i>
                             </button>
@@ -113,21 +117,22 @@ export default function DashboardActivity({
 
                             <button
                                 onClick={() => setOpen(true)}
-                                className="ml-5 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                                disabled={isEditing}
+                                className="ml-5 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white
+                                           hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 Add Activity
                             </button>
                         </div>
                     </div>
 
-                    {/* Messaggio di ricerca */}
                     {searchMessage && (
                         <div className="mt-3 p-2 text-center text-sm font-bold text-black">
                             {searchMessage}
                         </div>
                     )}
 
-                    {/* MODAL */}
+                          {/* MODAL */}
                     {open && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                             <div className="w-full max-w-md rounded-lg bg-white p-2 shadow-lg">
@@ -146,23 +151,29 @@ export default function DashboardActivity({
                     )}
 
                     {/* LISTA TASK */}
-                    <ListItem tasks={tasks.data} showEdit={true} />
+                    <ListItem
+                        tasks={tasks.data}
+                        showEdit={true}
+                        onEditChange={setIsEditing} // 👈 KEY
+                    />
 
-                    {/* PAGINAZIONE SERVER */}
+                    {/* PAGINAZIONE */}
                     {tasks.last_page > 1 && (
                         <div className="mt-auto mb-3 flex justify-center gap-2">
                             {tasks.links.map((link, index) => (
                                 <button
                                     key={index}
-                                    disabled={!link.url}
+                                    disabled={!link.url || isEditing}
                                     onClick={() =>
                                         link.url && Inertia.get(link.url)
                                     }
-                                    className={`cursor-pointer rounded border px-3 py-1 ${
-                                        link.active
-                                            ? 'bg-blue-500 text-white'
-                                            : ''
-                                    }`}
+                                    className={`cursor-pointer rounded border px-3 py-1
+                                        disabled:cursor-not-allowed disabled:opacity-50
+                                        ${
+                                            link.active
+                                                ? 'bg-blue-500 text-white'
+                                                : ''
+                                        }`}
                                     dangerouslySetInnerHTML={{
                                         __html: link.label,
                                     }}
