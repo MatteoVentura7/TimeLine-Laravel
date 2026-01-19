@@ -2,11 +2,17 @@ import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
+interface User {
+    id: number;
+    name: string;
+}
+
 interface Task {
     id: number;
     title: string;
     completed: boolean;
     created_at: string;
+    user?: User;
 }
 
 export default function TableUser({
@@ -118,7 +124,9 @@ export default function TableUser({
                             <tr className="border-b dark:border-neutral-700">
                                 <th className="p-3 text-left">Done</th>
                                 <th className="p-3 text-left">Title</th>
-                                <th className='p-3 text-left'>Created At</th>
+                                <th className="p-3 text-left">Assigned To</th>
+                                <th className="p-3 text-left">Created At</th>
+                                <th className="p-3 text-left">Completed On</th>
                                 <th className="p-3 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -179,8 +187,19 @@ export default function TableUser({
                                             )}
                                         </td>
 
+                                        {/* ASSIGNED TO */}
                                         <td className="p-3">
+                                            {task.user ? task.user.name : '—'}
+                                        </td>
+
+                                        {/* CREATED AT */}
+                                        <td className="p-3 whitespace-nowrap">
                                             {formatDateTime(task.created_at)}
+                                        </td>
+
+                                          {/* COMPLETED ON  */}
+                                        <td className="p-3 whitespace-nowrap">
+                                            -
                                         </td>
 
                                         {/* ACTIONS */}

@@ -30,12 +30,19 @@ interface TaskPagination {
     links: { url: string | null; label: string; active: boolean }[];
 }
 
+interface User {
+    id: number;
+    name: string;
+}
+
 export default function DashboardActivity({
     tasks,
     statistc,
+    users,
 }: {
     tasks: TaskPagination;
     statistc: { todo: number; done: number };
+    users: User[];
 }) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
@@ -144,7 +151,7 @@ export default function DashboardActivity({
                                     </button>
                                 </div>
 
-                                <TaskForm />
+                                <TaskForm users={users} />
                             </div>
                         </div>
                     )}

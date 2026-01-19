@@ -20,6 +20,11 @@ interface Task {
     completed: boolean;
 }
 
+interface User {
+    id: number;
+    name: string;
+}
+
 interface TaskPagination {
     data: Task[];
     current_page: number;
@@ -31,11 +36,13 @@ interface TaskPagination {
 
 
 export default function Dashboard({
+    users,
     tasks,
     statistc,
 }: {
     tasks : TaskPagination;
     statistc: { todo: number; done: number };
+    users: User[];
 }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -51,7 +58,7 @@ export default function Dashboard({
 
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border flex justify-center items-center "> 
                         {/* FORM AGGIUNTA TASK */}
-                        <TaskForm />
+                        <TaskForm users={users} />
                     </div>
 
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border flex justify-center items-center ">

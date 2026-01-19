@@ -3,67 +3,79 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class TaskController extends Controller
 {
+    // Dashboard principale (mostra solo i task dell'utente loggato)
     public function dashboard()
     {
+        
+         $tasks = Task::with('user') 
+            ->latest()
+            ->paginate(5)
+           ;
 
-        $tasks = Auth::user()->tasks()->latest()->paginate(5);
-        $statistc = [
-            'todo' => Auth::user()->tasks()->where('completed', false)->count(),
-            'done' => Auth::user()->tasks()->where('completed', true)->count(),
+           $statistc = [
+            'todo' => Task::where('completed', false)->count(),
+            'done' => Task::where('completed', true)->count(),
         ];
+
         return Inertia::render('dashboard', [
             'tasks' => $tasks,
             'statistc' => $statistc,
+            'users' => User::select('id', 'name')->get(), // elenco utenti per assegnazione
         ]);
     }
 
-  public function dashboardActivity(Request $request)
-{
-    // Ottieni il termine di ricerca dalla query string
-    $search = $request->input('search', '');
+    // Dashboard activity con ricerca e paginazione
+    public function dashboardActivity(Request $request)
+    {
+        $search = $request->input('search', '');
 
-    // Filtro dei task in base al termine di ricerca
-    $tasks = Auth::user()->tasks()
-        ->when($search, function ($query, $search) {
-            return $query->where('title', 'like', '%' . $search . '%');  // Filtra per titolo                
-        })
-        ->latest()  // Ordina per data (più recenti prima)
-        ->paginate(10)  // Paginazione dei risultati (10 per pagina)
-        ->withQueryString();
+        $tasks = Task::with('user') // Carica relazione utente
+            ->when($search, function ($query, $search) {
+                return $query->where('title', 'like', '%' . $search . '%');
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-   
-    $statistc = [
-        'todo' => Auth::user()->tasks()->where('completed', false)->count(),
-        'done' => Auth::user()->tasks()->where('completed', true)->count(),
-    ];
+        $statistc = [
+            'todo' => Task::where('completed', false)->count(),
+            'done' => Task::where('completed', true)->count(),
+        ];
 
+        return Inertia::render('dashboardActivity', [
+            'tasks' => $tasks,
+            'statistc' => $statistc,
+            'search' => $search,
+            'users' => User::select('id', 'name')->get(),
+        ]);
+    }
 
-    return Inertia::render('dashboardActivity', [
-        'tasks' => $tasks,
-        'statistc' => $statistc,
-        'search' => $search,  
-    ]);
-}
-
-
-
+    // Salva un nuovo task
     public function store(Request $request)
     {
-        $request->validate(['title' => 'required']);
-        $taskData = $request->only('title');
-        $taskData['user_id'] = Auth::user()->id;
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'user_id' => 'nullable|exists:users,id', // assegnazione opzionale
+        ]);
+
+        $taskData = $request->only('title', 'user_id');
+
+        // Se non viene passato user_id, assegna al loggato
+        $taskData['user_id'] = $taskData['user_id'] ?? Auth::id();
+
         Task::create($taskData);
 
         return Inertia::location(url()->previous());
-
     }
 
+    // Toggle completamento task
     public function update(Task $task)
     {
         $task->update([
@@ -73,17 +85,21 @@ class TaskController extends Controller
         return Inertia::location(url()->previous());
     }
 
+    // Aggiorna titolo task
     public function updateTitle(Request $request, Task $task)
     {
-        $request->validate(['title' => 'required']);
+        $request->validate(['title' => 'required|string|max:255']);
+
         $task->update(['title' => $request->input('title')]);
 
         return Inertia::location(url()->previous());
     }
 
+    // Cancella task
     public function destroy(Task $task)
     {
         $task->delete();
+
         return Inertia::location(url()->previous());
     }
 }
