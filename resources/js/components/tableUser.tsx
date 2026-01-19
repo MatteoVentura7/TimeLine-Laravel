@@ -182,9 +182,9 @@ export default function TableUser({
                                         </td>
 
                                         {/* COMPLETED ON  */}
-                                       <td className="p-3 whitespace-nowrap">
-    {task.completed_at_formatted ?? '—'}
-</td>
+                                        <td className="p-3 whitespace-nowrap">
+                                            {task.completed_at_formatted ?? '—'}
+                                        </td>
 
                                         {/* ACTIONS */}
                                         <td className="p-3 text-right whitespace-nowrap">

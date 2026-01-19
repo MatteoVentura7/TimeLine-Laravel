@@ -18,7 +18,9 @@ interface Task {
     id: number;
     title: string;
     completed: boolean;
-     created_at: string;
+    created_at_formatted: string;
+    completed_at_formatted: string;
+    user?: User;
 }
 
 interface TaskPagination {
