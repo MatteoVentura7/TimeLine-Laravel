@@ -1,4 +1,4 @@
-import ListItem from '@/components/listItem';
+import TableUser from '@/components/tableUser';
 import TaskForm from '@/components/taskForm';
 import AppLayout from '@/layouts/app-layout';
 import { dashboardActivity } from '@/routes';
@@ -39,7 +39,7 @@ export default function DashboardActivity({
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [searchMessage, setSearchMessage] = useState<string | null>(null);
-    const [isEditing, setIsEditing] = useState(false); // 👈 NEW
+    const [isEditing, setIsEditing] = useState(false); 
 
     useEffect(() => {
         const storedSearch = localStorage.getItem('searchTerm');
@@ -149,10 +149,10 @@ export default function DashboardActivity({
                     )}
 
                     {/* LISTA TASK */}
-                    <ListItem
+                    <TableUser
                         tasks={tasks.data}
                         showEdit={true}
-                        onEditChange={setIsEditing} // 👈 KEY
+                        onEditChange={setIsEditing} 
                     />
 
                     {/* PAGINAZIONE */}

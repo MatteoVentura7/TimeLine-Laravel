@@ -31,24 +31,23 @@ class TaskController extends Controller
     // Filtro dei task in base al termine di ricerca
     $tasks = Auth::user()->tasks()
         ->when($search, function ($query, $search) {
-            return $query->where('title', 'like', '%' . $search . '%')  // Filtra per titolo
-                         ->orWhere('description', 'like', '%' . $search . '%'); // Filtra per descrizione
+            return $query->where('title', 'like', '%' . $search . '%');  // Filtra per titolo                
         })
         ->latest()  // Ordina per data (più recenti prima)
         ->paginate(10)  // Paginazione dei risultati (10 per pagina)
         ->withQueryString();
 
-    // Statistiche per i task (da fare e completati)
+   
     $statistc = [
         'todo' => Auth::user()->tasks()->where('completed', false)->count(),
         'done' => Auth::user()->tasks()->where('completed', true)->count(),
     ];
 
-    // Passa i task e le statistiche alla vista Inertia
+
     return Inertia::render('dashboardActivity', [
         'tasks' => $tasks,
         'statistc' => $statistc,
-        'search' => $search,  // Passa anche il termine di ricerca alla vista
+        'search' => $search,  
     ]);
 }
 
