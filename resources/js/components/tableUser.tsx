@@ -6,6 +6,7 @@ interface Task {
     id: number;
     title: string;
     completed: boolean;
+    created_at: string;
 }
 
 export default function TableUser({
@@ -55,7 +56,7 @@ export default function TableUser({
                     setEditTitle('');
                     onEditChange?.(false);
                 },
-            }
+            },
         );
     };
 
@@ -84,6 +85,23 @@ export default function TableUser({
         });
     };
 
+    const formatDateTime = (timestamp: string) => {
+        const date = new Date(timestamp);
+
+        const formattedDate = date.toLocaleDateString('it-IT', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+
+        const formattedTime = date.toLocaleTimeString('it-IT', {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+
+        return `${formattedDate} ${formattedTime}`;
+    };
+
     return (
         <div className="flex h-full flex-col">
             {tasks.length === 0 ? (
@@ -100,39 +118,32 @@ export default function TableUser({
                             <tr className="border-b dark:border-neutral-700">
                                 <th className="p-3 text-left">Done</th>
                                 <th className="p-3 text-left">Title</th>
+                                <th className='p-3 text-left'>Created At</th>
                                 <th className="p-3 text-right">Actions</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             {tasks.map((task) => {
-                                const isThisEditing =
-                                    editingId === task.id;
+                                const isThisEditing = editingId === task.id;
 
                                 return (
                                     <tr
                                         key={task.id}
-                                        className={`border-b last:border-none dark:border-neutral-700
-                                            ${
-                                                isEditing && !isThisEditing
-                                                    ? 'opacity-60'
-                                                    : ''
-                                            }`}
+                                        className={`border-b last:border-none dark:border-neutral-700 ${
+                                            isEditing && !isThisEditing
+                                                ? 'opacity-60'
+                                                : ''
+                                        }`}
                                     >
                                         {/* CHECK */}
                                         <td className="p-3">
                                             <input
                                                 type="checkbox"
                                                 checked={task.completed}
-                                                disabled={
-                                                    isCheck || isEditing
-                                                }
-                                                onChange={() =>
-                                                    toggle(task.id)
-                                                }
-                                                className="h-5 w-5 rounded border-gray-300 text-blue-500
-                                                           focus:ring-2 focus:ring-blue-400
-                                                           disabled:cursor-not-allowed disabled:opacity-50"
+                                                disabled={isCheck || isEditing}
+                                                onChange={() => toggle(task.id)}
+                                                className="h-5 w-5 rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
                                             />
                                         </td>
 
@@ -143,15 +154,13 @@ export default function TableUser({
                                                     value={editTitle}
                                                     onChange={(e) =>
                                                         setEditTitle(
-                                                            e.target.value
+                                                            e.target.value,
                                                         )
                                                     }
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter')
                                                             saveEdit(task.id);
-                                                        if (
-                                                            e.key === 'Escape'
-                                                        )
+                                                        if (e.key === 'Escape')
                                                             cancelEdit();
                                                     }}
                                                     autoFocus
@@ -170,6 +179,10 @@ export default function TableUser({
                                             )}
                                         </td>
 
+                                        <td className="p-3">
+                                            {formatDateTime(task.created_at)}
+                                        </td>
+
                                         {/* ACTIONS */}
                                         <td className="p-3 text-right whitespace-nowrap">
                                             {showEdit &&
@@ -178,21 +191,18 @@ export default function TableUser({
                                                         <button
                                                             onClick={() =>
                                                                 saveEdit(
-                                                                    task.id
+                                                                    task.id,
                                                                 )
                                                             }
                                                             disabled={isSaving}
-                                                            className="mr-2 text-green-500 hover:text-green-600
-                                                                       disabled:opacity-50"
+                                                            className="mr-2 text-green-500 hover:text-green-600 disabled:opacity-50"
                                                             title="Save"
                                                         >
                                                             <i className="fa-solid fa-check"></i>
                                                         </button>
 
                                                         <button
-                                                            onClick={
-                                                                cancelEdit
-                                                            }
+                                                            onClick={cancelEdit}
                                                             className="mr-3 text-gray-500 hover:text-gray-600"
                                                             title="Cancel"
                                                         >
@@ -205,8 +215,7 @@ export default function TableUser({
                                                             startEdit(task)
                                                         }
                                                         disabled={isEditing}
-                                                        className="mr-3 text-yellow-500 hover:text-yellow-600
-                                                                   disabled:opacity-50"
+                                                        className="mr-3 text-yellow-500 hover:text-yellow-600 disabled:opacity-50"
                                                         title="Edit task"
                                                     >
                                                         <i className="fa-solid fa-pen"></i>
@@ -214,12 +223,9 @@ export default function TableUser({
                                                 ))}
 
                                             <button
-                                                onClick={() =>
-                                                    remove(task.id)
-                                                }
+                                                onClick={() => remove(task.id)}
                                                 disabled={isEditing}
-                                                className="text-red-500 hover:text-red-600
-                                                           disabled:opacity-50"
+                                                className="text-red-500 hover:text-red-600 disabled:opacity-50"
                                                 title="Delete task"
                                             >
                                                 <i className="fa-solid fa-trash"></i>
@@ -247,9 +253,7 @@ export default function TableUser({
                             <button
                                 onClick={() => setConfirmOpen(false)}
                                 disabled={isDeleting}
-                                className="rounded bg-gray-300 px-4 py-2
-                                           hover:bg-gray-400 disabled:opacity-50
-                                           dark:bg-neutral-700 dark:hover:bg-neutral-600"
+                                className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600"
                             >
                                 Cancel
                             </button>
@@ -257,8 +261,7 @@ export default function TableUser({
                             <button
                                 onClick={confirmDelete}
                                 disabled={isDeleting}
-                                className="rounded bg-red-500 px-4 py-2 text-white
-                                           hover:bg-red-600 disabled:opacity-50"
+                                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:opacity-50"
                             >
                                 {isDeleting ? 'Deleting...' : 'Confirm'}
                             </button>
