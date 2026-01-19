@@ -11,7 +11,8 @@ interface Task {
     id: number;
     title: string;
     completed: boolean;
-    created_at: string;
+    created_at_formatted: string;
+    completed_at_formatted: string;
     user?: User;
 }
 
@@ -89,23 +90,6 @@ export default function TableUser({
                 setIsDeleting(false);
             },
         });
-    };
-
-    const formatDateTime = (timestamp: string) => {
-        const date = new Date(timestamp);
-
-        const formattedDate = date.toLocaleDateString('it-IT', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-
-        const formattedTime = date.toLocaleTimeString('it-IT', {
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-
-        return `${formattedDate} ${formattedTime}`;
     };
 
     return (
@@ -194,13 +178,13 @@ export default function TableUser({
 
                                         {/* CREATED AT */}
                                         <td className="p-3 whitespace-nowrap">
-                                            {formatDateTime(task.created_at)}
+                                            {task.created_at_formatted}
                                         </td>
 
-                                          {/* COMPLETED ON  */}
-                                        <td className="p-3 whitespace-nowrap">
-                                            -
-                                        </td>
+                                        {/* COMPLETED ON  */}
+                                       <td className="p-3 whitespace-nowrap">
+    {task.completed_at_formatted ?? '—'}
+</td>
 
                                         {/* ACTIONS */}
                                         <td className="p-3 text-right whitespace-nowrap">

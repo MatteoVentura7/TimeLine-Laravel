@@ -80,6 +80,7 @@ class TaskController extends Controller
     {
         $task->update([
             'completed' => !$task->completed,
+            'completed_at' => $task->completed ? null : now(), // Carbon::now()
         ]);
 
         return Inertia::location(url()->previous());
