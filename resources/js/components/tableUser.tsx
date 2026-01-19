@@ -2,6 +2,7 @@ import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
+
 interface User {
     id: number;
     name: string;
@@ -13,19 +14,27 @@ interface Task {
     completed: boolean;
     created_at_formatted: string;
     completed_at_formatted: string;
-    user?: User;
+    user?: User | null;
 }
 
 export default function TableUser({
     tasks = [],
+    users,
     showEdit = false,
     onEditChange,
 }: {
     tasks: Task[];
+    users: User[];
     showEdit?: boolean;
     onEditChange?: (value: boolean) => void;
 }) {
-    const { patch } = useForm({ title: '' });
+  const { patch } = useForm({ title: '' });
+
+    const { data, setData, reset } = useForm<{
+        user_id: number | '';
+    }>({
+        user_id: '',
+    });
 
     const [isCheck, setIsCheck] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
@@ -42,25 +51,32 @@ export default function TableUser({
     const startEdit = (task: Task) => {
         setEditingId(task.id);
         setEditTitle(task.title);
+        setData('user_id', task.user?.id ?? '');
         onEditChange?.(true);
     };
 
     const cancelEdit = () => {
         setEditingId(null);
         setEditTitle('');
+        reset();
         onEditChange?.(false);
     };
 
     const saveEdit = (id: number) => {
         setIsSaving(true);
+
         Inertia.patch(
             `/tasks/${id}`,
-            { title: editTitle },
+            {
+                title: editTitle,
+                user_id: data.user_id || null,
+            },
             {
                 onFinish: () => {
                     setIsSaving(false);
                     setEditingId(null);
                     setEditTitle('');
+                    reset();
                     onEditChange?.(false);
                 },
             },
@@ -135,7 +151,7 @@ export default function TableUser({
                                                 checked={task.completed}
                                                 disabled={isCheck || isEditing}
                                                 onChange={() => toggle(task.id)}
-                                                className="h-5 w-5 rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
+                                                className="h-5 w-5 rounded"
                                             />
                                         </td>
 
@@ -160,10 +176,10 @@ export default function TableUser({
                                                 />
                                             ) : (
                                                 <span
-                                                    className={`font-medium dark:text-gray-200 ${
+                                                    className={`font-medium ${
                                                         task.completed
-                                                            ? 'text-gray-400 line-through dark:text-gray-500'
-                                                            : 'text-gray-800'
+                                                            ? 'line-through text-gray-400'
+                                                            : ''
                                                     }`}
                                                 >
                                                     {task.title}
@@ -173,17 +189,50 @@ export default function TableUser({
 
                                         {/* ASSIGNED TO */}
                                         <td className="p-3">
-                                            {task.user ? task.user.name : '—'}
+                                            {isThisEditing ? (
+                                                <select
+                                                    value={data.user_id}
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            'user_id',
+                                                            e.target.value
+                                                                ? Number(
+                                                                      e.target
+                                                                          .value,
+                                                                  )
+                                                                : '',
+                                                        )
+                                                    }
+                                                    className="w-full rounded border p-2"
+                                                >
+                                                    <option value="">
+                                                        Assign to...
+                                                    </option>
+                                                    {users.map((user) => (
+                                                        <option
+                                                            key={user.id}
+                                                            value={user.id}
+                                                        >
+                                                            {user.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            ) : (
+                                                <span>
+                                                    {task.user
+                                                        ? task.user.name
+                                                        : '—'}
+                                                </span>
+                                            )}
                                         </td>
 
-                                        {/* CREATED AT */}
                                         <td className="p-3 whitespace-nowrap">
                                             {task.created_at_formatted}
                                         </td>
 
-                                        {/* COMPLETED ON  */}
                                         <td className="p-3 whitespace-nowrap">
-                                            {task.completed_at_formatted ?? '—'}
+                                            {task.completed_at_formatted ??
+                                                '—'}
                                         </td>
 
                                         {/* ACTIONS */}
@@ -198,18 +247,18 @@ export default function TableUser({
                                                                 )
                                                             }
                                                             disabled={isSaving}
-                                                            className="mr-2 text-green-500 hover:text-green-600 disabled:opacity-50"
-                                                            title="Save"
+                                                            className="mr-2 text-green-500"
                                                         >
-                                                            <i className="fa-solid fa-check"></i>
+                                                            ✔
                                                         </button>
 
                                                         <button
-                                                            onClick={cancelEdit}
-                                                            className="mr-3 text-gray-500 hover:text-gray-600"
-                                                            title="Cancel"
+                                                            onClick={
+                                                                cancelEdit
+                                                            }
+                                                            className="mr-3 text-gray-500"
                                                         >
-                                                            <i className="fa-solid fa-xmark"></i>
+                                                            ✖
                                                         </button>
                                                     </>
                                                 ) : (
@@ -218,20 +267,20 @@ export default function TableUser({
                                                             startEdit(task)
                                                         }
                                                         disabled={isEditing}
-                                                        className="mr-3 text-yellow-500 hover:text-yellow-600 disabled:opacity-50"
-                                                        title="Edit task"
+                                                        className="mr-3 text-yellow-500"
                                                     >
-                                                        <i className="fa-solid fa-pen"></i>
+                                                        ✎
                                                     </button>
                                                 ))}
 
                                             <button
-                                                onClick={() => remove(task.id)}
+                                                onClick={() =>
+                                                    remove(task.id)
+                                                }
                                                 disabled={isEditing}
-                                                className="text-red-500 hover:text-red-600 disabled:opacity-50"
-                                                title="Delete task"
+                                                className="text-red-500"
                                             >
-                                                <i className="fa-solid fa-trash"></i>
+                                                🗑
                                             </button>
                                         </td>
                                     </tr>
@@ -242,21 +291,21 @@ export default function TableUser({
                 </div>
             )}
 
-            {/* MODAL CONFERMA DELETE */}
+            {/* MODAL DELETE */}
             {confirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                    <div className="w-80 rounded-lg bg-white p-6 text-center shadow-xl dark:bg-neutral-900">
+                    <div className="w-80 rounded-lg bg-white p-6 text-center">
                         <h2 className="mb-4 text-xl font-semibold">
                             Confirm delete
                         </h2>
-                        <p className="mb-6 text-neutral-700 dark:text-neutral-300">
+                        <p className="mb-6">
                             Are you sure you want to delete this task?
                         </p>
                         <div className="flex justify-center gap-3">
                             <button
                                 onClick={() => setConfirmOpen(false)}
                                 disabled={isDeleting}
-                                className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+                                className="rounded bg-gray-300 px-4 py-2"
                             >
                                 Cancel
                             </button>
@@ -264,7 +313,7 @@ export default function TableUser({
                             <button
                                 onClick={confirmDelete}
                                 disabled={isDeleting}
-                                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:opacity-50"
+                                className="rounded bg-red-500 px-4 py-2 text-white"
                             >
                                 {isDeleting ? 'Deleting...' : 'Confirm'}
                             </button>

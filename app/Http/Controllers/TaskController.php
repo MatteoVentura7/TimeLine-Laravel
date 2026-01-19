@@ -10,7 +10,7 @@ use Inertia\Inertia;
 
 class TaskController extends Controller
 {
-    // Dashboard principale (mostra solo i task dell'utente loggato)
+    
     public function dashboard()
     {
         
@@ -27,11 +27,11 @@ class TaskController extends Controller
         return Inertia::render('dashboard', [
             'tasks' => $tasks,
             'statistc' => $statistc,
-            'users' => User::select('id', 'name')->get(), // elenco utenti per assegnazione
+            'users' => User::select('id', 'name')->get(), 
         ]);
     }
 
-    // Dashboard activity con ricerca e paginazione
+    
     public function dashboardActivity(Request $request)
     {
         $search = $request->input('search', '');
@@ -57,17 +57,16 @@ class TaskController extends Controller
         ]);
     }
 
-    // Salva un nuovo task
     public function store(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'user_id' => 'nullable|exists:users,id', // assegnazione opzionale
+            'user_id' => 'nullable|exists:users,id', 
         ]);
 
         $taskData = $request->only('title', 'user_id');
 
-        // Se non viene passato user_id, assegna al loggato
+        
         $taskData['user_id'] = $taskData['user_id'] ?? Auth::id();
 
         Task::create($taskData);
@@ -75,28 +74,35 @@ class TaskController extends Controller
         return Inertia::location(url()->previous());
     }
 
-    // Toggle completamento task
+   
     public function update(Task $task)
     {
         $task->update([
             'completed' => !$task->completed,
-            'completed_at' => $task->completed ? null : now(), // Carbon::now()
+            'completed_at' => $task->completed ? null : now(), 
         ]);
 
         return Inertia::location(url()->previous());
     }
 
-    // Aggiorna titolo task
-    public function updateTitle(Request $request, Task $task)
-    {
-        $request->validate(['title' => 'required|string|max:255']);
+    
+public function updateTitle(Request $request, Task $task)
+{
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'user_id' => 'nullable|exists:users,id',
+    ]);
 
-        $task->update(['title' => $request->input('title')]);
+    $task->update([
+        'title' => $validated['title'],
+        'user_id' => $validated['user_id'] ?? $task->user_id,
+    ]);
 
-        return Inertia::location(url()->previous());
-    }
+    return Inertia::location(url()->previous());
+}
 
-    // Cancella task
+
+   
     public function destroy(Task $task)
     {
         $task->delete();

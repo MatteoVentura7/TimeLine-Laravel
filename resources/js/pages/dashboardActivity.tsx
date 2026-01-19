@@ -163,6 +163,7 @@ export default function DashboardActivity({
                         tasks={tasks.data}
                         showEdit={true}
                         onEditChange={setIsEditing} 
+                        users={users}
                     />
 
                     {/* PAGINAZIONE */}
