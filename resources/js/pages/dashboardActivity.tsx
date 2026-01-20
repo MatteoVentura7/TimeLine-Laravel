@@ -20,6 +20,7 @@ interface Task {
     completed: boolean;
     created_at_formatted: string;
     completed_at_formatted: string;
+    created_at_iso: string;
     user?: User;
 }
 

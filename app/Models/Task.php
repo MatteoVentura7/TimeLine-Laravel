@@ -24,6 +24,7 @@ class Task extends Model
     protected $appends = [
         'created_at_formatted',
         'completed_at_formatted',
+        'created_at_iso',
     ];
 
     public function user()
@@ -48,4 +49,12 @@ class Task extends Model
             ? $this->completed_at->setTimezone('Europe/Rome')->format('d/m/Y H:i')
             : null;
     }
+
+    public function getCreatedAtIsoAttribute()
+{
+    return $this->created_at
+        ? $this->created_at->utc()->toISOString()
+        : null;
+}
+
 }

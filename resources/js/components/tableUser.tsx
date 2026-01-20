@@ -12,6 +12,7 @@ interface Task {
     title: string;
     completed: boolean;
     created_at_formatted: string;
+    created_at_iso: string;
     completed_at_formatted: string;
     user?: User | null;
 }
@@ -133,9 +134,12 @@ export default function TableUser({
                         <tbody>
                             {tasks.map((task) => {
                                 const isThisEditing = editingId === task.id;
-                                 const createdAt = new Date(task.created_at_formatted);
-    const now = new Date();
-    const isFutureTask = createdAt > now;
+                                const createdAt = new Date(
+                                    task.created_at_iso,
+                                );
+                                const now = new Date();
+                                const isFutureTask = createdAt.getTime() > now.getTime();
+                                console.log(now)
 
                                 return (
                                     <tr
@@ -151,8 +155,11 @@ export default function TableUser({
                                             <input
                                                 type="checkbox"
                                                 checked={task.completed}
-                                                disabled={isCheck || isEditing || isFutureTask }
-                                                
+                                                disabled={
+                                                    isCheck ||
+                                                    isEditing ||
+                                                    isFutureTask
+                                                }
                                                 onChange={() => toggle(task.id)}
                                                 className="h-5 w-5 rounded"
                                             />

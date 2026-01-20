@@ -34,6 +34,8 @@ export default function TaskForm({ users }: { users: User[] }) {
     return (
         <form onSubmit={submit} className="m-8 mb-4 flex flex-col gap-2">
             <div className="flex gap-2">
+                <div>
+                <h3 className="font-black">Activity</h3>
                 <input
                     value={data.title}
                     onChange={(e) => setData('title', e.target.value)}
@@ -41,6 +43,9 @@ export default function TaskForm({ users }: { users: User[] }) {
                     className="w-full rounded border border-gray-300 p-2"
                     required
                 />
+                </div>
+                <div>
+                    <h3 className="font-black">Asigned</h3>
                 <select
                     value={data.user_id}
                     onChange={(e) => setData('user_id', e.target.value)}
@@ -54,6 +59,7 @@ export default function TaskForm({ users }: { users: User[] }) {
                         </option>
                     ))}
                 </select>
+                </div>
             </div>
 
             <span className="font-black">Start</span>
