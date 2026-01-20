@@ -2,10 +2,20 @@ import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
+interface User {
+    id: number;
+    name: string;
+}
+
 interface Task {
     id: number;
     title: string;
     completed: boolean;
+    created_at_formatted: string;
+    created_at_iso: string;
+    completed_at_formatted: string;
+    expiration_formatted: string;
+    user?: User | null;
 }
 
 export default function ListItem({
@@ -97,6 +107,12 @@ export default function ListItem({
                 <ul className="m-4 max-h-220 grow space-y-3 p-0 pr-2 pb-2">
                     {tasks.map((task) => {
                         const isThisEditing = editingId === task.id;
+                            const createdAt = new Date(
+                                    task.created_at_iso,
+                                );
+                                const now = new Date();
+                                const isFutureTask = createdAt.getTime() > now.getTime();
+                                console.log(now)
 
                         return (
                             <li
@@ -105,12 +121,16 @@ export default function ListItem({
                             >
                                 <div className="flex items-center space-x-3">
                                     <input
-                                        type="checkbox"
-                                        checked={task.completed}
-                                        disabled={isCheck || isEditing}
-                                        onChange={() => toggle(task.id)}
-                                        className="h-5 w-5 rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
-                                    />
+                                                type="checkbox"
+                                                checked={task.completed}
+                                                disabled={
+                                                    isCheck ||
+                                                    isEditing ||
+                                                    isFutureTask
+                                                }
+                                                onChange={() => toggle(task.id)}
+                                                className="h-5 w-5 rounded cursor-pointer"
+                                            />
 
                                     {isThisEditing ? (
                                         <input

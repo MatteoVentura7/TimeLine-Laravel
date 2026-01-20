@@ -21,6 +21,7 @@ interface Task {
     created_at_formatted: string;
     completed_at_formatted: string;
     created_at_iso: string;
+    expiration_formatted: string;
     user?: User;
 }
 

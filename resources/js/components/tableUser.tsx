@@ -14,6 +14,7 @@ interface Task {
     created_at_formatted: string;
     created_at_iso: string;
     completed_at_formatted: string;
+    expiration_formatted: string;
     user?: User | null;
 }
 
@@ -126,6 +127,7 @@ export default function TableUser({
                                 <th className="p-3 text-left">Title</th>
                                 <th className="p-3 text-left">Assigned To</th>
                                 <th className="p-3 text-left">Created At</th>
+                                <th className="p-3 text-left">Expire</th>
                                 <th className="p-3 text-left">Completed On</th>
                                 <th className="p-3 text-right">Actions</th>
                             </tr>
@@ -161,7 +163,7 @@ export default function TableUser({
                                                     isFutureTask
                                                 }
                                                 onChange={() => toggle(task.id)}
-                                                className="h-5 w-5 rounded"
+                                                className="h-5 w-5 rounded cursor-pointer"
                                             />
                                         </td>
 
@@ -238,6 +240,12 @@ export default function TableUser({
                                         <td className="p-3 font-medium">
                                             <div className="max-w-[6ch] overflow-hidden text-ellipsis whitespace-nowrap min-[901px]:max-w-[10ch] lg:max-w-[35ch] xl:max-w-[35ch] 2xl:max-w-[40ch]">
                                                 {task.created_at_formatted}
+                                            </div>
+                                        </td>
+                                         <td className="p-3 font-medium">
+                                            <div className="max-w-[6ch] overflow-hidden text-ellipsis whitespace-nowrap min-[901px]:max-w-[10ch] lg:max-w-[35ch] xl:max-w-[35ch] 2xl:max-w-[40ch]">
+                                                {task.expiration_formatted ??
+                                                    '—'}
                                             </div>
                                         </td>
 

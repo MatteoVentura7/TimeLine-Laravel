@@ -80,15 +80,13 @@ public function store(Request $request)
         $task->created_at = Carbon::parse($validated['start']);
     }
 
-    if (!empty($validated['expiration'])) {
-        $task->completed_at = Carbon::parse($validated['expiration']);
-        $task->completed = true;
-    }
 
     
     if ($hasCustomStart) {
         $task->timestamps = false;
     }
+
+    $task->expiration = $validated['expiration'] ?? null;
 
     $task->save();
 

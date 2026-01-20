@@ -18,6 +18,11 @@ interface Task {
     id: number;
     title: string;
     completed: boolean;
+    created_at_formatted: string;
+    created_at_iso: string;
+    completed_at_formatted: string;
+    expiration_formatted: string;
+    user?: User | null;
 }
 
 interface User {
