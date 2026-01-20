@@ -2,7 +2,6 @@ import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
-
 interface User {
     id: number;
     name: string;
@@ -28,7 +27,7 @@ export default function TableUser({
     showEdit?: boolean;
     onEditChange?: (value: boolean) => void;
 }) {
-  const { patch } = useForm({ title: '' });
+    const { patch } = useForm({ title: '' });
 
     const { data, setData, reset } = useForm<{
         user_id: number | '';
@@ -171,18 +170,21 @@ export default function TableUser({
                                                         if (e.key === 'Escape')
                                                             cancelEdit();
                                                     }}
-                                                    autoFocus
                                                     className="w-full rounded border px-2 py-1"
                                                 />
                                             ) : (
                                                 <span
                                                     className={`font-medium ${
                                                         task.completed
-                                                            ? 'line-through text-gray-400'
+                                                            ? 'text-gray-400 line-through'
                                                             : ''
                                                     }`}
                                                 >
-                                                    {task.title}
+                                                    <span
+                                                        className={`block max-w-[5ch] overflow-hidden font-medium text-ellipsis whitespace-nowrap min-[950px]:max-w-[5ch] sm:max-w-[8ch] md:max-w-[4ch] lg:max-w-[13ch] xl:max-w-[35ch] 2xl:max-w-[40ch] ${task.completed ? 'text-gray-400 line-through' : ''} `}
+                                                    >
+                                                        {task.title}
+                                                    </span>
                                                 </span>
                                             )}
                                         </td>
@@ -205,9 +207,6 @@ export default function TableUser({
                                                     }
                                                     className="w-full rounded border p-2"
                                                 >
-                                                    <option value="">
-                                                        Assign to...
-                                                    </option>
                                                     {users.map((user) => (
                                                         <option
                                                             key={user.id}
@@ -225,14 +224,17 @@ export default function TableUser({
                                                 </span>
                                             )}
                                         </td>
-
-                                        <td className="p-3 whitespace-nowrap">
-                                            {task.created_at_formatted}
+                                        <td className="p-3 font-medium">
+                                            <div className="max-w-[6ch] overflow-hidden text-ellipsis whitespace-nowrap min-[901px]:max-w-[10ch] lg:max-w-[35ch] xl:max-w-[35ch] 2xl:max-w-[40ch]">
+                                                {task.created_at_formatted}
+                                            </div>
                                         </td>
 
-                                        <td className="p-3 whitespace-nowrap">
-                                            {task.completed_at_formatted ??
-                                                '—'}
+                                        <td className="p-3 font-medium">
+                                            <div className="max-w-[6ch] overflow-hidden text-ellipsis whitespace-nowrap min-[901px]:max-w-[10ch] lg:max-w-[35ch] xl:max-w-[35ch] 2xl:max-w-[40ch]">
+                                                {task.completed_at_formatted ??
+                                                    '—'}
+                                            </div>
                                         </td>
 
                                         {/* ACTIONS */}
@@ -247,18 +249,18 @@ export default function TableUser({
                                                                 )
                                                             }
                                                             disabled={isSaving}
-                                                            className="mr-2 text-green-500"
+                                                            className="mr-2 cursor-pointer text-green-500 hover:text-green-600 disabled:opacity-50"
+                                                            title="Save"
                                                         >
-                                                            ✔
+                                                            <i className="fa-solid fa-check"></i>
                                                         </button>
 
                                                         <button
-                                                            onClick={
-                                                                cancelEdit
-                                                            }
-                                                            className="mr-3 text-gray-500"
+                                                            onClick={cancelEdit}
+                                                            className="mr-3 cursor-pointer text-gray-500 hover:text-gray-600"
+                                                            title="Cancel"
                                                         >
-                                                            ✖
+                                                            <i className="fa-solid fa-xmark"></i>
                                                         </button>
                                                     </>
                                                 ) : (
@@ -267,20 +269,18 @@ export default function TableUser({
                                                             startEdit(task)
                                                         }
                                                         disabled={isEditing}
-                                                        className="mr-3 text-yellow-500"
+                                                        className="mr-3 cursor-pointer text-yellow-500 hover:text-yellow-600 disabled:opacity-50"
                                                     >
-                                                        ✎
+                                                        <i className="fa-solid fa-pen"></i>
                                                     </button>
                                                 ))}
 
                                             <button
-                                                onClick={() =>
-                                                    remove(task.id)
-                                                }
+                                                onClick={() => remove(task.id)}
                                                 disabled={isEditing}
-                                                className="text-red-500"
+                                                className="cursor-pointer text-red-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                                             >
-                                                🗑
+                                                <i className="fa-solid fa-trash"></i>
                                             </button>
                                         </td>
                                     </tr>

@@ -1,6 +1,5 @@
 import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
-import { on } from 'events';
 import { useState } from 'react';
 
 interface Task {
@@ -56,7 +55,7 @@ export default function ListItem({
                     setEditTitle('');
                     onEditChange?.(false);
                 },
-            }
+            },
         );
     };
 
@@ -102,9 +101,7 @@ export default function ListItem({
                         return (
                             <li
                                 key={task.id}
-                                className={`flex items-center justify-between rounded-xl bg-white p-4 shadow
-                                    hover:shadow-lg dark:bg-neutral-800
-                                    ${isEditing && !isThisEditing ? 'opacity-60' : ''}`}
+                                className={`flex items-center justify-between rounded-xl bg-white p-4 shadow hover:shadow-lg dark:bg-neutral-800 ${isEditing && !isThisEditing ? 'opacity-60' : ''}`}
                             >
                                 <div className="flex items-center space-x-3">
                                     <input
@@ -112,9 +109,7 @@ export default function ListItem({
                                         checked={task.completed}
                                         disabled={isCheck || isEditing}
                                         onChange={() => toggle(task.id)}
-                                        className="h-5 w-5 rounded border-gray-300 text-blue-500
-                                                   focus:ring-2 focus:ring-blue-400
-                                                   disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="h-5 w-5 rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
                                     />
 
                                     {isThisEditing ? (
@@ -140,7 +135,11 @@ export default function ListItem({
                                                     : 'text-gray-800'
                                             }`}
                                         >
-                                            {task.title}
+                                                <span
+                                                        className={`block max-w-[23ch] overflow-hidden font-medium text-ellipsis whitespace-nowrap   sm:max-w-[40ch] md:max-w-[30ch]  lg:max-w-[12ch] xl:max-w-[20ch] 2xl:max-w-[25ch] ${task.completed ? 'text-gray-400 line-through' : ''} `}
+                                                    >
+                                                        {task.title}
+                                                    </span>
                                         </span>
                                     )}
                                 </div>
@@ -154,8 +153,7 @@ export default function ListItem({
                                                         saveEdit(task.id)
                                                     }
                                                     disabled={isSaving}
-                                                    className="mr-2 cursor-pointer text-green-500 hover:text-green-600
-                                                               disabled:cursor-not-allowed disabled:opacity-50"
+                                                    className="mr-2 cursor-pointer text-green-500 hover:text-green-600 disabled:cursor-not-allowed disabled:opacity-50"
                                                     title="Save"
                                                 >
                                                     <i className="fa-solid fa-check"></i>
@@ -173,8 +171,7 @@ export default function ListItem({
                                             <button
                                                 onClick={() => startEdit(task)}
                                                 disabled={isEditing}
-                                                className="mr-3 cursor-pointer text-yellow-500 hover:text-yellow-600
-                                                           disabled:cursor-not-allowed disabled:opacity-50"
+                                                className="mr-3 cursor-pointer text-yellow-500 hover:text-yellow-600 disabled:cursor-not-allowed disabled:opacity-50"
                                                 title="Edit task"
                                             >
                                                 <i className="fa-solid fa-pen"></i>
@@ -184,8 +181,7 @@ export default function ListItem({
                                     <button
                                         onClick={() => remove(task.id)}
                                         disabled={isEditing}
-                                        className="cursor-pointer text-red-500 hover:text-red-600
-                                                   disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="cursor-pointer text-red-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                                         title="Delete task"
                                     >
                                         <i className="fa-solid fa-trash"></i>
@@ -211,9 +207,7 @@ export default function ListItem({
                             <button
                                 onClick={() => setConfirmOpen(false)}
                                 disabled={isDeleting}
-                                className="rounded bg-gray-300 px-4 py-2
-                                           hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50
-                                           dark:bg-neutral-700 dark:hover:bg-neutral-600"
+                                className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600"
                             >
                                 Cancel
                             </button>
@@ -221,8 +215,7 @@ export default function ListItem({
                             <button
                                 onClick={confirmDelete}
                                 disabled={isDeleting}
-                                className="rounded bg-red-500 px-4 py-2 text-white
-                                           hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {isDeleting ? 'Deleting...' : 'Confirm'}
                             </button>

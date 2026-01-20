@@ -31,33 +31,44 @@ export default function TaskForm({ users }: { users: User[] }) {
 
     return (
         <form onSubmit={submit} className="m-8 mb-4 flex flex-col gap-2">
-            <input
-                value={data.title}
-                onChange={(e) => setData('title', e.target.value)}
-                placeholder="Add activity..."
-                className="w-full rounded border border-gray-300 p-2"
-                required
-            />
+            <div className="flex gap-2">
+                <input
+                    value={data.title}
+                    onChange={(e) => setData('title', e.target.value)}
+                    placeholder="Add activity..."
+                    className="w-full rounded border border-gray-300 p-2"
+                    required
+                />
+                <select
+                    value={data.user_id}
+                    onChange={(e) => setData('user_id', e.target.value)}
+                    className="w-full rounded border border-gray-300 p-2"
+                    required
+                >
+                    <option value="">Assign to...</option>
+                    {users.map((user) => (
+                        <option key={user.id} value={user.id}>
+                            {user.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
-            <select
-                value={data.user_id}
-                onChange={(e) => setData('user_id', e.target.value)}
+            <span className='font-black'>Start</span>
+            <input
+                type="datetime-local"
                 className="w-full rounded border border-gray-300 p-2"
-                required
-            >
-                <option value="">Assign to...</option>
-                {users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                        {user.name}
-                    </option>
-                ))}
-            </select>
+            />
+            <span className='font-black'>Expiration</span>
+            <input
+                type="datetime-local"
+                className="w-full rounded border border-gray-300 p-2"
+            />
 
             <button
                 type="submit"
                 disabled={isAdding}
-                className="mt-2 rounded bg-blue-500 px-4 py-2 text-white
-                           hover:bg-blue-600 disabled:opacity-50"
+                className="mt-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
             >
                 {isAdding ? 'Adding...' : 'Add'}
             </button>

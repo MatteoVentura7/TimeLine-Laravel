@@ -38,14 +38,14 @@ class Task extends Model
     public function getCreatedAtFormattedAttribute()
     {
         return $this->created_at
-            ? $this->created_at->format('d/m/Y H:i')
+            ? $this->created_at->setTimezone('Europe/Rome')->format('d/m/Y H:i')
             : null;
     }
 
     public function getCompletedAtFormattedAttribute()
     {
         return $this->completed_at
-            ? $this->completed_at->format('d/m/Y H:i')
+            ? $this->completed_at->setTimezone('Europe/Rome')->format('d/m/Y H:i')
             : null;
     }
 }
