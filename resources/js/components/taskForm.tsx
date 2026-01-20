@@ -8,10 +8,12 @@ interface User {
 }
 
 export default function TaskForm({ users }: { users: User[] }) {
-    const { data, setData, post, reset } = useForm({
-        title: '',
-        user_id: '',
-    });
+   const { data, setData, post, reset } = useForm({
+    title: '',
+    user_id: '',
+    start: '',
+    expiration: '',
+});
 
     const [isAdding, setIsAdding] = useState(false);
 
@@ -54,14 +56,21 @@ export default function TaskForm({ users }: { users: User[] }) {
                 </select>
             </div>
 
-            <span className='font-black'>Start</span>
+            <span className="font-black">Start</span>
             <input
                 type="datetime-local"
+                value={data.start}
+                onChange={(e) => setData('start', e.target.value)}
                 className="w-full rounded border border-gray-300 p-2"
             />
-            <span className='font-black'>Expiration</span>
+
+            <span className="font-black">Expiration</span>
             <input
                 type="datetime-local"
+                value={data.expiration}
+                onChange={(e) => setData('expiration', e.target.value)}
+                min={data.start || undefined}
+                disabled={!data.start}
                 className="w-full rounded border border-gray-300 p-2"
             />
 

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class TaskController extends Controller
 {
@@ -57,24 +58,42 @@ class TaskController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'user_id' => 'nullable|exists:users,id', 
-        ]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'user_id' => 'nullable|exists:users,id',
+        'start' => 'nullable|date',
+        'expiration' => 'nullable|date|after_or_equal:start',
+    ], [
+        'expiration.after_or_equal' =>
+            'La data di fine non può essere precedente alla data di inizio.',
+    ]);
 
-        $taskData = $request->only('title', 'user_id');
+    $task = new Task();
+    $task->title = $validated['title'];
+    $task->user_id = $validated['user_id'] ?? Auth::id();
 
-        
-        $taskData['user_id'] = $taskData['user_id'] ?? Auth::id();
+    $hasCustomStart = !empty($validated['start']);
 
-        Task::create($taskData);
-
-        return Inertia::location(url()->previous());
+    if ($hasCustomStart) {
+        $task->created_at = Carbon::parse($validated['start']);
     }
 
-   
+    if (!empty($validated['expiration'])) {
+        $task->completed_at = Carbon::parse($validated['expiration']);
+        $task->completed = true;
+    }
+
+    
+    if ($hasCustomStart) {
+        $task->timestamps = false;
+    }
+
+    $task->save();
+
+    return Inertia::location(url()->previous());
+}
     public function update(Task $task)
     {
         $task->update([

@@ -133,6 +133,9 @@ export default function TableUser({
                         <tbody>
                             {tasks.map((task) => {
                                 const isThisEditing = editingId === task.id;
+                                 const createdAt = new Date(task.created_at_formatted);
+    const now = new Date();
+    const isFutureTask = createdAt > now;
 
                                 return (
                                     <tr
@@ -148,7 +151,8 @@ export default function TableUser({
                                             <input
                                                 type="checkbox"
                                                 checked={task.completed}
-                                                disabled={isCheck || isEditing}
+                                                disabled={isCheck || isEditing || isFutureTask }
+                                                
                                                 onChange={() => toggle(task.id)}
                                                 className="h-5 w-5 rounded"
                                             />
