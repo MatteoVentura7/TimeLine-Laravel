@@ -32,24 +32,24 @@ export default function TaskForm({ users }: { users: User[] }) {
     };
 
     return (
-        <form onSubmit={submit} className="m-8 mb-4 flex flex-col gap-2">
-            <div className="flex gap-2">
-                <div>
-                <h3 className="font-black">Activity</h3>
+        <form onSubmit={submit} className="m-6 mb-4 flex flex-col gap-2">
+            
+                
+                <span className="font-black">Activity</span>
                 <input
                     value={data.title}
                     onChange={(e) => setData('title', e.target.value)}
                     placeholder="Add activity..."
-                    className="w-full rounded border border-gray-300 p-2"
+                    className="w-full h-8 rounded border border-gray-300 p-2"
                     required
                 />
-                </div>
-                <div>
-                    <h3 className="font-black">Asigned</h3>
+                
+                
+                    <span className="font-black">Asigned</span>
                 <select
                     value={data.user_id}
                     onChange={(e) => setData('user_id', e.target.value)}
-                    className="w-full rounded border border-gray-300 p-2"
+                    className="w-full h-10 rounded border border-gray-300 p-2"
                     required
                 >
                     <option value="">Assign to...</option>
@@ -59,15 +59,15 @@ export default function TaskForm({ users }: { users: User[] }) {
                         </option>
                     ))}
                 </select>
-                </div>
-            </div>
+                
+            
 
             <span className="font-black">Start</span>
             <input
                 type="datetime-local"
                 value={data.start}
                 onChange={(e) => setData('start', e.target.value)}
-                className="w-full rounded border border-gray-300 p-2"
+                className="w-full h-8 rounded border border-gray-300 p-2"
             />
 
             <span className="font-black">Expiration</span>
@@ -77,13 +77,13 @@ export default function TaskForm({ users }: { users: User[] }) {
                 onChange={(e) => setData('expiration', e.target.value)}
                 min={data.start || undefined}
                 disabled={!data.start}
-                className="w-full rounded border border-gray-300 p-2"
+                className="w-full h-8 rounded border border-gray-300 p-2"
             />
 
             <button
                 type="submit"
                 disabled={isAdding}
-                className="mt-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
+                className="mt-2 cursor-pointer  rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
             >
                 {isAdding ? 'Adding...' : 'Add'}
             </button>

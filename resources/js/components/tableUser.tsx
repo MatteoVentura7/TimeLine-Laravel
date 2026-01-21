@@ -1,6 +1,7 @@
 import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import Modal from './modal';
 
 interface User {
     id: number;
@@ -46,6 +47,8 @@ export default function TableUser({
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editTitle, setEditTitle] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+
+    const [infoModalOpen, setInfoModalOpen] = useState(false);
 
     const isEditing = editingId !== null;
 
@@ -109,6 +112,14 @@ export default function TableUser({
         });
     };
 
+    const openInfoModal = () => {
+        setInfoModalOpen(true);
+    };
+
+    const closeInfoModal = () => {
+        setInfoModalOpen(false);
+    };
+
     return (
         <div className="flex h-full flex-col">
             {tasks.length === 0 ? (
@@ -136,12 +147,11 @@ export default function TableUser({
                         <tbody>
                             {tasks.map((task) => {
                                 const isThisEditing = editingId === task.id;
-                                const createdAt = new Date(
-                                    task.created_at_iso,
-                                );
+                                const createdAt = new Date(task.created_at_iso);
                                 const now = new Date();
-                                const isFutureTask = createdAt.getTime() > now.getTime();
-                                console.log(now)
+                                const isFutureTask =
+                                    createdAt.getTime() > now.getTime();
+                                console.log(now);
 
                                 return (
                                     <tr
@@ -163,7 +173,7 @@ export default function TableUser({
                                                     isFutureTask
                                                 }
                                                 onChange={() => toggle(task.id)}
-                                                className="h-5 w-5 rounded cursor-pointer"
+                                                className="h-5 w-5 cursor-pointer rounded"
                                             />
                                         </td>
 
@@ -242,7 +252,7 @@ export default function TableUser({
                                                 {task.created_at_formatted}
                                             </div>
                                         </td>
-                                         <td className="p-3 font-medium">
+                                        <td className="p-3 font-medium">
                                             <div className="max-w-[6ch] overflow-hidden text-ellipsis whitespace-nowrap min-[901px]:max-w-[10ch] lg:max-w-[35ch] xl:max-w-[35ch] 2xl:max-w-[40ch]">
                                                 {task.expiration_formatted ??
                                                     '—'}
@@ -293,7 +303,12 @@ export default function TableUser({
                                                         <i className="fa-solid fa-pen"></i>
                                                     </button>
                                                 ))}
-
+                                            <button
+                                                onClick={openInfoModal}
+                                                className="mr-3 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                                            >
+                                                <i className="fa-solid fa-circle-info"></i>
+                                            </button>
                                             <button
                                                 onClick={() => remove(task.id)}
                                                 disabled={isEditing}
@@ -339,6 +354,17 @@ export default function TableUser({
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* MODAL INFO */}
+            {infoModalOpen && (
+                <Modal
+                    open={infoModalOpen}
+                    onClose={closeInfoModal}
+                    title="Information"
+                >
+                    <p>This is the information modal content.</p>
+                </Modal>
             )}
         </div>
     );

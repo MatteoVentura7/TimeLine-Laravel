@@ -61,7 +61,7 @@ export default function Dashboard({
                         <ListItem tasks={tasks.data} />
                     </div>
 
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border flex justify-center items-center "> 
+                    <div className="relative aspect-video min-h-95 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border flex justify-center items-center "> 
                         {/* FORM AGGIUNTA TASK */}
                         <TaskForm users={users} />
                     </div>
