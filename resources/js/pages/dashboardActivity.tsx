@@ -14,6 +14,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+interface User {
+    id: number;
+    name: string;
+}
+
 interface Task {
     id: number;
     title: string;
@@ -34,11 +39,6 @@ interface TaskPagination {
     links: { url: string | null; label: string; active: boolean }[];
 }
 
-interface User {
-    id: number;
-    name: string;
-}
-
 export default function DashboardActivity({
     tasks,
     statistc,
@@ -48,10 +48,10 @@ export default function DashboardActivity({
     statistc: { todo: number; done: number };
     users: User[];
 }) {
-    const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [searchMessage, setSearchMessage] = useState<string | null>(null);
-    const [isEditing, setIsEditing] = useState(false); 
+    const [isEditing, setIsEditing] = useState(false);
+    const [createOpen, setCreateOpen] = useState(false);
 
     useEffect(() => {
         const storedSearch = localStorage.getItem('searchTerm');
@@ -91,10 +91,8 @@ export default function DashboardActivity({
 
             <div className="relative min-h-220 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                 <div>
-                  
-
                     <div className="mt-5 mr-5 ml-5 flex flex-col items-center justify-between lg:flex-row">
-                        {/* BARRA DI RICERCA */}
+                        {/* SEARCH */}
                         <form
                             onSubmit={handleSearchSubmit}
                             className="mr-5 mb-3 flex items-center justify-end lg:mb-0"
@@ -110,13 +108,13 @@ export default function DashboardActivity({
                             <button
                                 type="submit"
                                 disabled={isEditing}
-                                className="ml-2 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white
-                                           hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="ml-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <i className="fa-solid fa-magnifying-glass"></i>
                             </button>
                         </form>
 
+                        {/* STATS + ADD */}
                         <div>
                             <span className="mr-3 font-bold text-blue-600">
                                 To Do : {statistc.todo ?? 0}
@@ -126,10 +124,9 @@ export default function DashboardActivity({
                             </span>
 
                             <button
-                                onClick={() => setOpen(true)}
+                                onClick={() => setCreateOpen(true)}
                                 disabled={isEditing}
-                                className="ml-5 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white
-                                           hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="ml-5 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                             >
                                 Add Activity
                             </button>
@@ -137,38 +134,27 @@ export default function DashboardActivity({
                     </div>
 
                     {searchMessage && (
-                        <div className="mt-3 p-2 text-center text-sm font-bold text-black">
+                        <div className="mt-3 p-2 text-center text-sm font-bold">
                             {searchMessage}
                         </div>
                     )}
 
-                          {/* MODAL */}
-                    {open && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                            <div className="w-full max-w-md rounded-lg bg-white p-2 shadow-lg">
-                                <div className="flex justify-end">
-                                    <button
-                                        onClick={() => setOpen(false)}
-                                        className="cursor-pointer text-red-500 hover:text-red-700"
-                                    >
-                                        X
-                                    </button>
-                                </div>
+                    {/* CREATE TASK MODAL */}
+                    <TaskForm
+                        users={users}
+                        open={createOpen}
+                        onClose={() => setCreateOpen(false)}
+                    />
 
-                                <TaskForm users={users} />
-                            </div>
-                        </div>
-                    )}
-
-                    {/* LISTA TASK */}
+                    {/* TASK LIST */}
                     <TableUser
                         tasks={tasks.data}
                         showEdit={true}
-                        onEditChange={setIsEditing} 
+                        onEditChange={setIsEditing}
                         users={users}
                     />
 
-                    {/* PAGINAZIONE */}
+                    {/* PAGINATION */}
                     {tasks.last_page > 1 && (
                         <div className="mt-auto flex justify-center gap-2">
                             {tasks.links.map((link, index) => (
@@ -178,13 +164,11 @@ export default function DashboardActivity({
                                     onClick={() =>
                                         link.url && Inertia.get(link.url)
                                     }
-                                    className={`cursor-pointer rounded border px-3 py-1
-                                        disabled:cursor-not-allowed disabled:opacity-50
-                                        ${
-                                            link.active
-                                                ? 'bg-blue-500 text-white'
-                                                : ''
-                                        }`}
+                                    className={`rounded border px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50 ${
+                                        link.active
+                                            ? 'bg-blue-500 text-white'
+                                            : ''
+                                    }`}
                                     dangerouslySetInnerHTML={{
                                         __html: link.label,
                                     }}

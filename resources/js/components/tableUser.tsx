@@ -48,7 +48,11 @@ export default function TableUser({
     const [editTitle, setEditTitle] = useState('');
     const [isSaving, setIsSaving] = useState(false);
 
+    // INFO MODAL
     const [infoModalOpen, setInfoModalOpen] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    
+
 
     const isEditing = editingId !== null;
 
@@ -112,12 +116,14 @@ export default function TableUser({
         });
     };
 
-    const openInfoModal = () => {
+    const openInfoModal = (task: Task) => {
+        setSelectedTask(task);
         setInfoModalOpen(true);
     };
 
     const closeInfoModal = () => {
         setInfoModalOpen(false);
+        setSelectedTask(null);
     };
 
     return (
@@ -151,7 +157,6 @@ export default function TableUser({
                                 const now = new Date();
                                 const isFutureTask =
                                     createdAt.getTime() > now.getTime();
-                                console.log(now);
 
                                 return (
                                     <tr
@@ -172,7 +177,9 @@ export default function TableUser({
                                                     isEditing ||
                                                     isFutureTask
                                                 }
-                                                onChange={() => toggle(task.id)}
+                                                onChange={() =>
+                                                    toggle(task.id)
+                                                }
                                                 className="h-5 w-5 cursor-pointer rounded"
                                             />
                                         </td>
@@ -199,15 +206,11 @@ export default function TableUser({
                                                 <span
                                                     className={`font-medium ${
                                                         task.completed
-                                                            ? 'text-gray-400 line-through'
+                                                            ? 'line-through text-gray-400'
                                                             : ''
                                                     }`}
                                                 >
-                                                    <span
-                                                        className={`block max-w-[5ch] overflow-hidden font-medium text-ellipsis whitespace-nowrap min-[950px]:max-w-[5ch] sm:max-w-[8ch] md:max-w-[4ch] lg:max-w-[13ch] xl:max-w-[35ch] 2xl:max-w-[40ch] ${task.completed ? 'text-gray-400 line-through' : ''} `}
-                                                    >
-                                                        {task.title}
-                                                    </span>
+                                                    {task.title}
                                                 </span>
                                             )}
                                         </td>
@@ -230,6 +233,9 @@ export default function TableUser({
                                                     }
                                                     className="w-full rounded border p-2"
                                                 >
+                                                    <option value="">
+                                                        —
+                                                    </option>
                                                     {users.map((user) => (
                                                         <option
                                                             key={user.id}
@@ -247,23 +253,15 @@ export default function TableUser({
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="p-3 font-medium">
-                                            <div className="max-w-[6ch] overflow-hidden text-ellipsis whitespace-nowrap min-[901px]:max-w-[10ch] lg:max-w-[35ch] xl:max-w-[35ch] 2xl:max-w-[40ch]">
-                                                {task.created_at_formatted}
-                                            </div>
-                                        </td>
-                                        <td className="p-3 font-medium">
-                                            <div className="max-w-[6ch] overflow-hidden text-ellipsis whitespace-nowrap min-[901px]:max-w-[10ch] lg:max-w-[35ch] xl:max-w-[35ch] 2xl:max-w-[40ch]">
-                                                {task.expiration_formatted ??
-                                                    '—'}
-                                            </div>
-                                        </td>
 
-                                        <td className="p-3 font-medium">
-                                            <div className="max-w-[6ch] overflow-hidden text-ellipsis whitespace-nowrap min-[901px]:max-w-[10ch] lg:max-w-[35ch] xl:max-w-[35ch] 2xl:max-w-[40ch]">
-                                                {task.completed_at_formatted ??
-                                                    '—'}
-                                            </div>
+                                        <td className="p-3">
+                                            {task.created_at_formatted}
+                                        </td>
+                                        <td className="p-3">
+                                            {task.expiration_formatted ?? '—'}
+                                        </td>
+                                        <td className="p-3">
+                                            {task.completed_at_formatted ?? '—'}
                                         </td>
 
                                         {/* ACTIONS */}
@@ -278,16 +276,13 @@ export default function TableUser({
                                                                 )
                                                             }
                                                             disabled={isSaving}
-                                                            className="mr-2 cursor-pointer text-green-500 hover:text-green-600 disabled:opacity-50"
-                                                            title="Save"
+                                                            className="mr-2 text-green-500"
                                                         >
                                                             <i className="fa-solid fa-check"></i>
                                                         </button>
-
                                                         <button
                                                             onClick={cancelEdit}
-                                                            className="mr-3 cursor-pointer text-gray-500 hover:text-gray-600"
-                                                            title="Cancel"
+                                                            className="mr-3 text-gray-500"
                                                         >
                                                             <i className="fa-solid fa-xmark"></i>
                                                         </button>
@@ -298,21 +293,25 @@ export default function TableUser({
                                                             startEdit(task)
                                                         }
                                                         disabled={isEditing}
-                                                        className="mr-3 cursor-pointer text-yellow-500 hover:text-yellow-600 disabled:opacity-50"
+                                                        className="mr-3 text-yellow-500"
                                                     >
                                                         <i className="fa-solid fa-pen"></i>
                                                     </button>
                                                 ))}
+
                                             <button
-                                                onClick={openInfoModal}
-                                                className="mr-3 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                                                onClick={() =>
+                                                    openInfoModal(task)
+                                                }
+                                                className="mr-3"
                                             >
                                                 <i className="fa-solid fa-circle-info"></i>
                                             </button>
+
                                             <button
                                                 onClick={() => remove(task.id)}
                                                 disabled={isEditing}
-                                                className="cursor-pointer text-red-500 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                                                className="text-red-500"
                                             >
                                                 <i className="fa-solid fa-trash"></i>
                                             </button>
@@ -325,7 +324,7 @@ export default function TableUser({
                 </div>
             )}
 
-            {/* MODAL DELETE */}
+            {/* DELETE MODAL */}
             {confirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
                     <div className="w-80 rounded-lg bg-white p-6 text-center">
@@ -338,34 +337,93 @@ export default function TableUser({
                         <div className="flex justify-center gap-3">
                             <button
                                 onClick={() => setConfirmOpen(false)}
-                                disabled={isDeleting}
-                                className="rounded bg-gray-300 px-4 py-2"
+                                className="rounded bg-gray-300 px-4 py-2 cursor-pointer"
                             >
                                 Cancel
                             </button>
-
                             <button
                                 onClick={confirmDelete}
-                                disabled={isDeleting}
-                                className="rounded bg-red-500 px-4 py-2 text-white"
+                                className="rounded bg-red-500 px-4 py-2 text-white cursor-pointer"
                             >
-                                {isDeleting ? 'Deleting...' : 'Confirm'}
+                                Confirm
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* MODAL INFO */}
-            {infoModalOpen && (
-                <Modal
-                    open={infoModalOpen}
-                    onClose={closeInfoModal}
-                    title="Information"
+            {infoModalOpen && selectedTask && (
+    <Modal
+        open={infoModalOpen}
+        onClose={closeInfoModal}
+        title="Task details"
+    >
+        <div className="space-y-4">
+            {/* TITLE */}
+            <div className="rounded-lg bg-gray-100 p-4 dark:bg-neutral-700">
+                <h3 className="text-lg font-semibold">
+                    <i className="fa-solid fa-list-check mr-2 text-blue-500"></i>
+                    {selectedTask.title}
+                </h3>
+            </div>
+
+            {/* STATUS + USER */}
+            <div className="flex flex-wrap gap-3">
+                <span
+                    className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
+                        selectedTask.completed
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-yellow-100 text-yellow-700'
+                    }`}
                 >
-                    <p>This is the information modal content.</p>
-                </Modal>
-            )}
+                    <i
+                        className={`fa-solid ${
+                            selectedTask.completed
+                                ? 'fa-circle-check'
+                                : 'fa-clock'
+                        }`}
+                    ></i>
+                    {selectedTask.completed ? 'Completed' : 'Pending'}
+                </span>
+
+                <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+                    <i className="fa-solid fa-user"></i>
+                    {selectedTask.user
+                        ? selectedTask.user.name
+                        : 'Unassigned'}
+                </span>
+            </div>
+
+            {/* DATES */}
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="rounded-lg border p-3">
+                    <p className="text-sm text-gray-500">Created at</p>
+                    <p className="font-medium">
+                        <i className="fa-regular fa-calendar mr-2"></i>
+                        {selectedTask.created_at_formatted}
+                    </p>
+                </div>
+
+                <div className="rounded-lg border p-3">
+                    <p className="text-sm text-gray-500">Expiration</p>
+                    <p className="font-medium">
+                        <i className="fa-regular fa-hourglass-half mr-2"></i>
+                        {selectedTask.expiration_formatted ?? '—'}
+                    </p>
+                </div>
+
+                <div className="rounded-lg border p-3 sm:col-span-2">
+                    <p className="text-sm text-gray-500">Completed on</p>
+                    <p className="font-medium">
+                        <i className="fa-solid fa-check mr-2"></i>
+                        {selectedTask.completed_at_formatted ?? '—'}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </Modal>
+)}
+
         </div>
     );
 }
