@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import { queryParams } from '@/wayfinder';
 import { router, useForm } from '@inertiajs/react';
-import Modal from './modal';
 
 interface User {
     id: number;
@@ -9,39 +9,40 @@ interface User {
 
 interface TaskFormProps {
     users: User[];
-    open: boolean;
-    onClose: () => void;
+    onSuccess?: () => void;
 }
 
-export default function TaskForm({ users, open, onClose }: TaskFormProps) {
-    const { data, setData, post, reset } = useForm({
+export default function TaskForm({ users, onSuccess }: TaskFormProps) {
+    const { data, setData, post, reset, processing } = useForm({
         title: '',
         user_id: '',
         start: '',
         expiration: '',
     });
 
+    // ✅ stato per sapere se è stato appena inviato
+    const [submitted, setSubmitted] = useState(false);
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitted(true); // blocca il form subito
 
         post(`/tasks${queryParams({})}`, {
             preserveState: false,
             onSuccess: () => {
-                reset();
-                onClose(); // 👈 chiude il modal
+                reset();           // svuota il form
+                setSubmitted(false); // ora può riattivarsi
+                onSuccess?.();
                 router.reload({ only: ['tasks', 'statistic'] });
             },
         });
     };
 
+    const isDisabled = processing || submitted;
+
     return (
-        <Modal
-            open={open}
-            onClose={onClose}
-            title="New activity"
-            width="w-[480px]"
-        >
-            <form onSubmit={submit} className="flex flex-col gap-3">
+        <form onSubmit={submit}>
+            <fieldset disabled={isDisabled} className="flex flex-col gap-3">
                 <div>
                     <label className="mb-1 block font-semibold">Activity</label>
                     <input
@@ -81,9 +82,7 @@ export default function TaskForm({ users, open, onClose }: TaskFormProps) {
                 </div>
 
                 <div>
-                    <label className="mb-1 block font-semibold">
-                        Expiration
-                    </label>
+                    <label className="mb-1 block font-semibold">Expiration</label>
                     <input
                         type="datetime-local"
                         value={data.expiration}
@@ -96,11 +95,14 @@ export default function TaskForm({ users, open, onClose }: TaskFormProps) {
 
                 <button
                     type="submit"
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 cursor-pointer"
+                    disabled={isDisabled}
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-white
+                               hover:bg-blue-700 disabled:opacity-50
+                               disabled:cursor-not-allowed"
                 >
-                    Add
+                    {processing ? 'Saving...' : 'Add'}
                 </button>
-            </form>
-        </Modal>
+            </fieldset>
+        </form>
     );
 }

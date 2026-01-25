@@ -32,16 +32,14 @@ export default function TableUser({
 }) {
     const { patch } = useForm({ title: '' });
 
-    const { data, setData, reset } = useForm<{
-        user_id: number | '';
-    }>({
+    const { data, setData, reset } = useForm<{ user_id: number | '' }>({
         user_id: '',
     });
 
     const [isCheck, setIsCheck] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false); // ✅ stato delete
 
     // Inline edit
     const [editingId, setEditingId] = useState<number | null>(null);
@@ -51,8 +49,6 @@ export default function TableUser({
     // INFO MODAL
     const [infoModalOpen, setInfoModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-    
-
 
     const isEditing = editingId !== null;
 
@@ -72,30 +68,16 @@ export default function TableUser({
 
     const saveEdit = (id: number) => {
         setIsSaving(true);
-
         Inertia.patch(
             `/tasks/${id}`,
-            {
-                title: editTitle,
-                user_id: data.user_id || null,
-            },
-            {
-                onFinish: () => {
-                    setIsSaving(false);
-                    setEditingId(null);
-                    setEditTitle('');
-                    reset();
-                    onEditChange?.(false);
-                },
-            },
+            { title: editTitle, user_id: data.user_id || null },
+            { onFinish: () => { setIsSaving(false); setEditingId(null); setEditTitle(''); reset(); onEditChange?.(false); } }
         );
     };
 
     const toggle = (id: number) => {
         setIsCheck(true);
-        patch(`/tasks/${id}/toggle`, {
-            onFinish: () => setIsCheck(false),
-        });
+        patch(`/tasks/${id}/toggle`, { onFinish: () => setIsCheck(false) });
     };
 
     const remove = (id: number) => {
@@ -104,7 +86,7 @@ export default function TableUser({
     };
 
     const confirmDelete = () => {
-        if (!taskToDelete) return;
+        if (!taskToDelete || isDeleting) return;
 
         setIsDeleting(true);
         Inertia.delete(`/tasks/${taskToDelete}`, {
@@ -149,73 +131,43 @@ export default function TableUser({
                                 <th className="p-3 text-right">Actions</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             {tasks.map((task) => {
                                 const isThisEditing = editingId === task.id;
                                 const createdAt = new Date(task.created_at_iso);
                                 const now = new Date();
-                                const isFutureTask =
-                                    createdAt.getTime() > now.getTime();
+                                const isFutureTask = createdAt.getTime() > now.getTime();
 
                                 return (
-                                    <tr
-                                        key={task.id}
-                                        className={`border-b last:border-none dark:border-neutral-700 ${
-                                            isEditing && !isThisEditing
-                                                ? 'opacity-60'
-                                                : ''
-                                        }`}
-                                    >
-                                        {/* CHECK */}
+                                    <tr key={task.id} className={`border-b last:border-none dark:border-neutral-700 ${isEditing && !isThisEditing ? 'opacity-60' : ''}`}>
                                         <td className="p-3">
                                             <input
                                                 type="checkbox"
                                                 checked={task.completed}
-                                                disabled={
-                                                    isCheck ||
-                                                    isEditing ||
-                                                    isFutureTask
-                                                }
-                                                onChange={() =>
-                                                    toggle(task.id)
-                                                }
+                                                disabled={isCheck || isEditing || isFutureTask}
+                                                onChange={() => toggle(task.id)}
                                                 className="h-5 w-5 cursor-pointer rounded"
                                             />
                                         </td>
 
-                                        {/* TITLE */}
                                         <td className="p-3">
                                             {isThisEditing ? (
                                                 <input
                                                     value={editTitle}
-                                                    onChange={(e) =>
-                                                        setEditTitle(
-                                                            e.target.value,
-                                                        )
-                                                    }
+                                                    onChange={(e) => setEditTitle(e.target.value)}
                                                     onKeyDown={(e) => {
-                                                        if (e.key === 'Enter')
-                                                            saveEdit(task.id);
-                                                        if (e.key === 'Escape')
-                                                            cancelEdit();
+                                                        if (e.key === 'Enter') saveEdit(task.id);
+                                                        if (e.key === 'Escape') cancelEdit();
                                                     }}
                                                     className="w-full rounded border px-2 py-1"
                                                 />
                                             ) : (
-                                                <span
-                                                    className={`font-medium ${
-                                                        task.completed
-                                                            ? 'line-through text-gray-400'
-                                                            : ''
-                                                    }`}
-                                                >
+                                                <span className={`font-medium ${task.completed ? 'line-through text-gray-400' : ''}`}>
                                                     {task.title}
                                                 </span>
                                             )}
                                         </td>
 
-                                        {/* ASSIGNED TO */}
                                         <td className="p-3">
                                             {isThisEditing ? (
                                                 <select
@@ -223,88 +175,42 @@ export default function TableUser({
                                                     onChange={(e) =>
                                                         setData(
                                                             'user_id',
-                                                            e.target.value
-                                                                ? Number(
-                                                                      e.target
-                                                                          .value,
-                                                                  )
-                                                                : '',
+                                                            e.target.value ? Number(e.target.value) : ''
                                                         )
                                                     }
                                                     className="w-full rounded border p-2"
                                                 >
-                                                    <option value="">
-                                                        —
-                                                    </option>
+                                                    <option value="">—</option>
                                                     {users.map((user) => (
-                                                        <option
-                                                            key={user.id}
-                                                            value={user.id}
-                                                        >
-                                                            {user.name}
-                                                        </option>
+                                                        <option key={user.id} value={user.id}>{user.name}</option>
                                                     ))}
                                                 </select>
                                             ) : (
-                                                <span>
-                                                    {task.user
-                                                        ? task.user.name
-                                                        : '—'}
-                                                </span>
+                                                <span>{task.user ? task.user.name : '—'}</span>
                                             )}
                                         </td>
 
-                                        <td className="p-3">
-                                            {task.created_at_formatted}
-                                        </td>
-                                        <td className="p-3">
-                                            {task.expiration_formatted ?? '—'}
-                                        </td>
-                                        <td className="p-3">
-                                            {task.completed_at_formatted ?? '—'}
-                                        </td>
+                                        <td className="p-3">{task.created_at_formatted}</td>
+                                        <td className="p-3">{task.expiration_formatted ?? '—'}</td>
+                                        <td className="p-3">{task.completed_at_formatted ?? '—'}</td>
 
-                                        {/* ACTIONS */}
                                         <td className="p-3 text-right whitespace-nowrap">
-                                            {showEdit &&
-                                                (isThisEditing ? (
-                                                    <>
-                                                        <button
-                                                            onClick={() =>
-                                                                saveEdit(
-                                                                    task.id,
-                                                                )
-                                                            }
-                                                            disabled={isSaving}
-                                                            className="mr-2 text-green-500"
-                                                        >
-                                                            <i className="fa-solid fa-check"></i>
-                                                        </button>
-                                                        <button
-                                                            onClick={cancelEdit}
-                                                            className="mr-3 text-gray-500"
-                                                        >
-                                                            <i className="fa-solid fa-xmark"></i>
-                                                        </button>
-                                                    </>
-                                                ) : (
-                                                    <button
-                                                        onClick={() =>
-                                                            startEdit(task)
-                                                        }
-                                                        disabled={isEditing}
-                                                        className="mr-3 text-yellow-500"
-                                                    >
-                                                        <i className="fa-solid fa-pen"></i>
+                                            {showEdit && (isThisEditing ? (
+                                                <>
+                                                    <button onClick={() => saveEdit(task.id)} disabled={isSaving} className="mr-2 text-green-500">
+                                                        <i className="fa-solid fa-check"></i>
                                                     </button>
-                                                ))}
+                                                    <button onClick={cancelEdit} className="mr-3 text-gray-500">
+                                                        <i className="fa-solid fa-xmark"></i>
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button onClick={() => startEdit(task)} disabled={isEditing} className="mr-3 text-yellow-500">
+                                                    <i className="fa-solid fa-pen"></i>
+                                                </button>
+                                            ))}
 
-                                            <button
-                                                onClick={() =>
-                                                    openInfoModal(task)
-                                                }
-                                                className="mr-3"
-                                            >
+                                            <button onClick={() => openInfoModal(task)} className="mr-3">
                                                 <i className="fa-solid fa-circle-info"></i>
                                             </button>
 
@@ -337,93 +243,74 @@ export default function TableUser({
                         <div className="flex justify-center gap-3">
                             <button
                                 onClick={() => setConfirmOpen(false)}
-                                className="rounded bg-gray-300 px-4 py-2 cursor-pointer"
+                                disabled={isDeleting}
+                                className={`rounded bg-gray-300 px-4 py-2 cursor-pointer ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={confirmDelete}
-                                className="rounded bg-red-500 px-4 py-2 text-white cursor-pointer"
+                                disabled={isDeleting}
+                                className={`rounded bg-red-500 px-4 py-2 text-white cursor-pointer ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                                Confirm
+                                {isDeleting ? 'Deleting...' : 'Confirm'}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
+            {/* INFO MODAL */}
             {infoModalOpen && selectedTask && (
-    <Modal
-        open={infoModalOpen}
-        onClose={closeInfoModal}
-        title="Task details"
-    >
-        <div className="space-y-4">
-            {/* TITLE */}
-            <div className="rounded-lg bg-gray-100 p-4 dark:bg-neutral-700">
-                <h3 className="text-lg font-semibold">
-                    <i className="fa-solid fa-list-check mr-2 text-blue-500"></i>
-                    {selectedTask.title}
-                </h3>
-            </div>
+                <Modal open={infoModalOpen} onClose={closeInfoModal} title="Task details">
+                    <div className="space-y-4">
+                        <div className="rounded-lg bg-gray-100 p-4 dark:bg-neutral-700">
+                            <h3 className="text-lg font-semibold">
+                                <i className="fa-solid fa-list-check mr-2 text-blue-500"></i>
+                                {selectedTask.title}
+                            </h3>
+                        </div>
 
-            {/* STATUS + USER */}
-            <div className="flex flex-wrap gap-3">
-                <span
-                    className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
-                        selectedTask.completed
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-yellow-100 text-yellow-700'
-                    }`}
-                >
-                    <i
-                        className={`fa-solid ${
-                            selectedTask.completed
-                                ? 'fa-circle-check'
-                                : 'fa-clock'
-                        }`}
-                    ></i>
-                    {selectedTask.completed ? 'Completed' : 'Pending'}
-                </span>
+                        <div className="flex flex-wrap gap-3">
+                            <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${selectedTask.completed ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                <i className={`fa-solid ${selectedTask.completed ? 'fa-circle-check' : 'fa-clock'}`}></i>
+                                {selectedTask.completed ? 'Completed' : 'Pending'}
+                            </span>
 
-                <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
-                    <i className="fa-solid fa-user"></i>
-                    {selectedTask.user
-                        ? selectedTask.user.name
-                        : 'Unassigned'}
-                </span>
-            </div>
+                            <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+                                <i className="fa-solid fa-user"></i>
+                                {selectedTask.user ? selectedTask.user.name : 'Unassigned'}
+                            </span>
+                        </div>
 
-            {/* DATES */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="rounded-lg border p-3">
-                    <p className="text-sm text-gray-500">Created at</p>
-                    <p className="font-medium">
-                        <i className="fa-regular fa-calendar mr-2"></i>
-                        {selectedTask.created_at_formatted}
-                    </p>
-                </div>
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <div className="rounded-lg border p-3">
+                                <p className="text-sm text-gray-500">Created at</p>
+                                <p className="font-medium">
+                                    <i className="fa-regular fa-calendar mr-2"></i>
+                                    {selectedTask.created_at_formatted}
+                                </p>
+                            </div>
 
-                <div className="rounded-lg border p-3">
-                    <p className="text-sm text-gray-500">Expiration</p>
-                    <p className="font-medium">
-                        <i className="fa-regular fa-hourglass-half mr-2"></i>
-                        {selectedTask.expiration_formatted ?? '—'}
-                    </p>
-                </div>
+                            <div className="rounded-lg border p-3">
+                                <p className="text-sm text-gray-500">Expiration</p>
+                                <p className="font-medium">
+                                    <i className="fa-regular fa-hourglass-half mr-2"></i>
+                                    {selectedTask.expiration_formatted ?? '—'}
+                                </p>
+                            </div>
 
-                <div className="rounded-lg border p-3 sm:col-span-2">
-                    <p className="text-sm text-gray-500">Completed on</p>
-                    <p className="font-medium">
-                        <i className="fa-solid fa-check mr-2"></i>
-                        {selectedTask.completed_at_formatted ?? '—'}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </Modal>
-)}
-
+                            <div className="rounded-lg border p-3 sm:col-span-2">
+                                <p className="text-sm text-gray-500">Completed on</p>
+                                <p className="font-medium">
+                                    <i className="fa-solid fa-check mr-2"></i>
+                                    {selectedTask.completed_at_formatted ?? '—'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </Modal>
+            )}
         </div>
     );
 }

@@ -2,11 +2,7 @@ import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 
-export default function Welcome({
-    canRegister = true,
-}: {
-    canRegister?: boolean;
-}) {
+export default function Welcome({ canRegister = true }: { canRegister?: boolean }) {
     const { auth } = usePage<SharedData>().props;
 
     return (
@@ -14,51 +10,87 @@ export default function Welcome({
             <Head title="Welcome">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
+                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700"
                     rel="stylesheet"
                 />
             </Head>
-            <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
-                <header className="mb-6 w-full max-w-83.75 text-sm not-has-[nav]:hidden lg:max-w-4xl">
-                    <nav className="flex items-center justify-end gap-4">
-                        {auth.user ? (
+
+            <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                {/* NAVBAR */}
+                <header className="w-full py-4 px-6 lg:px-12 flex justify-end items-center border-b border-gray-200 dark:border-gray-700">
+                    {auth.user ? (
+                        <Link
+                            href={dashboard()}
+                            className="rounded-lg border border-transparent bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition-colors"
+                        >
+                            Dashboard
+                        </Link>
+                    ) : (
+                        <div className="flex gap-4">
                             <Link
-                                href={dashboard()}
-                                className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                href={login()}
+                                className="rounded-lg border border-gray-300 px-6 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 transition"
                             >
-                                Dashboard
+                                Log in
                             </Link>
-                        ) : (
-                            <>
+                            {canRegister && (
+                                <Link
+                                    href={register()}
+                                    className="rounded-lg border border-blue-600 bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition"
+                                >
+                                    Register
+                                </Link>
+                            )}
+                        </div>
+                    )}
+                </header>
+
+                {/* HERO */}
+                <main className="flex flex-1 flex-col-reverse lg:flex-row items-center justify-between max-w-6xl mx-auto px-6 lg:px-12 py-12 gap-12">
+                    {/* TESTO HERO */}
+                    <div className="flex flex-col gap-6 text-center lg:text-left lg:max-w-lg">
+                        <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
+                            Benvenuto su <span className="text-blue-600 dark:text-blue-400">Argomedia</span>
+                        </h1>
+                        <p className="text-lg text-gray-700 dark:text-gray-300">
+                            Gestisci le tue attività in modo semplice, veloce e professionale. Tutto il necessario per organizzare il tuo lavoro in un unico posto.
+                        </p>
+                        {!auth.user && (
+                            <div className="flex justify-center lg:justify-start gap-4">
                                 <Link
                                     href={login()}
-                                    className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                                    className="rounded-lg border border-gray-300 px-6 py-2 text-sm font-medium hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 transition"
                                 >
                                     Log in
                                 </Link>
                                 {canRegister && (
                                     <Link
                                         href={register()}
-                                        className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                        className="rounded-lg border border-blue-600 bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition"
                                     >
                                         Register
                                     </Link>
                                 )}
-                            </>
+                            </div>
                         )}
-                    </nav>
-                </header>
-                <div className="flex max-w-2xl items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
-                    <main className="flex flex-col-reverse lg:flex-row">
-                        <div className="relative -mb-px aspect-335/376 w-full shrink-0 overflow-hidden lg:mb-0 lg:-ml-px lg:aspect-auto dark:bg-[#1D0002]">
+                    </div>
+
+                    {/* IMMAGINE HERO */}
+                    <div className="relative w-full max-w-md lg:max-w-lg">
+                        <div className="rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-800">
                             <img
-                                src="\LOGO_ARGOMEDIA.png"
-                                alt=""
-                                className="w-6xl"
+                                src="/LOGO_ARGOMEDIA.png"
+                                alt="Argomedia Logo"
+                                className="w-full h-auto object-contain p-6"
                             />
                         </div>
-                    </main>
-                </div>
+                    </div>
+                </main>
+
+                {/* FOOTER */}
+                <footer className="py-6 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
+                    &copy; {new Date().getFullYear()} Argomedia. All rights reserved.
+                </footer>
             </div>
         </>
     );

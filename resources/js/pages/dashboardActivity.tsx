@@ -1,11 +1,11 @@
 import TableUser from '@/components/tableUser';
-import TaskForm from '@/components/taskForm';
 import AppLayout from '@/layouts/app-layout';
 import { dashboardActivity } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { router as Inertia } from '@inertiajs/core';
 import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import TaskFormModal from '@/components/taskFormModal';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -51,7 +51,7 @@ export default function DashboardActivity({
     const [search, setSearch] = useState('');
     const [searchMessage, setSearchMessage] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [createOpen, setCreateOpen] = useState(false);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const storedSearch = localStorage.getItem('searchTerm');
@@ -124,9 +124,9 @@ export default function DashboardActivity({
                             </span>
 
                             <button
-                                onClick={() => setCreateOpen(true)}
+                                onClick={() => setOpen(true)}
                                 disabled={isEditing}
-                                className="ml-5 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                                className="ml-5 cursor-pointer rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 Add Activity
                             </button>
@@ -140,10 +140,10 @@ export default function DashboardActivity({
                     )}
 
                     {/* CREATE TASK MODAL */}
-                    <TaskForm
+                    <TaskFormModal
                         users={users}
-                        open={createOpen}
-                        onClose={() => setCreateOpen(false)}
+                        open={open}
+                        onClose={() => setOpen(false)}
                     />
 
                     {/* TASK LIST */}
