@@ -18,6 +18,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('tasks/{task}', [TaskController::class, 'updateTitle'])->name('tasks.updateTitle');
     Route::patch('tasks/{task}/toggle', [TaskController::class, 'update'])->name('tasks.toggle');
     Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy'); 
+    Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete'])
+    ->name('tasks.complete');
+
 });
 
 require __DIR__ . '/settings.php';

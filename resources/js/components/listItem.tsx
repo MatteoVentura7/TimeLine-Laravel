@@ -149,15 +149,9 @@ export default function ListItem({
                                         />
                                     ) : (
                                         <span
-                                            className={`font-medium transition-colors duration-200 dark:text-gray-200 ${
-                                                task.completed
-                                                    ? 'text-gray-400 line-through dark:text-gray-500'
-                                                    : 'text-gray-800'
-                                            }`}
-                                        >
+                                            className='font-medium transition-colors duration-200  '>
                                                 <span
-                                                        className={`block max-w-[23ch] overflow-hidden font-medium text-ellipsis whitespace-nowrap   sm:max-w-[40ch] md:max-w-[30ch]  lg:max-w-[12ch] xl:max-w-[20ch] 2xl:max-w-[25ch] ${task.completed ? 'text-gray-400 line-through' : ''} `}
-                                                    >
+                                                        className='block max-w-[23ch] overflow-hidden font-medium text-ellipsis whitespace-nowrap   sm:max-w-[40ch] md:max-w-[30ch]  lg:max-w-[12ch] xl:max-w-[20ch] 2xl:max-w-[25ch]'>
                                                         {task.title}
                                                     </span>
                                         </span>

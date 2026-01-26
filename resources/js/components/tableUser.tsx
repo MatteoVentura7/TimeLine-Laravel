@@ -162,7 +162,7 @@ export default function TableUser({
                                                     className="w-full rounded border px-2 py-1"
                                                 />
                                             ) : (
-                                                <span className={`font-medium ${task.completed ? 'line-through text-gray-400' : ''}`}>
+                                                <span className='font-medium'>
                                                     {task.title}
                                                 </span>
                                             )}

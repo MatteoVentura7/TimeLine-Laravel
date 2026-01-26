@@ -126,4 +126,26 @@ public function updateTitle(Request $request, Task $task)
 
         return Inertia::location(url()->previous());
     }
+
+   public function complete(Request $request, Task $task)
+{
+    // Validazione della data, la data deve essere valida e non futura
+    $data = $request->validate([
+        'completed_at' => ['required', 'date', 'before_or_equal:now'],
+    ]);
+
+    // Se il task è già completato, non fare nulla (opzionale, per evitare duplicazioni)
+    if ($task->completed) {
+        return response()->json(['message' => 'Task already completed.'], 422);
+    }
+
+    // Aggiorna il task, impostando il completamento e la data di completamento
+    $task->update([
+        'completed'    => true,
+        'completed_at' => Carbon::parse($data['completed_at']),
+    ]);
+
+    return back(); // Ritorna alla pagina precedente
+}
+
 }

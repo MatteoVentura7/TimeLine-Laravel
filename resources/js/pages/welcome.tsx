@@ -50,10 +50,10 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                     {/* TESTO HERO */}
                     <div className="flex flex-col gap-6 text-center lg:text-left lg:max-w-lg">
                         <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
-                            Benvenuto su <span className="text-blue-600 dark:text-blue-400">Argomedia</span>
+                            Welcome to <span className="text-blue-600 dark:text-blue-400">Argomedia</span>
                         </h1>
                         <p className="text-lg text-gray-700 dark:text-gray-300">
-                            Gestisci le tue attività in modo semplice, veloce e professionale. Tutto il necessario per organizzare il tuo lavoro in un unico posto.
+                            Manage your activities simply, quickly and professionally. Everything you need to organize your work in one place.
                         </p>
                         {!auth.user && (
                             <div className="flex justify-center lg:justify-start gap-4">

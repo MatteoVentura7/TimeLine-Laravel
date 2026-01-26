@@ -20,18 +20,18 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
         expiration: '',
     });
 
-    // ✅ stato per sapere se è stato appena inviato
+    
     const [submitted, setSubmitted] = useState(false);
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitted(true); // blocca il form subito
+        setSubmitted(true); 
 
         post(`/tasks${queryParams({})}`, {
             preserveState: false,
             onSuccess: () => {
-                reset();           // svuota il form
-                setSubmitted(false); // ora può riattivarsi
+                reset();           
+                setSubmitted(false); 
                 onSuccess?.();
                 router.reload({ only: ['tasks', 'statistic'] });
             },
