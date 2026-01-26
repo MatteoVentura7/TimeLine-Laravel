@@ -2,7 +2,7 @@ import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import ConfirmDeleteModal from './confirmDeleteModal';
-import Modal from './modal';
+import TaskInfoModal from './taskInfoModal';
 
 interface User {
     id: number;
@@ -52,6 +52,9 @@ export default function TableUser({
     // INFO MODAL
     const [infoModalOpen, setInfoModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [isInfoEditing, setIsInfoEditing] = useState(false);
+    const [infoEditTitle, setInfoEditTitle] = useState('');
+    const [infoEditUserId, setInfoEditUserId] = useState<number | ''>('');
 
     // COMPLETE MODAL
     const [completeModalOpen, setCompleteModalOpen] = useState(false);
@@ -61,13 +64,6 @@ export default function TableUser({
     const isEditing = editingId !== null;
 
     /* ================= EDIT ================= */
-
-    const startEdit = (task: Task) => {
-        setEditingId(task.id);
-        setEditTitle(task.title);
-        setData('user_id', task.user?.id ?? '');
-        onEditChange?.(true);
-    };
 
     const cancelEdit = () => {
         setEditingId(null);
@@ -148,16 +144,42 @@ export default function TableUser({
         });
     };
 
-    /* ================= INFO ================= */
+    /* ================= INFO MODAL ================= */
 
     const openInfoModal = (task: Task) => {
         setSelectedTask(task);
+        setInfoEditTitle(task.title);
+        setInfoEditUserId(task.user?.id ?? '');
+        setIsInfoEditing(false);
         setInfoModalOpen(true);
     };
 
-    const closeInfoModal = () => {
-        setInfoModalOpen(false);
-        setSelectedTask(null);
+    const saveInfoEdit = () => {
+        if (!selectedTask) return;
+
+        setIsCheck(true);
+
+        Inertia.patch(
+            `/tasks/${selectedTask.id}`,
+            {
+                title: infoEditTitle,
+                user_id: infoEditUserId || null,
+            },
+            {
+                onFinish: () => {
+                    setIsCheck(false);
+                    setIsInfoEditing(false);
+                    setSelectedTask(null);
+                    setInfoModalOpen(false);
+                },
+            },
+        );
+    };
+
+    const cancelInfoEdit = () => {
+        setInfoEditTitle(selectedTask?.title ?? '');
+        setInfoEditUserId(selectedTask?.user?.id ?? '');
+        setIsInfoEditing(false);
     };
 
     return (
@@ -287,39 +309,6 @@ export default function TableUser({
                                         </td>
 
                                         <td className="p-3 text-right whitespace-nowrap">
-                                            {showEdit &&
-                                                (isThisEditing ? (
-                                                    <>
-                                                        <button
-                                                            onClick={() =>
-                                                                saveEdit(
-                                                                    task.id,
-                                                                )
-                                                            }
-                                                            disabled={isSaving}
-                                                            className="mr-2 text-green-500"
-                                                        >
-                                                            <i className="fa-solid fa-check"></i>
-                                                        </button>
-                                                        <button
-                                                            onClick={cancelEdit}
-                                                            className="mr-3 text-gray-500"
-                                                        >
-                                                            <i className="fa-solid fa-xmark"></i>
-                                                        </button>
-                                                    </>
-                                                ) : (
-                                                    <button
-                                                        onClick={() =>
-                                                            startEdit(task)
-                                                        }
-                                                        disabled={isEditing}
-                                                        className="mr-3 text-yellow-500"
-                                                    >
-                                                        <i className="fa-solid fa-pen"></i>
-                                                    </button>
-                                                ))}
-
                                             <button
                                                 onClick={() =>
                                                     openInfoModal(task)
@@ -345,6 +334,7 @@ export default function TableUser({
                 </div>
             )}
 
+            {/* DELETE MODAL */}
             <ConfirmDeleteModal
                 open={confirmOpen}
                 loading={isDeleting}
@@ -394,84 +384,15 @@ export default function TableUser({
                 </div>
             )}
 
-            {/* INFO MODAL (ORIGINALE) */}
-            {infoModalOpen && selectedTask && (
-                <Modal
-                    open={infoModalOpen}
-                    onClose={closeInfoModal}
-                    title="Task details"
-                    width='w-[1500px]'
-                >
-                    <div className="space-y-4">
-                        <div className="rounded-lg bg-gray-100 p-4 dark:bg-neutral-700">
-                            <h3 className="text-lg font-semibold">
-                                <i className="fa-solid fa-list-check mr-2 text-blue-500"></i>
-                                {selectedTask.title}
-                            </h3>
-                        </div>
-
-                        <div className="flex flex-wrap gap-3">
-                            <span
-                                className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
-                                    selectedTask.completed
-                                        ? 'bg-green-100 text-green-700'
-                                        : 'bg-yellow-100 text-yellow-700'
-                                }`}
-                            >
-                                <i
-                                    className={`fa-solid ${
-                                        selectedTask.completed
-                                            ? 'fa-circle-check'
-                                            : 'fa-clock'
-                                    }`}
-                                ></i>
-                                {selectedTask.completed
-                                    ? 'Completed'
-                                    : 'Pending'}
-                            </span>
-
-                            <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
-                                <i className="fa-solid fa-user"></i>
-                                {selectedTask.user
-                                    ? selectedTask.user.name
-                                    : 'Unassigned'}
-                            </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <div className="rounded-lg border p-3">
-                                <p className="text-sm text-gray-500">
-                                    Created at
-                                </p>
-                                <p className="font-medium">
-                                    <i className="fa-regular fa-calendar mr-2"></i>
-                                    {selectedTask.created_at_formatted}
-                                </p>
-                            </div>
-
-                            <div className="rounded-lg border p-3">
-                                <p className="text-sm text-gray-500">
-                                    Expiration
-                                </p>
-                                <p className="font-medium">
-                                    <i className="fa-regular fa-hourglass-half mr-2"></i>
-                                    {selectedTask.expiration_formatted ?? '—'}
-                                </p>
-                            </div>
-
-                            <div className="rounded-lg border p-3 sm:col-span-2">
-                                <p className="text-sm text-gray-500">
-                                    Completed on
-                                </p>
-                                <p className="font-medium">
-                                    <i className="fa-solid fa-check mr-2"></i>
-                                    {selectedTask.completed_at_formatted ?? '—'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </Modal>
-            )}
+            <TaskInfoModal
+                task={selectedTask}
+                users={users}
+                open={infoModalOpen}
+                onClose={() => {
+                    setInfoModalOpen(false);
+                    setSelectedTask(null);
+                }}
+            />
         </div>
     );
 }
