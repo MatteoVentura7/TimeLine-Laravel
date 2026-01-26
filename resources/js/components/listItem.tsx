@@ -1,6 +1,7 @@
 import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import ConfirmDeleteModal from './confirmDeleteModal';
 
 interface User {
     id: number;
@@ -107,12 +108,11 @@ export default function ListItem({
                 <ul className="m-4 max-h-220 grow space-y-3 p-0 pr-2 pb-2">
                     {tasks.map((task) => {
                         const isThisEditing = editingId === task.id;
-                            const createdAt = new Date(
-                                    task.created_at_iso,
-                                );
-                                const now = new Date();
-                                const isFutureTask = createdAt.getTime() > now.getTime();
-                                console.log(now)
+                        const createdAt = new Date(task.created_at_iso);
+                        const now = new Date();
+                        const isFutureTask =
+                            createdAt.getTime() > now.getTime();
+                        console.log(now);
 
                         return (
                             <li
@@ -121,12 +121,12 @@ export default function ListItem({
                             >
                                 <div className="flex items-center space-x-3">
                                     <input
-                                                type="checkbox"
-                                                checked={task.completed}
-                                                disabled
-                                                onChange={() => toggle(task.id)}
-                                                className="h-5 w-5 rounded cursor-pointer"
-                                            />
+                                        type="checkbox"
+                                        checked={task.completed}
+                                        disabled
+                                        onChange={() => toggle(task.id)}
+                                        className="h-5 w-5 cursor-pointer rounded"
+                                    />
 
                                     {isThisEditing ? (
                                         <input
@@ -144,12 +144,10 @@ export default function ListItem({
                                             className="w-64 rounded border px-2 py-1"
                                         />
                                     ) : (
-                                        <span
-                                            className='font-medium transition-colors duration-200  '>
-                                                <span
-                                                        className='block max-w-[23ch] overflow-hidden font-medium text-ellipsis whitespace-nowrap   sm:max-w-[40ch] md:max-w-[30ch]  lg:max-w-[12ch] xl:max-w-[20ch] 2xl:max-w-[25ch]'>
-                                                        {task.title}
-                                                    </span>
+                                        <span className="font-medium transition-colors duration-200">
+                                            <span className="block max-w-[23ch] overflow-hidden font-medium text-ellipsis whitespace-nowrap sm:max-w-[40ch] md:max-w-[30ch] lg:max-w-[12ch] xl:max-w-[20ch] 2xl:max-w-[25ch]">
+                                                {task.title}
+                                            </span>
                                         </span>
                                     )}
                                 </div>
@@ -203,36 +201,17 @@ export default function ListItem({
                 </ul>
             )}
 
-            {/* POPUP CONFERMA ELIMINAZIONE */}
-            {confirmOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                    <div className="w-80 rounded-lg bg-white p-6 text-center shadow-xl dark:bg-neutral-900">
-                        <h2 className="mb-4 text-xl font-semibold">
-                            Confirm delete
-                        </h2>
-                        <p className="mb-6 text-neutral-700 dark:text-neutral-300">
-                            Are you sure you want to delete this task?
-                        </p>
-                        <div className="flex justify-center gap-3">
-                            <button
-                                onClick={() => setConfirmOpen(false)}
-                                disabled={isDeleting}
-                                className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600"
-                            >
-                                Cancel
-                            </button>
-
-                            <button
-                                onClick={confirmDelete}
-                                disabled={isDeleting}
-                                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                {isDeleting ? 'Deleting...' : 'Confirm'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmDeleteModal
+                open={confirmOpen}
+                loading={isDeleting}
+                title="Confirm delete"
+                message="Are you sure you want to delete this task?"
+                onCancel={() => {
+                    setConfirmOpen(false);
+                    setTaskToDelete(null);
+                }}
+                onConfirm={confirmDelete}
+            />
         </div>
     );
 }

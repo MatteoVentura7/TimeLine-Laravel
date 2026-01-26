@@ -1,6 +1,7 @@
 import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import ConfirmDeleteModal from './confirmDeleteModal';
 import Modal from './modal';
 
 interface User {
@@ -88,7 +89,7 @@ export default function TableUser({
                     reset();
                     onEditChange?.(false);
                 },
-            }
+            },
         );
     };
 
@@ -114,7 +115,7 @@ export default function TableUser({
                     setCompleteModalOpen(false);
                     setTaskToComplete(null);
                 },
-            }
+            },
         );
     };
 
@@ -169,19 +170,14 @@ export default function TableUser({
                                 <th className="p-3 text-left">Assigned To</th>
                                 <th className="p-3 text-left">Created At</th>
                                 <th className="p-3 text-left">Expire</th>
-                                <th className="p-3 text-left">
-                                    Completed On
-                                </th>
+                                <th className="p-3 text-left">Completed On</th>
                                 <th className="p-3 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {tasks.map((task) => {
-                                const isThisEditing =
-                                    editingId === task.id;
-                                const createdAt = new Date(
-                                    task.created_at_iso
-                                );
+                                const isThisEditing = editingId === task.id;
+                                const createdAt = new Date(task.created_at_iso);
                                 const isFutureTask =
                                     createdAt.getTime() > Date.now();
 
@@ -217,15 +213,13 @@ export default function TableUser({
                                                     value={editTitle}
                                                     onChange={(e) =>
                                                         setEditTitle(
-                                                            e.target.value
+                                                            e.target.value,
                                                         )
                                                     }
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter')
                                                             saveEdit(task.id);
-                                                        if (
-                                                            e.key === 'Escape'
-                                                        )
+                                                        if (e.key === 'Escape')
                                                             cancelEdit();
                                                     }}
                                                     className="w-full rounded border px-2 py-1"
@@ -247,9 +241,9 @@ export default function TableUser({
                                                             e.target.value
                                                                 ? Number(
                                                                       e.target
-                                                                          .value
+                                                                          .value,
                                                                   )
-                                                                : ''
+                                                                : '',
                                                         )
                                                     }
                                                     className="w-full rounded border p-2"
@@ -277,12 +271,10 @@ export default function TableUser({
                                             {task.created_at_formatted}
                                         </td>
                                         <td className="p-3">
-                                            {task.expiration_formatted ??
-                                                '—'}
+                                            {task.expiration_formatted ?? '—'}
                                         </td>
                                         <td className="p-3">
-                                            {task.completed_at_formatted ??
-                                                '—'}
+                                            {task.completed_at_formatted ?? '—'}
                                         </td>
 
                                         <td className="p-3 text-right whitespace-nowrap">
@@ -292,7 +284,7 @@ export default function TableUser({
                                                         <button
                                                             onClick={() =>
                                                                 saveEdit(
-                                                                    task.id
+                                                                    task.id,
                                                                 )
                                                             }
                                                             disabled={isSaving}
@@ -301,9 +293,7 @@ export default function TableUser({
                                                             <i className="fa-solid fa-check"></i>
                                                         </button>
                                                         <button
-                                                            onClick={
-                                                                cancelEdit
-                                                            }
+                                                            onClick={cancelEdit}
                                                             className="mr-3 text-gray-500"
                                                         >
                                                             <i className="fa-solid fa-xmark"></i>
@@ -325,17 +315,15 @@ export default function TableUser({
                                                 onClick={() =>
                                                     openInfoModal(task)
                                                 }
-                                                className="mr-3"
+                                                className="mr-3 text-blue-500 cursor-pointer"
                                             >
                                                 <i className="fa-solid fa-circle-info"></i>
                                             </button>
 
                                             <button
-                                                onClick={() =>
-                                                    remove(task.id)
-                                                }
+                                                onClick={() => remove(task.id)}
                                                 disabled={isEditing}
-                                                className="text-red-500"
+                                                className="text-red-500 cursor-pointer"
                                             >
                                                 <i className="fa-solid fa-trash"></i>
                                             </button>
@@ -348,37 +336,17 @@ export default function TableUser({
                 </div>
             )}
 
-            {/* DELETE MODAL (ORIGINALE) */}
-            {confirmOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                    <div className="w-80 rounded-lg bg-white p-6 text-center">
-                        <h2 className="mb-4 text-xl font-semibold">
-                            Confirm delete
-                        </h2>
-                        <p className="mb-6">
-                            Are you sure you want to delete this task?
-                        </p>
-                        <div className="flex justify-center gap-3">
-                            <button
-                                onClick={() => setConfirmOpen(false)}
-                                disabled={isDeleting}
-                                className="rounded bg-gray-300 px-4 py-2"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={confirmDelete}
-                                disabled={isDeleting}
-                                className="rounded bg-red-500 px-4 py-2 text-white"
-                            >
-                                {isDeleting
-                                    ? 'Deleting...'
-                                    : 'Confirm'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmDeleteModal
+                open={confirmOpen}
+                loading={isDeleting}
+                title="Confirm delete"
+                message="Are you sure you want to delete this task?"
+                onCancel={() => {
+                    setConfirmOpen(false);
+                    setTaskToDelete(null);
+                }}
+                onConfirm={confirmDelete}
+            />
 
             {/* COMPLETE MODAL */}
             {completeModalOpen && taskToComplete && (
@@ -391,24 +359,15 @@ export default function TableUser({
                         <input
                             type="date"
                             value={completedDate}
-                            min={taskToComplete.created_at_iso.slice(
-                                0,
-                                10
-                            )}
-                            max={new Date()
-                                .toISOString()
-                                .slice(0, 10)}
-                            onChange={(e) =>
-                                setCompletedDate(e.target.value)
-                            }
+                            min={taskToComplete.created_at_iso.slice(0, 10)}
+                            max={new Date().toISOString().slice(0, 10)}
+                            onChange={(e) => setCompletedDate(e.target.value)}
                             className="mb-6 w-full rounded border p-2"
                         />
 
                         <div className="flex justify-end gap-3">
                             <button
-                                onClick={() =>
-                                    setCompleteModalOpen(false)
-                                }
+                                onClick={() => setCompleteModalOpen(false)}
                                 className="rounded bg-gray-300 px-4 py-2"
                             >
                                 Cancel
@@ -474,9 +433,7 @@ export default function TableUser({
                                 </p>
                                 <p className="font-medium">
                                     <i className="fa-regular fa-calendar mr-2"></i>
-                                    {
-                                        selectedTask.created_at_formatted
-                                    }
+                                    {selectedTask.created_at_formatted}
                                 </p>
                             </div>
 
@@ -486,8 +443,7 @@ export default function TableUser({
                                 </p>
                                 <p className="font-medium">
                                     <i className="fa-regular fa-hourglass-half mr-2"></i>
-                                    {selectedTask.expiration_formatted ??
-                                        '—'}
+                                    {selectedTask.expiration_formatted ?? '—'}
                                 </p>
                             </div>
 
@@ -497,8 +453,7 @@ export default function TableUser({
                                 </p>
                                 <p className="font-medium">
                                     <i className="fa-solid fa-check mr-2"></i>
-                                    {selectedTask.completed_at_formatted ??
-                                        '—'}
+                                    {selectedTask.completed_at_formatted ?? '—'}
                                 </p>
                             </div>
                         </div>
