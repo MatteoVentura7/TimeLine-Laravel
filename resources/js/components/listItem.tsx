@@ -123,11 +123,7 @@ export default function ListItem({
                                     <input
                                                 type="checkbox"
                                                 checked={task.completed}
-                                                disabled={
-                                                    isCheck ||
-                                                    isEditing ||
-                                                    isFutureTask
-                                                }
+                                                disabled
                                                 onChange={() => toggle(task.id)}
                                                 className="h-5 w-5 rounded cursor-pointer"
                                             />
