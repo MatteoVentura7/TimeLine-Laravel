@@ -1,5 +1,5 @@
 import { router as Inertia } from '@inertiajs/core';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from './modal';
 
 interface User {
@@ -27,7 +27,12 @@ interface TaskInfoModalProps {
     onClose: () => void;
 }
 
-export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoModalProps) {
+export default function TaskInfoModal({
+    task,
+    users,
+    open,
+    onClose,
+}: TaskInfoModalProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState('');
     const [userId, setUserId] = useState<number | ''>('');
@@ -72,7 +77,9 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
         setCompletedError('');
 
         if (expDate && expDate < createdAt) {
-            setExpirationError('Expiration date cannot be before creation date.');
+            setExpirationError(
+                'Expiration date cannot be before creation date.',
+            );
             return;
         }
 
@@ -98,7 +105,7 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
                     setIsEditing(false);
                     onClose();
                 },
-            }
+            },
         );
     };
 
@@ -116,103 +123,142 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
 
     if (!task) return null;
 
-    const selectedUser = users.find(u => u.id === userId) ?? task.user;
+    const selectedUser = users.find((u) => u.id === userId) ?? task.user;
 
     return (
-        <Modal open={open} onClose={onClose} title="Task Details" width="w-[1200px]">
+        <Modal
+            open={open}
+            onClose={onClose}
+            title="Task Details"
+            width="w-[1200px]"
+        >
             <div className="space-y-6">
                 {/* Titolo + edit */}
-                <div className="flex justify-between items-center bg-gray-50 dark:bg-neutral-700 rounded-lg p-4 shadow-sm transition">
+                <div className="ml-4 flex items-center justify-end gap-2">
                     {isEditing ? (
-                        <input
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2 shadow-sm transition-all"
-                            placeholder="Task title"
-                        />
+                        <>
+                            <button
+                                onClick={saveChanges}
+                                disabled={loading}
+                                className="flex cursor-pointer items-center gap-1 rounded-lg bg-green-500 px-3 py-1 text-white transition hover:bg-green-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                            >
+                                {loading ? (
+                                    <span className="h-4 w-4 animate-spin rounded-full border-b-2 border-white"></span>
+                                ) : (
+                                    <i className="fa-solid fa-check"></i>
+                                )}
+                                Save
+                            </button>
+                            <button
+                                onClick={cancelEdit}
+                                className="flex cursor-pointer items-center gap-1 rounded-lg bg-gray-200 px-3 py-1 text-gray-700 transition hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none"
+                            >
+                                <i className="fa-solid fa-xmark"></i>
+                                Cancel
+                            </button>
+                        </>
                     ) : (
-                        <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-800 dark:text-gray-100 transition-all">
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="flex cursor-pointer items-center gap-1 rounded-lg bg-yellow-100 px-3 py-1 text-yellow-700 transition hover:bg-yellow-200 focus:ring-2 focus:ring-yellow-300 focus:outline-none"
+                        >
+                            <i className="fa-solid fa-pen"></i>
+                            Edit
+                        </button>
+                    )}
+                </div>
+                <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4 shadow-sm transition dark:bg-neutral-700">
+                    {isEditing ? (
+                        <>
+                            <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
+                                <i className="fa-solid fa-list-check text-blue-500"></i>
+                                <input
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                    placeholder="Task title"
+                                />
+                            </h3>
+                        </>
+                    ) : (
+                        <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
                             <i className="fa-solid fa-list-check text-blue-500"></i>
                             {title}
                         </h3>
                     )}
-
-                    <div className="ml-4 flex items-center gap-2">
-                        {isEditing ? (
-                            <>
-                                <button
-                                    onClick={saveChanges}
-                                    disabled={loading}
-                                    className="flex items-center gap-1 bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                                >
-                                    {loading ? (
-                                        <span className="animate-spin border-b-2 border-white rounded-full w-4 h-4"></span>
-                                    ) : (
-                                        <i className="fa-solid fa-check"></i>
-                                    )}
-                                    Save
-                                </button>
-                                <button
-                                    onClick={cancelEdit}
-                                    className="flex items-center gap-1 bg-gray-200 text-gray-700 px-3 py-1 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition"
-                                >
-                                    <i className="fa-solid fa-xmark"></i>
-                                    Cancel
-                                </button>
-                            </>
-                        ) : (
-                            <button
-                                onClick={() => setIsEditing(true)}
-                                className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-300 transition flex items-center gap-1"
-                            >
-                                <i className="fa-solid fa-pen"></i>
-                                Edit
-                            </button>
-                        )}
-                    </div>
                 </div>
 
-                {/* Utente assegnato */}
+                {/* Utente assegnato + stato completamento*/}
                 <div className="flex flex-wrap items-center gap-3">
                     {isEditing ? (
-                        <select
+                        <>
+                        <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 transition">
+                            <i className="fa-solid fa-user"></i>
+                             <select
                             value={userId}
-                            onChange={(e) => setUserId(e.target.value ? Number(e.target.value) : '')}
-                            className="rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2 shadow-sm transition"
+                            onChange={(e) =>
+                                setUserId(
+                                    e.target.value
+                                        ? Number(e.target.value)
+                                        : '',
+                                )
+                            }
+                            className="rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         >
-                            <option value="">— Unassigned —</option>
+                            
                             {users.map((user) => (
                                 <option key={user.id} value={user.id}>
                                     {user.name}
                                 </option>
                             ))}
                         </select>
+                            
+                        </span>
+                       
+                        </>
                     ) : (
                         <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition">
                             <i className="fa-solid fa-user"></i>
                             {selectedUser?.name ?? 'Unassigned'}
                         </span>
                     )}
-                </div>
-
-                {/* Stato completamento */}
-                <div className="flex flex-wrap items-center gap-3">
                     {isEditing ? (
-                        <select
+                        <>
+                           <span
+                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
+                                completed
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-yellow-100 text-yellow-700'
+                            }`}
+                        >
+                            <i
+                                className={`fa-solid ${completed ? 'fa-circle-check' : 'fa-clock'}`}
+                            ></i>
+                            
+                            <select
                             value={completed ? 'completed' : 'pending'}
-                            onChange={(e) => setCompleted(e.target.value === 'completed')}
-                            className="rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2 shadow-sm transition"
+                            onChange={(e) =>
+                                setCompleted(e.target.value === 'completed')
+                            }
+                            className="rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         >
                             <option value="pending">Pending</option>
                             <option value="completed">Completed</option>
                         </select>
+                        </span>
+                        
+                        </>
                     ) : (
                         <span
                             className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
-                                completed ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                completed
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-yellow-100 text-yellow-700'
                             }`}
                         >
-                            <i className={`fa-solid ${completed ? 'fa-circle-check' : 'fa-clock'}`}></i>
+                            <i
+                                className={`fa-solid ${completed ? 'fa-circle-check' : 'fa-clock'}`}
+                            ></i>
                             {completed ? 'Completed' : 'Pending'}
                         </span>
                     )}
@@ -220,7 +266,7 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
 
                 {/* Date fields */}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <div className="rounded-lg border p-3 bg-gray-50 dark:bg-neutral-800 shadow-sm transition">
+                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm transition dark:bg-neutral-800">
                         <p className="text-sm text-gray-500">Created at</p>
                         <p className="font-medium">
                             <i className="fa-regular fa-calendar mr-2"></i>
@@ -228,44 +274,58 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
                         </p>
                     </div>
 
-                    <div className="rounded-lg border p-3 bg-gray-50 dark:bg-neutral-800 shadow-sm transition">
+                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm transition dark:bg-neutral-800">
                         <p className="text-sm text-gray-500">Expiration</p>
                         {isEditing ? (
                             <>
                                 <input
                                     type="datetime-local"
                                     value={expiration}
-                                    onChange={(e) => setExpiration(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm transition"
+                                    onChange={(e) =>
+                                        setExpiration(e.target.value)
+                                    }
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                 />
                                 {expirationError && (
-                                    <p className="text-red-500 text-sm mt-1">{expirationError}</p>
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {expirationError}
+                                    </p>
                                 )}
                             </>
                         ) : (
-                            <p className="font-medium">{task.expiration_formatted ?? '—'}</p>
+                            <p className="font-medium">
+                                {task.expiration_formatted ?? '—'}
+                            </p>
                         )}
                     </div>
 
-                    <div className="rounded-lg border p-3 sm:col-span-2 bg-gray-50 dark:bg-neutral-800 shadow-sm transition">
+                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm transition sm:col-span-2 dark:bg-neutral-800">
                         <p className="text-sm text-gray-500">Completed on</p>
                         {isEditing ? (
                             <>
                                 <input
                                     type="datetime-local"
                                     value={completedAt}
-                                    onChange={(e) => setCompletedAt(e.target.value)}
+                                    onChange={(e) =>
+                                        setCompletedAt(e.target.value)
+                                    }
                                     disabled={!completed}
-                                    className={`w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm transition ${
-                                        !completed ? 'bg-gray-100 cursor-not-allowed' : ''
+                                    className={`w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ${
+                                        !completed
+                                            ? 'cursor-not-allowed bg-gray-100'
+                                            : ''
                                     }`}
                                 />
                                 {completedError && (
-                                    <p className="text-red-500 text-sm mt-1">{completedError}</p>
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {completedError}
+                                    </p>
                                 )}
                             </>
                         ) : (
-                            <p className="font-medium">{task.completed_at_formatted ?? '—'}</p>
+                            <p className="font-medium">
+                                {task.completed_at_formatted ?? '—'}
+                            </p>
                         )}
                     </div>
                 </div>
