@@ -30,7 +30,7 @@ export default function ConfirmDeleteModal({
                     <button
                         onClick={onCancel}
                         disabled={loading}
-                        className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+                        className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600 cursor-pointer"
                     >
                         Cancel
                     </button>
@@ -38,7 +38,7 @@ export default function ConfirmDeleteModal({
                     <button
                         onClick={onConfirm}
                         disabled={loading}
-                        className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                     >
                         {loading ? 'Deleting...' : 'Confirm'}
                     </button>

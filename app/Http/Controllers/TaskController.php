@@ -135,18 +135,27 @@ public function complete(Request $request, Task $task)
         'completed_at' => [
             'required',
             'date',
-            'after_or_equal:' . $task->created_at->toDateString(),
-            'before_or_equal:today',
+            function ($attribute, $value, $fail) use ($task) {
+                $completedAt = Carbon::parse($value);
+                if ($completedAt->lt($task->created_at)) {
+                    $fail('La data e ora di completamento non può essere precedente a quella di creazione.');
+                }
+                if ($completedAt->gt(now())) {
+                    $fail('La data e ora di completamento non può essere nel futuro.');
+                }
+            },
         ],
     ]);
 
     $task->update([
         'completed' => true,
-        'completed_at' => $request->completed_at,
+        'completed_at' => Carbon::parse($request->completed_at),
     ]);
 
     return back();
 }
+
+
 
 
 }

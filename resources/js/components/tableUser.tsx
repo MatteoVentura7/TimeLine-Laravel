@@ -56,7 +56,7 @@ export default function TableUser({
     // COMPLETE MODAL
     const [completeModalOpen, setCompleteModalOpen] = useState(false);
     const [taskToComplete, setTaskToComplete] = useState<Task | null>(null);
-    const [completedDate, setCompletedDate] = useState('');
+    const [completedAt, setCompletedAt] = useState('');
 
     const isEditing = editingId !== null;
 
@@ -95,9 +95,16 @@ export default function TableUser({
 
     /* ================= COMPLETE ================= */
 
+    const isoToLocalDatetime = (iso: string) => {
+        const d = new Date(iso);
+        const offset = d.getTimezoneOffset();
+        const local = new Date(d.getTime() - offset * 60_000);
+        return local.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+    };
+
     const openCompleteModal = (task: Task) => {
         setTaskToComplete(task);
-        setCompletedDate(new Date().toISOString().slice(0, 10));
+        setCompletedAt(isoToLocalDatetime(new Date().toISOString()));
         setCompleteModalOpen(true);
     };
 
@@ -108,7 +115,9 @@ export default function TableUser({
 
         Inertia.patch(
             `/tasks/${taskToComplete.id}/complete`,
-            { completed_at: completedDate },
+            {
+                completed_at: completedAt,
+            },
             {
                 onFinish: () => {
                     setIsCheck(false);
@@ -315,7 +324,7 @@ export default function TableUser({
                                                 onClick={() =>
                                                     openInfoModal(task)
                                                 }
-                                                className="mr-3 text-blue-500 cursor-pointer"
+                                                className="mr-3 cursor-pointer text-blue-500"
                                             >
                                                 <i className="fa-solid fa-circle-info"></i>
                                             </button>
@@ -323,7 +332,7 @@ export default function TableUser({
                                             <button
                                                 onClick={() => remove(task.id)}
                                                 disabled={isEditing}
-                                                className="text-red-500 cursor-pointer"
+                                                className="cursor-pointer text-red-500"
                                             >
                                                 <i className="fa-solid fa-trash"></i>
                                             </button>
@@ -357,11 +366,13 @@ export default function TableUser({
                         </h2>
 
                         <input
-                            type="date"
-                            value={completedDate}
-                            min={taskToComplete.created_at_iso.slice(0, 10)}
-                            max={new Date().toISOString().slice(0, 10)}
-                            onChange={(e) => setCompletedDate(e.target.value)}
+                            type="datetime-local"
+                            value={completedAt}
+                            min={isoToLocalDatetime(
+                                taskToComplete.created_at_iso,
+                            )}
+                            max={new Date().toISOString().slice(0, 16)}
+                            onChange={(e) => setCompletedAt(e.target.value)}
                             className="mb-6 w-full rounded border p-2"
                         />
 
@@ -389,6 +400,7 @@ export default function TableUser({
                     open={infoModalOpen}
                     onClose={closeInfoModal}
                     title="Task details"
+                    width='w-[1500px]'
                 >
                     <div className="space-y-4">
                         <div className="rounded-lg bg-gray-100 p-4 dark:bg-neutral-700">
