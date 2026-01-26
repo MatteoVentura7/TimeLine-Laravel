@@ -39,13 +39,12 @@ interface TaskPagination {
     links: { url: string | null; label: string; active: boolean }[];
 }
 
-
 export default function Dashboard({
     users,
     tasks,
     statistc,
 }: {
-    tasks : TaskPagination;
+    tasks: TaskPagination;
     statistc: { todo: number; done: number };
     users: User[];
 }) {
@@ -56,17 +55,18 @@ export default function Dashboard({
                 <div className="grid auto-rows-min gap-4 lg:grid-cols-3">
                     <div className="relative aspect-video min-h-95 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* LISTA TASK */}
-                      
 
                         <ListItem tasks={tasks.data} />
                     </div>
 
-                    <div className="relative aspect-video min-h-95 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border flex justify-center items-center "> 
+                    <div className="relative flex aspect-video min-h-95 w-full items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* FORM AGGIUNTA TASK */}
-                        <TaskForm users={users} />
+                        <div className='w-96'>
+                            <TaskForm users={users} />
+                        </div>
                     </div>
 
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border flex justify-center items-center ">
+                    <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* STATISTICHE */}
                         <ChartCounter statistc={statistc} />
                     </div>

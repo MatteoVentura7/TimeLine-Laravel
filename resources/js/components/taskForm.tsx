@@ -20,18 +20,17 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
         expiration: '',
     });
 
-    
     const [submitted, setSubmitted] = useState(false);
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitted(true); 
+        setSubmitted(true);
 
         post(`/tasks${queryParams({})}`, {
             preserveState: false,
             onSuccess: () => {
-                reset();           
-                setSubmitted(false); 
+                reset();
+                setSubmitted(false);
                 onSuccess?.();
                 router.reload({ only: ['tasks', 'statistic'] });
             },
@@ -41,28 +40,41 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
     const isDisabled = processing || submitted;
 
     return (
-        <form onSubmit={submit}>
-            <fieldset disabled={isDisabled} className="flex flex-col gap-3">
-                <div>
-                    <label className="mb-1 block font-semibold">Activity</label>
+        <form onSubmit={submit} className="space-y-6">
+            <fieldset disabled={isDisabled} className="space-y-4">
+                {/* Activity */}
+                <div className="flex flex-col">
+                    <label htmlFor="title" className="mb-1 text-sm font-medium text-gray-700">
+                        Activity
+                    </label>
                     <input
+                        id="title"
+                        type="text"
                         value={data.title}
                         onChange={(e) => setData('title', e.target.value)}
-                        placeholder="Add activity..."
-                        className="w-full rounded border border-gray-300 p-2"
+                        placeholder="Enter activity..."
                         required
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2
+                                   focus:outline-none focus:ring-2 focus:ring-blue-500
+                                   focus:border-blue-500 shadow-sm transition"
                     />
                 </div>
 
-                <div>
-                    <label className="mb-1 block font-semibold">Assigned</label>
+                {/* Assigned User */}
+                <div className="flex flex-col">
+                    <label htmlFor="user_id" className="mb-1 text-sm font-medium text-gray-700">
+                        Assigned
+                    </label>
                     <select
+                        id="user_id"
                         value={data.user_id}
                         onChange={(e) => setData('user_id', e.target.value)}
-                        className="w-full rounded border border-gray-300 p-2"
                         required
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2
+                                   focus:outline-none focus:ring-2 focus:ring-blue-500
+                                   focus:border-blue-500 shadow-sm transition"
                     >
-                        <option value="">Assign to...</option>
+                        <option value="">Select user...</option>
                         {users.map((user) => (
                             <option key={user.id} value={user.id}>
                                 {user.name}
@@ -71,36 +83,50 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                     </select>
                 </div>
 
-                <div>
-                    <label className="mb-1 block font-semibold">Start</label>
+                {/* Start */}
+                <div className="flex flex-col">
+                    <label htmlFor="start" className="mb-1 text-sm font-medium text-gray-700">
+                        Start
+                    </label>
                     <input
+                        id="start"
                         type="datetime-local"
                         value={data.start}
                         onChange={(e) => setData('start', e.target.value)}
-                        className="w-full rounded border border-gray-300 p-2"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2
+                                   focus:outline-none focus:ring-2 focus:ring-blue-500
+                                   focus:border-blue-500 shadow-sm transition"
                     />
                 </div>
 
-                <div>
-                    <label className="mb-1 block font-semibold">Expiration</label>
+                {/* Expiration */}
+                <div className="flex flex-col">
+                    <label htmlFor="expiration" className="mb-1 text-sm font-medium text-gray-700">
+                        Expiration
+                    </label>
                     <input
+                        id="expiration"
                         type="datetime-local"
                         value={data.expiration}
                         onChange={(e) => setData('expiration', e.target.value)}
                         min={data.start || undefined}
                         disabled={!data.start}
-                        className="w-full rounded border border-gray-300 p-2 disabled:opacity-50"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2
+                                   focus:outline-none focus:ring-2 focus:ring-blue-500
+                                   focus:border-blue-500 shadow-sm transition
+                                   disabled:bg-gray-100 disabled:cursor-not-allowed"
                     />
                 </div>
 
+                {/* Submit Button */}
                 <button
                     type="submit"
                     disabled={isDisabled}
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-white
-                               hover:bg-blue-700 disabled:opacity-50
-                               disabled:cursor-not-allowed cursor-pointer"
+                    className="w-full rounded-lg bg-blue-600 text-white py-2 font-medium
+                               hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400
+                               disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer"
                 >
-                    {processing ? 'Saving...' : 'Add'}
+                    {processing ? 'Saving...' : 'Add Task'}
                 </button>
             </fieldset>
         </form>
