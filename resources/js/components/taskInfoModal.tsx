@@ -14,6 +14,9 @@ interface Task {
     created_at_formatted: string;
     completed_at_formatted: string;
     expiration_formatted: string;
+    created_at_iso: string;
+    completed_at_iso: string | null;
+    expiration_iso: string | null;
     user?: User | null;
 }
 
@@ -28,22 +31,67 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState('');
     const [userId, setUserId] = useState<number | ''>('');
+    const [completed, setCompleted] = useState(false);
+    const [completedAt, setCompletedAt] = useState('');
+    const [expiration, setExpiration] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const [expirationError, setExpirationError] = useState('');
+    const [completedError, setCompletedError] = useState('');
+
+    const isoToLocal = (iso: string | null) => {
+        if (!iso) return '';
+        const d = new Date(iso);
+        const offset = d.getTimezoneOffset();
+        const local = new Date(d.getTime() - offset * 60_000);
+        return local.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+    };
 
     useEffect(() => {
         if (task) {
             setTitle(task.title);
             setUserId(task.user?.id ?? '');
+            setCompleted(task.completed);
+            setCompletedAt(isoToLocal(task.completed_at_iso));
+            setExpiration(isoToLocal(task.expiration_iso));
             setIsEditing(false);
+            setExpirationError('');
+            setCompletedError('');
         }
     }, [task]);
 
     const saveChanges = () => {
         if (!task) return;
+
+        const createdAt = new Date(task.created_at_iso);
+        const expDate = expiration ? new Date(expiration) : null;
+        const compDate = completedAt ? new Date(completedAt) : null;
+
+        // reset errori
+        setExpirationError('');
+        setCompletedError('');
+
+        if (expDate && expDate < createdAt) {
+            setExpirationError('Expiration date cannot be before creation date.');
+            return;
+        }
+
+        if (compDate && compDate < createdAt) {
+            setCompletedError('Completed date cannot be before creation date.');
+            return;
+        }
+
         setLoading(true);
+
         Inertia.patch(
             `/tasks/${task.id}`,
-            { title, user_id: userId || null },
+            {
+                title,
+                user_id: userId || null,
+                completed,
+                completed_at: completed ? completedAt : null,
+                expiration: expiration || null,
+            },
             {
                 onFinish: () => {
                     setLoading(false);
@@ -58,7 +106,12 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
         if (!task) return;
         setTitle(task.title);
         setUserId(task.user?.id ?? '');
+        setCompleted(task.completed);
+        setCompletedAt(isoToLocal(task.completed_at_iso));
+        setExpiration(isoToLocal(task.expiration_iso));
         setIsEditing(false);
+        setExpirationError('');
+        setCompletedError('');
     };
 
     if (!task) return null;
@@ -66,9 +119,9 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
     const selectedUser = users.find(u => u.id === userId) ?? task.user;
 
     return (
-        <Modal open={open} onClose={onClose} title="Task Details" width="w-[800px]">
+        <Modal open={open} onClose={onClose} title="Task Details" width="w-[1200px]">
             <div className="space-y-6">
-                {/* Titolo + Edit */}
+                {/* Titolo + edit */}
                 <div className="flex justify-between items-center bg-gray-50 dark:bg-neutral-700 rounded-lg p-4 shadow-sm transition">
                     {isEditing ? (
                         <input
@@ -119,7 +172,7 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
                     </div>
                 </div>
 
-                {/* Utente assegnato con aggiornamento live */}
+                {/* Utente assegnato */}
                 <div className="flex flex-wrap items-center gap-3">
                     {isEditing ? (
                         <select
@@ -142,19 +195,30 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
                     )}
                 </div>
 
-                {/* Stato live */}
-                <div>
-                    <span
-                        className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
-                            task.completed ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                        }`}
-                    >
-                        <i className={`fa-solid ${task.completed ? 'fa-circle-check' : 'fa-clock'}`}></i>
-                        {task.completed ? 'Completed' : 'Pending'}
-                    </span>
+                {/* Stato completamento */}
+                <div className="flex flex-wrap items-center gap-3">
+                    {isEditing ? (
+                        <select
+                            value={completed ? 'completed' : 'pending'}
+                            onChange={(e) => setCompleted(e.target.value === 'completed')}
+                            className="rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2 shadow-sm transition"
+                        >
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    ) : (
+                        <span
+                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
+                                completed ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                            }`}
+                        >
+                            <i className={`fa-solid ${completed ? 'fa-circle-check' : 'fa-clock'}`}></i>
+                            {completed ? 'Completed' : 'Pending'}
+                        </span>
+                    )}
                 </div>
 
-                {/* Info date con anteprima soft */}
+                {/* Date fields */}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div className="rounded-lg border p-3 bg-gray-50 dark:bg-neutral-800 shadow-sm transition">
                         <p className="text-sm text-gray-500">Created at</p>
@@ -166,12 +230,43 @@ export default function TaskInfoModal({ task, users, open, onClose }: TaskInfoMo
 
                     <div className="rounded-lg border p-3 bg-gray-50 dark:bg-neutral-800 shadow-sm transition">
                         <p className="text-sm text-gray-500">Expiration</p>
-                        <p className="font-medium">{task.expiration_formatted ?? '—'}</p>
+                        {isEditing ? (
+                            <>
+                                <input
+                                    type="datetime-local"
+                                    value={expiration}
+                                    onChange={(e) => setExpiration(e.target.value)}
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm transition"
+                                />
+                                {expirationError && (
+                                    <p className="text-red-500 text-sm mt-1">{expirationError}</p>
+                                )}
+                            </>
+                        ) : (
+                            <p className="font-medium">{task.expiration_formatted ?? '—'}</p>
+                        )}
                     </div>
 
                     <div className="rounded-lg border p-3 sm:col-span-2 bg-gray-50 dark:bg-neutral-800 shadow-sm transition">
                         <p className="text-sm text-gray-500">Completed on</p>
-                        <p className="font-medium">{task.completed_at_formatted ?? '—'}</p>
+                        {isEditing ? (
+                            <>
+                                <input
+                                    type="datetime-local"
+                                    value={completedAt}
+                                    onChange={(e) => setCompletedAt(e.target.value)}
+                                    disabled={!completed}
+                                    className={`w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm transition ${
+                                        !completed ? 'bg-gray-100 cursor-not-allowed' : ''
+                                    }`}
+                                />
+                                {completedError && (
+                                    <p className="text-red-500 text-sm mt-1">{completedError}</p>
+                                )}
+                            </>
+                        ) : (
+                            <p className="font-medium">{task.completed_at_formatted ?? '—'}</p>
+                        )}
                     </div>
                 </div>
             </div>

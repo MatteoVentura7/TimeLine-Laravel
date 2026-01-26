@@ -108,11 +108,17 @@ public function updateTitle(Request $request, Task $task)
     $validated = $request->validate([
         'title' => 'required|string|max:255',
         'user_id' => 'nullable|exists:users,id',
+        'completed' => 'nullable|boolean',
+        'completed_at' => 'nullable|date',
+        'expiration' => 'nullable|date',
     ]);
 
     $task->update([
         'title' => $validated['title'],
         'user_id' => $validated['user_id'] ?? $task->user_id,
+         'completed' => $request->completed ?? $task->completed,
+        'completed_at' => $request->completed_at,
+        'expiration' => $request->expiration,
     ]);
 
     return Inertia::location(url()->previous());
