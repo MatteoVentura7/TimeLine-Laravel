@@ -146,9 +146,9 @@ public function complete(Request $request, Task $task)
                 if ($completedAt->lt($task->created_at)) {
                     $fail('La data e ora di completamento non può essere precedente a quella di creazione.');
                 }
-                if ($completedAt->gt(now())) {
-                    $fail('La data e ora di completamento non può essere nel futuro.');
-                }
+                // if ($completedAt->gt(now())) {
+                //     $fail('La data e ora di completamento non può essere nel futuro.');
+                // }
             },
         ],
     ]);
