@@ -91,7 +91,7 @@ class TaskController extends Controller
             'completed_at' => $task->completed ? null : now(),
         ]);
 
-        return back();
+       return Inertia::location(url()->previous());
     }
 
     /**
@@ -122,7 +122,7 @@ class TaskController extends Controller
 
         $task->update($data);
 
-        return back();
+         return Inertia::location(url()->previous());
     }
 
     public function destroy(Task $task)
