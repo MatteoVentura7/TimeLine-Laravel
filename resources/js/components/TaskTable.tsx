@@ -30,8 +30,6 @@ export default function TaskTable({
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
-  
-
     const saveEdit = (task: Task) => {
         onUpdateTask({
             ...task,
@@ -126,64 +124,55 @@ export default function TaskTable({
                                 }`}
                             >
                                 <td className="p-3">
-                                    <input
-                                        type="checkbox"
-                                        checked={task.completed}
-                                        disabled={
-                                            task.completed ||
-                                            isThisEditing ||
-                                            isFutureTask
+                                    <button
+                                        onClick={() => {
+                                            if (task.completed) {
+                                                onUpdateTask({
+                                                    ...task,
+                                                    completed: false,
+                                                    completed_at_iso: null,
+                                                });
+                                            } else {
+                                                openCompleteModal(task);
+                                            }
+                                        }}
+                                        className={`flex items-center justify-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
+                                            task.completed
+                                                ? 'bg-green-500 text-white hover:bg-green-600'
+                                                : 'bg-gray-200 text-gray-600 hover:bg-green-500 hover:text-white'
+                                        } `}
+                                        title={
+                                            task.completed
+                                                ? 'Undo complete'
+                                                : 'Complete task'
                                         }
-                                        onChange={() => openCompleteModal(task)}
-                                        className="h-5 w-5 cursor-pointer rounded"
-                                    />
+                                    >
+                                        {task.completed ? (
+                                            <>
+                                                <i className="fa-solid fa-check"></i>
+                                                Completed
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fa-regular fa-circle"></i>
+                                                Complete
+                                            </>
+                                        )}
+                                    </button>
                                 </td>
 
                                 <td className="p-3">
-                                    {isThisEditing ? (
-                                        <input
-                                            value={editTitle}
-                                            onChange={(e) =>
-                                                setEditTitle(e.target.value)
-                                            }
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter')
-                                                    saveEdit(task);
-                                                if (e.key === 'Escape')
-                                                    cancelEdit();
-                                            }}
-                                            className="w-full rounded border px-2 py-1"
-                                        />
-                                    ) : (
+                                  
                                         <span className="font-medium">
                                             {task.title}
                                         </span>
-                                    )}
+                                  
                                 </td>
 
                                 <td className="p-3">
-                                    {isThisEditing ? (
-                                        <select
-                                            value={editUserId}
-                                            onChange={(e) =>
-                                                setEditUserId(
-                                                    e.target.value
-                                                        ? Number(e.target.value)
-                                                        : '',
-                                                )
-                                            }
-                                            className="w-full rounded border p-2"
-                                        >
-                                            <option value="">—</option>
-                                            {users.map((u) => (
-                                                <option key={u.id} value={u.id}>
-                                                    {u.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    ) : (
+                                   
                                         <span>{task.user?.name ?? '—'}</span>
-                                    )}
+                                    
                                 </td>
 
                                 <td className="p-3">
