@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { queryParams } from '@/wayfinder';
 import { router, useForm } from '@inertiajs/react';
+import type {User } from '@/types/task-user'
 
-interface User {
-    id: number;
-    name: string;
-}
+
 
 interface TaskFormProps {
     users: User[];
@@ -126,7 +124,7 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                                hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400
                                disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer"
                 >
-                    {processing ? 'Saving...' : 'Add Task'}
+                    {processing ? 'Saving...' : 'Add '}
                 </button>
             </fieldset>
         </form>

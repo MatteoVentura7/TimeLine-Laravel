@@ -6,6 +6,7 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import ChartCounter from '../components/chartCounter';
+import type { TaskPagination,User } from '@/types/task-user'
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -14,30 +15,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface Task {
-    id: number;
-    title: string;
-    completed: boolean;
-    created_at_formatted: string;
-    created_at_iso: string;
-    completed_at_formatted: string;
-    expiration_formatted: string;
-    user?: User | null;
-}
-
-interface User {
-    id: number;
-    name: string;
-}
-
-interface TaskPagination {
-    data: Task[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-    links: { url: string | null; label: string; active: boolean }[];
-}
 
 export default function Dashboard({
     users,

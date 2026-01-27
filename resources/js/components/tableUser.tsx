@@ -3,24 +3,7 @@ import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import ConfirmDeleteModal from './confirmDeleteModal';
 import TaskInfoModal from './taskInfoModal';
-
-interface User {
-    id: number;
-    name: string;
-}
-
-interface Task {
-    id: number;
-    title: string;
-    completed: boolean;
-    created_at_formatted: string;
-    created_at_iso: string;
-    completed_at_formatted: string;
-    expiration_formatted: string;
-    completed_at_iso: string | null;
-    expiration_iso: string | null;
-    user?: User | null;
-}
+import type {User,Task } from '@/types/task-user'
 
 export default function TableUser({
     tasks = [],

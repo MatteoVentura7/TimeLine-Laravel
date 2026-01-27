@@ -2,22 +2,7 @@ import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import ConfirmDeleteModal from './confirmDeleteModal';
-
-interface User {
-    id: number;
-    name: string;
-}
-
-interface Task {
-    id: number;
-    title: string;
-    completed: boolean;
-    created_at_formatted: string;
-    created_at_iso: string;
-    completed_at_formatted: string;
-    expiration_formatted: string;
-    user?: User | null;
-}
+import type {Task } from '@/types/task-user'
 
 export default function ListItem({
     tasks = [],

@@ -6,6 +6,7 @@ import { router as Inertia } from '@inertiajs/core';
 import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import TaskFormModal from '@/components/taskFormModal';
+import type { TaskPagination,User } from '@/types/task-user'
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -14,30 +15,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface User {
-    id: number;
-    name: string;
-}
-
-interface Task {
-    id: number;
-    title: string;
-    completed: boolean;
-    created_at_formatted: string;
-    completed_at_formatted: string;
-    created_at_iso: string;
-    expiration_formatted: string;
-    user?: User;
-}
-
-interface TaskPagination {
-    data: Task[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-    links: { url: string | null; label: string; active: boolean }[];
-}
 
 export default function DashboardActivity({
     tasks,

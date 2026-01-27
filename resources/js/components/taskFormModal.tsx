@@ -1,10 +1,8 @@
 import Modal from './modal';
 import TaskForm from './taskForm';
+import type { User } from '@/types/task-user'
 
-interface User {
-    id: number;
-    name: string;
-}
+
 
 interface TaskFormModalProps {
     users: User[];

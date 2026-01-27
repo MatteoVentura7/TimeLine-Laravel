@@ -1,24 +1,8 @@
 import { router as Inertia } from '@inertiajs/core';
 import { useEffect, useState } from 'react';
 import Modal from './modal';
+import type {User,Task } from '@/types/task-user'
 
-interface User {
-    id: number;
-    name: string;
-}
-
-interface Task {
-    id: number;
-    title: string;
-    completed: boolean;
-    created_at_formatted: string;
-    completed_at_formatted: string;
-    expiration_formatted: string;
-    created_at_iso: string;
-    completed_at_iso: string | null;
-    expiration_iso: string | null;
-    user?: User | null;
-}
 
 interface TaskInfoModalProps {
     task: Task | null;
