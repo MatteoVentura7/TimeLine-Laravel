@@ -136,10 +136,10 @@ export default function TaskTable({
                                                 openCompleteModal(task);
                                             }
                                         }}
-                                        className={`flex items-center justify-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
+                                        className={`flex items-center justify-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition cursor-pointer ${
                                             task.completed
-                                                ? 'bg-green-500 text-white hover:bg-green-600'
-                                                : 'bg-gray-200 text-gray-600 hover:bg-green-500 hover:text-white'
+                                                ? ' text-green-500 hover:text-green-600'
+                                                : ' text-gray-600 hover:text-green-500 '
                                         } `}
                                         title={
                                             task.completed
@@ -149,13 +149,13 @@ export default function TaskTable({
                                     >
                                         {task.completed ? (
                                             <>
-                                                <i className="fa-solid fa-check"></i>
-                                                Completed
+                                                <i className="fa-solid fa-square-check text-2xl"></i>
+                                                
                                             </>
                                         ) : (
                                             <>
-                                                <i className="fa-regular fa-circle"></i>
-                                                Complete
+                                                <i className="fa-regular fa-square text-2xl"></i>
+                                               
                                             </>
                                         )}
                                     </button>

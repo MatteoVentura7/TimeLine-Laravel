@@ -24,6 +24,7 @@ export default function TaskInfoModal({
     const [expiration, setExpiration] = useState('');
     const [createdAt, setCreatedAt] = useState('');
     const [loading, setLoading] = useState(false);
+  
 
     const [expirationError, setExpirationError] = useState('');
     const [completedError, setCompletedError] = useState('');
@@ -184,9 +185,23 @@ export default function TaskInfoModal({
                         </h3>
                     ) : (
                         <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
-                            <i className="fa-solid fa-list-check text-blue-500"></i>
-                            {title}
-                        </h3>
+    <i
+        className={`fa-solid fa-list-check ${
+            completed ? 'text-green-500' : 'text-blue-500'
+        }`}
+    ></i>
+    {isEditing ? (
+        <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            placeholder="Task title"
+        />
+    ) : (
+        title
+    )}
+</h3>
+
                     )}
                 </div>
 
