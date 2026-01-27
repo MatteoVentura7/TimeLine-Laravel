@@ -1,8 +1,7 @@
+import type { Task, User } from '@/types/task-user';
 import { router as Inertia } from '@inertiajs/core';
 import { useEffect, useState } from 'react';
 import Modal from './modal';
-import type {User,Task } from '@/types/task-user'
-
 
 interface TaskInfoModalProps {
     task: Task | null;
@@ -23,17 +22,19 @@ export default function TaskInfoModal({
     const [completed, setCompleted] = useState(false);
     const [completedAt, setCompletedAt] = useState('');
     const [expiration, setExpiration] = useState('');
+    const [createdAt, setCreatedAt] = useState('');
     const [loading, setLoading] = useState(false);
 
     const [expirationError, setExpirationError] = useState('');
     const [completedError, setCompletedError] = useState('');
+    const [createdError, setCreatedError] = useState('');
 
     const isoToLocal = (iso: string | null) => {
         if (!iso) return '';
         const d = new Date(iso);
         const offset = d.getTimezoneOffset();
         const local = new Date(d.getTime() - offset * 60_000);
-        return local.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+        return local.toISOString().slice(0, 16);
     };
 
     useEffect(() => {
@@ -43,31 +44,45 @@ export default function TaskInfoModal({
             setCompleted(task.completed);
             setCompletedAt(isoToLocal(task.completed_at_iso));
             setExpiration(isoToLocal(task.expiration_iso));
+            setCreatedAt(isoToLocal(task.created_at_iso));
             setIsEditing(false);
             setExpirationError('');
             setCompletedError('');
+            setCreatedError('');
         }
     }, [task]);
 
     const saveChanges = () => {
         if (!task) return;
 
-        const createdAt = new Date(task.created_at_iso);
+        const created = createdAt
+            ? new Date(createdAt)
+            : new Date(task.created_at_iso);
         const expDate = expiration ? new Date(expiration) : null;
         const compDate = completedAt ? new Date(completedAt) : null;
 
-        // reset errori
         setExpirationError('');
         setCompletedError('');
+        setCreatedError('');
 
-        if (expDate && expDate < createdAt) {
+        if (!createdAt) {
+            setCreatedError('Creation date is required.');
+            return;
+        }
+
+        if (expDate && expDate < created) {
             setExpirationError(
                 'Expiration date cannot be before creation date.',
             );
             return;
         }
 
-        if (compDate && compDate < createdAt) {
+        if (completed && !completedAt) {
+            setCompletedError('Completion date is required.');
+            return;
+        }
+
+        if (compDate && compDate < created) {
             setCompletedError('Completed date cannot be before creation date.');
             return;
         }
@@ -80,6 +95,7 @@ export default function TaskInfoModal({
                 title,
                 user_id: userId || null,
                 completed,
+                created_at: createdAt,
                 completed_at: completed ? completedAt : null,
                 expiration: expiration || null,
             },
@@ -100,9 +116,11 @@ export default function TaskInfoModal({
         setCompleted(task.completed);
         setCompletedAt(isoToLocal(task.completed_at_iso));
         setExpiration(isoToLocal(task.expiration_iso));
+        setCreatedAt(isoToLocal(task.created_at_iso));
         setIsEditing(false);
         setExpirationError('');
         setCompletedError('');
+        setCreatedError('');
     };
 
     if (!task) return null;
@@ -117,7 +135,7 @@ export default function TaskInfoModal({
             width="w-[1200px]"
         >
             <div className="space-y-6">
-                {/* Titolo + edit */}
+                {/* Header + Edit */}
                 <div className="ml-4 flex items-center justify-end gap-2">
                     {isEditing ? (
                         <>
@@ -151,19 +169,19 @@ export default function TaskInfoModal({
                         </button>
                     )}
                 </div>
+
+                {/* Title */}
                 <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4 shadow-sm transition dark:bg-neutral-700">
                     {isEditing ? (
-                        <>
-                            <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
-                                <i className="fa-solid fa-list-check text-blue-500"></i>
-                                <input
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                                    placeholder="Task title"
-                                />
-                            </h3>
-                        </>
+                        <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
+                            <i className="fa-solid fa-list-check text-blue-500"></i>
+                            <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                placeholder="Task title"
+                            />
+                        </h3>
                     ) : (
                         <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
                             <i className="fa-solid fa-list-check text-blue-500"></i>
@@ -172,13 +190,10 @@ export default function TaskInfoModal({
                     )}
                 </div>
 
-                {/* Utente assegnato + stato completamento*/}
+                {/* User + Status */}
                 <div className="flex flex-wrap items-center gap-3">
                     {isEditing ? (
-                        <>
-                        <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 transition">
-                            <i className="fa-solid fa-user"></i>
-                             <select
+                        <select
                             value={userId}
                             onChange={(e) =>
                                 setUserId(
@@ -187,51 +202,32 @@ export default function TaskInfoModal({
                                         : '',
                                 )
                             }
-                            className="rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            className="rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         >
-                            
-                            {users.map((user) => (
-                                <option key={user.id} value={user.id}>
-                                    {user.name}
+                            {users.map((u) => (
+                                <option key={u.id} value={u.id}>
+                                    {u.name}
                                 </option>
                             ))}
                         </select>
-                            
-                        </span>
-                       
-                        </>
                     ) : (
                         <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition">
                             <i className="fa-solid fa-user"></i>
                             {selectedUser?.name ?? 'Unassigned'}
                         </span>
                     )}
+
                     {isEditing ? (
-                        <>
-                           <span
-                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
-                                completed
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-yellow-100 text-yellow-700'
-                            }`}
-                        >
-                            <i
-                                className={`fa-solid ${completed ? 'fa-circle-check' : 'fa-clock'}`}
-                            ></i>
-                            
-                            <select
+                        <select
                             value={completed ? 'completed' : 'pending'}
                             onChange={(e) =>
                                 setCompleted(e.target.value === 'completed')
                             }
-                            className="rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            className="rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         >
                             <option value="pending">Pending</option>
                             <option value="completed">Completed</option>
                         </select>
-                        </span>
-                        
-                        </>
                     ) : (
                         <span
                             className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
@@ -243,22 +239,42 @@ export default function TaskInfoModal({
                             <i
                                 className={`fa-solid ${completed ? 'fa-circle-check' : 'fa-clock'}`}
                             ></i>
+
                             {completed ? 'Completed' : 'Pending'}
                         </span>
                     )}
                 </div>
 
-                {/* Date fields */}
+                {/* Dates */}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm transition dark:bg-neutral-800">
+                    {/* Created at */}
+                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800">
                         <p className="text-sm text-gray-500">Created at</p>
-                        <p className="font-medium">
-                            <i className="fa-regular fa-calendar mr-2"></i>
-                            {task.created_at_formatted}
-                        </p>
+                        {isEditing ? (
+                            <>
+                                <input
+                                    type="datetime-local"
+                                    value={createdAt}
+                                    onChange={(e) =>
+                                        setCreatedAt(e.target.value)
+                                    }
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                />
+                                {createdError && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {createdError}
+                                    </p>
+                                )}
+                            </>
+                        ) : (
+                            <p className="font-medium">
+                                {task.created_at_formatted}
+                            </p>
+                        )}
                     </div>
 
-                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm transition dark:bg-neutral-800">
+                    {/* Expiration */}
+                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800">
                         <p className="text-sm text-gray-500">Expiration</p>
                         {isEditing ? (
                             <>
@@ -268,7 +284,7 @@ export default function TaskInfoModal({
                                     onChange={(e) =>
                                         setExpiration(e.target.value)
                                     }
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                 />
                                 {expirationError && (
                                     <p className="mt-1 text-sm text-red-500">
@@ -283,8 +299,11 @@ export default function TaskInfoModal({
                         )}
                     </div>
 
-                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm transition sm:col-span-2 dark:bg-neutral-800">
-                        <p className="text-sm text-gray-500">Completed on</p>
+                    {/* Completed at */}
+                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm sm:col-span-2 dark:bg-neutral-800">
+                        <p className="text-sm text-gray-500">
+                            Completed on {completed ? '*' : ''}
+                        </p>
                         {isEditing ? (
                             <>
                                 <input
@@ -294,11 +313,7 @@ export default function TaskInfoModal({
                                         setCompletedAt(e.target.value)
                                     }
                                     disabled={!completed}
-                                    className={`w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ${
-                                        !completed
-                                            ? 'cursor-not-allowed bg-gray-100'
-                                            : ''
-                                    }`}
+                                    className={`w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ${!completed ? 'cursor-not-allowed bg-gray-100' : ''}`}
                                 />
                                 {completedError && (
                                     <p className="mt-1 text-sm text-red-500">

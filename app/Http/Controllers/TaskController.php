@@ -103,6 +103,7 @@ public function store(Request $request)
     }
 
     
+
 public function updateTitle(Request $request, Task $task)
 {
     $validated = $request->validate([
@@ -111,15 +112,22 @@ public function updateTitle(Request $request, Task $task)
         'completed' => 'nullable|boolean',
         'completed_at' => 'nullable|date',
         'expiration' => 'nullable|date',
+        'created_at' => 'nullable|date', // <-- aggiunto
     ]);
 
-    $task->update([
-        'title' => $validated['title'],
-        'user_id' => $validated['user_id'] ?? $task->user_id,
-         'completed' => $request->completed ?? $task->completed,
-        'completed_at' => $request->completed_at,
-        'expiration' => $request->expiration,
-    ]);
+    // Se vogliamo modificare created_at, dobbiamo disabilitare i timestamps
+    if (!empty($validated['created_at'])) {
+        $task->timestamps = false; // così possiamo aggiornare created_at
+        $task->created_at = Carbon::parse($validated['created_at']);
+    }
+
+    $task->title = $validated['title'];
+    $task->user_id = $validated['user_id'] ?? $task->user_id;
+    $task->completed = $request->completed ?? $task->completed;
+    $task->completed_at = $request->completed_at ? Carbon::parse($request->completed_at) : null;
+    $task->expiration = $request->expiration ? Carbon::parse($request->expiration) : null;
+
+    $task->save();
 
     return Inertia::location(url()->previous());
 }
