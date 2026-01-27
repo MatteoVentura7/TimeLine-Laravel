@@ -1,9 +1,10 @@
+import type { Task, User } from '@/types/task-user';
 import { router as Inertia } from '@inertiajs/core';
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import CompleteTaskModal from './CompleteTaskModal';
 import ConfirmDeleteModal from './confirmDeleteModal';
 import TaskInfoModal from './taskInfoModal';
-import type {User,Task } from '@/types/task-user'
 
 export default function TableUser({
     tasks = [],
@@ -333,41 +334,18 @@ export default function TableUser({
             />
 
             {/* COMPLETE MODAL */}
-            {completeModalOpen && taskToComplete && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                    <div className="w-80 rounded-lg bg-white p-6">
-                        <h2 className="mb-4 text-xl font-semibold">
-                            Complete task
-                        </h2>
-
-                        <input
-                            type="datetime-local"
-                            value={completedAt}
-                            min={isoToLocalDatetime(
-                                taskToComplete.created_at_iso,
-                            )}
-                            max={new Date().toISOString().slice(0, 16)}
-                            onChange={(e) => setCompletedAt(e.target.value)}
-                            className="mb-6 w-full rounded border p-2"
-                        />
-
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => setCompleteModalOpen(false)}
-                                className="rounded bg-gray-300 px-4 py-2"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={confirmComplete}
-                                className="rounded bg-green-500 px-4 py-2 text-white"
-                            >
-                                Confirm
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <CompleteTaskModal
+                open={completeModalOpen}
+                task={taskToComplete}
+                completedAt={completedAt}
+                loading={isCheck}
+                onChangeCompletedAt={setCompletedAt}
+                onClose={() => {
+                    setCompleteModalOpen(false);
+                    setTaskToComplete(null);
+                }}
+                onConfirm={confirmComplete}
+            />
 
             <TaskInfoModal
                 task={selectedTask}
