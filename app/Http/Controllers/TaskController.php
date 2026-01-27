@@ -11,16 +11,13 @@ use Carbon\Carbon;
 
 class TaskController extends Controller
 {
-    
     public function dashboard()
     {
-        
-         $tasks = Task::with('user') 
+        $tasks = Task::with('user')
             ->latest()
-            ->paginate(5)
-           ;
+            ->paginate(5);
 
-           $statistc = [
+        $statistc = [
             'todo' => Task::where('completed', false)->count(),
             'done' => Task::where('completed', true)->count(),
         ];
@@ -28,16 +25,15 @@ class TaskController extends Controller
         return Inertia::render('dashboard', [
             'tasks' => $tasks,
             'statistc' => $statistc,
-            'users' => User::select('id', 'name')->get(), 
+            'users' => User::select('id', 'name')->get(),
         ]);
     }
 
-    
     public function dashboardActivity(Request $request)
     {
         $search = $request->input('search', '');
 
-        $tasks = Task::with('user') // Carica relazione utente
+        $tasks = Task::with('user')
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', '%' . $search . '%');
             })
@@ -58,118 +54,106 @@ class TaskController extends Controller
         ]);
     }
 
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'user_id' => 'nullable|exists:users,id',
-        'start' => 'nullable|date',
-        'expiration' => 'nullable|date|after_or_equal:start',
-    ], [
-        'expiration.after_or_equal' =>
-            'La data di fine non può essere precedente alla data di inizio.',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'user_id' => 'nullable|exists:users,id',
+            'start' => 'nullable|date',
+            'expiration' => 'nullable|date|after_or_equal:start',
+        ], [
+            'expiration.after_or_equal' =>
+                'La data di fine non può essere precedente alla data di inizio.',
+        ]);
 
-    $task = new Task();
-    $task->title = $validated['title'];
-    $task->user_id = $validated['user_id'] ?? Auth::id();
+        $task = new Task();
+        $task->title = $validated['title'];
+        $task->user_id = $validated['user_id'] ?? Auth::id();
 
-    $hasCustomStart = !empty($validated['start']);
+        if (!empty($validated['start'])) {
+            $task->created_at = Carbon::parse($validated['start']);
+            $task->timestamps = false; // per modificare created_at
+        }
 
-    if ($hasCustomStart) {
-        $task->created_at = Carbon::parse($validated['start']);
+        $task->expiration = $validated['expiration'] ?? null;
+        $task->save();
+
+        return Inertia::location(url()->previous());
     }
 
-
-    
-    if ($hasCustomStart) {
-        $task->timestamps = false;
-    }
-
-    $task->expiration = $validated['expiration'] ?? null;
-
-    $task->save();
-
-    return Inertia::location(url()->previous());
-}
-    public function update(Task $task)
+    /**
+     * Toggle completo / undo completo
+     */
+    public function toggleComplete(Task $task)
     {
         $task->update([
             'completed' => !$task->completed,
-            'completed_at' => $task->completed ? null : now(), 
+            'completed_at' => $task->completed ? null : now(),
         ]);
 
-        return Inertia::location(url()->previous());
+        return back();
     }
 
-    
+    /**
+     * Aggiorna task parzialmente senza cancellare altri campi
+     */
+    public function updateTitle(Request $request, Task $task)
+    {
+        $validated = $request->validate([
+            'title' => 'nullable|string|max:255',
+            'user_id' => 'nullable|exists:users,id',
+            'completed' => 'nullable|boolean',
+            'completed_at' => 'nullable|date',
+            'expiration' => 'nullable|date',
+            'created_at' => 'nullable|date',
+        ]);
 
-public function updateTitle(Request $request, Task $task)
-{
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'user_id' => 'nullable|exists:users,id',
-        'completed' => 'nullable|boolean',
-        'completed_at' => 'nullable|date',
-        'expiration' => 'nullable|date',
-        'created_at' => 'nullable|date', // <-- aggiunto
-    ]);
+        $data = [];
 
-    // Se vogliamo modificare created_at, dobbiamo disabilitare i timestamps
-    if (!empty($validated['created_at'])) {
-        $task->timestamps = false; // così possiamo aggiornare created_at
-        $task->created_at = Carbon::parse($validated['created_at']);
+        if (isset($validated['title'])) $data['title'] = $validated['title'];
+        if (isset($validated['user_id'])) $data['user_id'] = $validated['user_id'];
+        if (isset($validated['completed'])) $data['completed'] = $validated['completed'];
+        if (isset($validated['completed_at'])) $data['completed_at'] = Carbon::parse($validated['completed_at']);
+        if (isset($validated['expiration'])) $data['expiration'] = Carbon::parse($validated['expiration']);
+        if (isset($validated['created_at'])) {
+            $task->timestamps = false;
+            $data['created_at'] = Carbon::parse($validated['created_at']);
+        }
+
+        $task->update($data);
+
+        return back();
     }
 
-    $task->title = $validated['title'];
-    $task->user_id = $validated['user_id'] ?? $task->user_id;
-    $task->completed = $request->completed ?? $task->completed;
-    $task->completed_at = $request->completed_at ? Carbon::parse($request->completed_at) : null;
-    $task->expiration = $request->expiration ? Carbon::parse($request->expiration) : null;
-
-    $task->save();
-
-    return Inertia::location(url()->previous());
-}
-
-
-   
     public function destroy(Task $task)
     {
         $task->delete();
-
         return Inertia::location(url()->previous());
     }
 
-  
+    /**
+     * Completa task con data inserita dalla modal
+     */
+    public function complete(Request $request, Task $task)
+    {
+        $request->validate([
+            'completed_at' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) use ($task) {
+                    $completedAt = Carbon::parse($value);
+                    if ($completedAt->lt($task->created_at)) {
+                        $fail('La data e ora di completamento non può essere precedente a quella di creazione.');
+                    }
+                },
+            ],
+        ]);
 
-public function complete(Request $request, Task $task)
-{
-    $request->validate([
-        'completed_at' => [
-            'required',
-            'date',
-            function ($attribute, $value, $fail) use ($task) {
-                $completedAt = Carbon::parse($value);
-                if ($completedAt->lt($task->created_at)) {
-                    $fail('La data e ora di completamento non può essere precedente a quella di creazione.');
-                }
-                // if ($completedAt->gt(now())) {
-                //     $fail('La data e ora di completamento non può essere nel futuro.');
-                // }
-            },
-        ],
-    ]);
+        $task->update([
+            'completed' => true,
+            'completed_at' => Carbon::parse($request->completed_at),
+        ]);
 
-    $task->update([
-        'completed' => true,
-        'completed_at' => Carbon::parse($request->completed_at),
-    ]);
-
-    return back();
-}
-
-
-
-
+        return back();
+    }
 }
