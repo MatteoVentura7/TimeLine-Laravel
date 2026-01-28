@@ -2,6 +2,7 @@ import type { Task, User } from '@/types/task-user';
 import { router as Inertia } from '@inertiajs/core';
 import { useEffect, useState } from 'react';
 import Modal from './modal';
+import SubTaskList from './subTaskList';
 
 interface TaskInfoModalProps {
     task: Task | null;
@@ -352,7 +353,9 @@ export default function TaskInfoModal({
                             </p>
                         )}
                     </div>
+                    <SubTaskList/>
                 </div>
+                
             </div>
         </Modal>
     );
