@@ -49,7 +49,7 @@ export default function TaskTable({
 
     const openCompleteModal = (task: Task) => {
         setTaskToComplete(task);
-        setCompletedAt(new Date().toISOString().slice(0, 16));
+        setCompletedAt('');
         setCompleteModalOpen(true);
     };
 

@@ -1,14 +1,14 @@
-import Modal from '@/components/modal'
-import type { Task } from '@/types/task-user'
+import Modal from '@/components/modal';
+import type { Task } from '@/types/task-user';
 
 interface CompleteTaskModalProps {
-    open: boolean
-    task: Task | null
-    completedAt: string
-    loading?: boolean
-    onChangeCompletedAt: (value: string) => void
-    onClose: () => void
-    onConfirm: () => void
+    open: boolean;
+    task: Task | null;
+    completedAt: string;
+    loading?: boolean;
+    onChangeCompletedAt: (value: string) => void;
+    onClose: () => void;
+    onConfirm: () => void;
 }
 
 export default function CompleteTaskModal({
@@ -20,14 +20,14 @@ export default function CompleteTaskModal({
     onClose,
     onConfirm,
 }: CompleteTaskModalProps) {
-    if (!task) return null
+    if (!task) return null;
 
     const isoToLocalDatetime = (iso: string) => {
-        const d = new Date(iso)
-        const offset = d.getTimezoneOffset()
-        const local = new Date(d.getTime() - offset * 60_000)
-        return local.toISOString().slice(0, 16)
-    }
+        const d = new Date(iso);
+        const offset = d.getTimezoneOffset();
+        const local = new Date(d.getTime() - offset * 60_000);
+        return local.toISOString().slice(0, 16);
+    };
 
     return (
         <Modal
@@ -47,8 +47,8 @@ export default function CompleteTaskModal({
 
                     <button
                         onClick={onConfirm}
-                        disabled={loading}
-                        className="rounded bg-green-500 px-4 py-2 text-white disabled:opacity-60"
+                        disabled={loading || !completedAt}
+                        className="rounded bg-green-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         Confirm
                     </button>
@@ -57,12 +57,12 @@ export default function CompleteTaskModal({
         >
             <input
                 type="datetime-local"
-                value={completedAt}
+                value={completedAt || ''}
+                required
                 min={isoToLocalDatetime(task.created_at_iso)}
-                // max={new Date().toISOString().slice(0, 16)}
                 onChange={(e) => onChangeCompletedAt(e.target.value)}
                 className="w-full rounded border p-2"
             />
         </Modal>
-    )
+    );
 }
