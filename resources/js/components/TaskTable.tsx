@@ -226,9 +226,8 @@ export default function TaskTable({
 
             <ConfirmDeleteModal
                 open={confirmOpen}
-                title="Confirm delete"
-                message="Are you sure you want to delete this task?"
-                onCancel={() => {
+               
+                onClose={() => {
                     setConfirmOpen(false);
                     setTaskToDelete(null);
                 }}

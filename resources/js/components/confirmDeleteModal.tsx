@@ -1,11 +1,12 @@
-
+import Modal from '@/components/modal';
 interface ConfirmDeleteModalProps {
     open: boolean;
     loading?: boolean;
     title?: string;
     message?: string;
-    onCancel: () => void;
+
     onConfirm: () => void;
+    onClose: () => void;
 }
 
 export default function ConfirmDeleteModal({
@@ -13,25 +14,23 @@ export default function ConfirmDeleteModal({
     loading = false,
     title = 'Confirm delete',
     message = 'Are you sure you want to delete this item?',
-    onCancel,
+    onClose,
     onConfirm,
 }: ConfirmDeleteModalProps) {
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="w-80 rounded-lg bg-white p-6 text-center shadow-xl dark:bg-neutral-900">
-                <h2 className="mb-4 text-xl font-semibold">{title}</h2>
-
-                <p className="mb-6 text-neutral-700 dark:text-neutral-300">
-                    {message}
-                </p>
-
-                <div className="flex justify-center gap-3">
+        <Modal
+            open={open}
+            onClose={onClose}
+            title={title}
+            width="w-80"
+            footer={
+                <>
                     <button
-                        onClick={onCancel}
+                        onClick={onClose}
                         disabled={loading}
-                        className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600 cursor-pointer"
+                        className="cursor-pointer rounded bg-gray-300 px-4 py-2 hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600"
                     >
                         Cancel
                     </button>
@@ -39,12 +38,16 @@ export default function ConfirmDeleteModal({
                     <button
                         onClick={onConfirm}
                         disabled={loading}
-                        className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                        className="cursor-pointer rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {loading ? 'Deleting...' : 'Confirm'}
                     </button>
-                </div>
-            </div>
-        </div>
+                </>
+            }
+        >
+            <p className="mb-6 text-neutral-700 dark:text-neutral-300 text-lg">
+                {message}
+            </p>
+        </Modal>
     );
 }
