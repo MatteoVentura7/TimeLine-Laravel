@@ -24,7 +24,6 @@ export default function TaskInfoModal({
     const [expiration, setExpiration] = useState('');
     const [createdAt, setCreatedAt] = useState('');
     const [loading, setLoading] = useState(false);
-  
 
     const [expirationError, setExpirationError] = useState('');
     const [completedError, setCompletedError] = useState('');
@@ -185,23 +184,24 @@ export default function TaskInfoModal({
                         </h3>
                     ) : (
                         <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
-    <i
-        className={`fa-solid fa-list-check ${
-            completed ? 'text-green-500' : 'text-blue-500'
-        }`}
-    ></i>
-    {isEditing ? (
-        <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            placeholder="Task title"
-        />
-    ) : (
-        title
-    )}
-</h3>
-
+                            <i
+                                className={`fa-solid fa-list-check ${
+                                    completed
+                                        ? 'text-green-500'
+                                        : 'text-blue-500'
+                                }`}
+                            ></i>
+                            {isEditing ? (
+                                <input
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                    placeholder="Task title"
+                                />
+                            ) : (
+                                title
+                            )}
+                        </h3>
                     )}
                 </div>
 
@@ -232,32 +232,36 @@ export default function TaskInfoModal({
                         </span>
                     )}
 
-                    {isEditing ? (
-                        <select
-                            value={completed ? 'completed' : 'pending'}
-                            onChange={(e) =>
-                                setCompleted(e.target.value === 'completed')
-                            }
-                            className="rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        >
-                            <option value="pending">Pending</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                    ) : (
-                        <span
-                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
-                                completed
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-yellow-100 text-yellow-700'
-                            }`}
-                        >
-                            <i
-                                className={`fa-solid ${completed ? 'fa-circle-check' : 'fa-clock'}`}
-                            ></i>
+                    <button
+                        onClick={() => {
+                            if (!isEditing) return;
 
-                            {completed ? 'Completed' : 'Pending'}
-                        </span>
-                    )}
+                            if (completed) {
+                                setCompleted(false);
+                                setCompletedAt('');
+                            } else {
+                                setCompleted(true);
+                                setCompletedAt(
+                                    new Date().toISOString().slice(0, 16),
+                                );
+                            }
+                        }}
+                        disabled={!isEditing}
+                        className={`flex cursor-pointer items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
+                            completed
+                                ? 'text-green-500 hover:text-green-600'
+                                : 'text-gray-600 hover:text-green-500'
+                        } ${!isEditing ? 'cursor-not-allowed opacity-60' : ''} `}
+                        title={completed ? 'Undo complete' : 'Complete task'}
+                    >
+                        {completed ? (
+                            <i className="fa-solid fa-square-check text-2xl"></i>
+                        ) : (
+                            <i className="fa-regular fa-square text-2xl"></i>
+                        )}
+                        <></>
+                        <span>{completed ? 'Completed' : 'Not Completed'}</span>
+                    </button>
                 </div>
 
                 {/* Dates */}
