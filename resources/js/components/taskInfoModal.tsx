@@ -270,9 +270,9 @@ export default function TaskInfoModal({
                 </div>
 
                 {/* Dates */}
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="flex  grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
                     {/* Created at */}
-                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800">
+                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800 w-full">
                         <p className="text-sm text-gray-500">Created at</p>
                         {isEditing ? (
                             <>
@@ -298,7 +298,7 @@ export default function TaskInfoModal({
                     </div>
 
                     {/* Expiration */}
-                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800">
+                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800 w-full">
                         <p className="text-sm text-gray-500">Expiration</p>
                         {isEditing ? (
                             <>
@@ -324,7 +324,7 @@ export default function TaskInfoModal({
                     </div>
 
                     {/* Completed at */}
-                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm sm:col-span-2 dark:bg-neutral-800">
+                    <div className="rounded-lg border bg-gray-50 p-3 shadow-sm sm:col-span-2 md:col-span-3 dark:bg-neutral-800 w-full">
                         <p className="text-sm text-gray-500">
                             Completed on {completed ? '*' : ''}
                         </p>
@@ -353,8 +353,9 @@ export default function TaskInfoModal({
                             </p>
                         )}
                     </div>
-                    <SubTaskList/>
+                  
                 </div>
+                  <SubTaskList task={task} />
                 
             </div>
         </Modal>

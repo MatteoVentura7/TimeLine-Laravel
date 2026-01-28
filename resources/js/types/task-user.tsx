@@ -3,6 +3,12 @@ export interface User {
     name: string;
 }
 
+export interface SubTask {
+    id: number;
+    title: string;
+    completed: boolean;
+}
+
 export interface Task {
     id: number;
     title: string;
@@ -14,6 +20,7 @@ export interface Task {
     completed_at_iso: string | null;
     expiration_iso: string | null;
     user?: User | null;
+    subtasks: SubTask[];
 }
 
 export interface TaskPagination {

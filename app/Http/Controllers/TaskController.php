@@ -13,7 +13,7 @@ class TaskController extends Controller
 {
     public function dashboard()
     {
-        $tasks = Task::with('user')
+        $tasks = Task::with('user','subtasks')
             ->latest()
             ->paginate(5);
 
@@ -33,7 +33,7 @@ class TaskController extends Controller
     {
         $search = $request->input('search', '');
 
-        $tasks = Task::with('user')
+        $tasks = Task::with('user','subtasks')
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', '%' . $search . '%');
             })
@@ -156,4 +156,7 @@ class TaskController extends Controller
 
         return back();
     }
+
+    
 }
+

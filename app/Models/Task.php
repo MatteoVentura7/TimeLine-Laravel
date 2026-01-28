@@ -68,4 +68,9 @@ class Task extends Model
         : null;
 }
 
+public function subtasks()
+{
+    return $this->hasMany(SubTask::class);
+}
+
 }
