@@ -37,20 +37,20 @@ export default function TaskInfoModal({
         return local.toISOString().slice(0, 16);
     };
 
-    useEffect(() => {
-        if (task) {
-            setTitle(task.title);
-            setUserId(task.user?.id ?? '');
-            setCompleted(task.completed);
-            setCompletedAt(isoToLocal(task.completed_at_iso));
-            setExpiration(isoToLocal(task.expiration_iso));
-            setCreatedAt(isoToLocal(task.created_at_iso));
-            setIsEditing(false);
-            setExpirationError('');
-            setCompletedError('');
-            setCreatedError('');
-        }
-    }, [task]);
+useEffect(() => {
+    if (task) {
+        setTitle(task.title);
+        setUserId(task.user?.id ?? '');
+        setCompleted(task.completed);
+        setCompletedAt(task.completed_at_iso ? isoToLocal(task.completed_at_iso) : '');
+        setExpiration(task.expiration_iso ? isoToLocal(task.expiration_iso) : '');
+        setCreatedAt(task.created_at_iso ? isoToLocal(task.created_at_iso) : '');
+        setIsEditing(false);
+        setExpirationError('');
+        setCompletedError('');
+        setCreatedError('');
+    }
+}, [task]);
 
     const saveChanges = () => {
         if (!task) return;
@@ -242,7 +242,7 @@ export default function TaskInfoModal({
                             } else {
                                 setCompleted(true);
                                 setCompletedAt(
-                                    new Date().toISOString().slice(0, 16),
+                                    ''
                                 );
                             }
                         }}
@@ -299,7 +299,7 @@ export default function TaskInfoModal({
                             <>
                                 <input
                                     type="datetime-local"
-                                    value={task.expiration_formatted}
+                                    value={expiration}
                                     onChange={(e) =>
                                         setExpiration(e.target.value)
                                     }
@@ -327,7 +327,7 @@ export default function TaskInfoModal({
                             <>
                                 <input
                                     type="datetime-local"
-                                    value={task.completed_at_formatted}
+                                    value={completedAt || ''}
                                     onChange={(e) =>
                                         setCompletedAt(e.target.value)
                                     }
