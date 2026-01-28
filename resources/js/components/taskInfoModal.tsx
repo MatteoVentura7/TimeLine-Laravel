@@ -299,7 +299,7 @@ export default function TaskInfoModal({
                             <>
                                 <input
                                     type="datetime-local"
-                                    value={expiration}
+                                    value={task.expiration_formatted}
                                     onChange={(e) =>
                                         setExpiration(e.target.value)
                                     }
@@ -327,7 +327,7 @@ export default function TaskInfoModal({
                             <>
                                 <input
                                     type="datetime-local"
-                                    value={completedAt}
+                                    value={task.completed_at_formatted}
                                     onChange={(e) =>
                                         setCompletedAt(e.target.value)
                                     }
