@@ -136,10 +136,10 @@ export default function TaskTable({
                                                 openCompleteModal(task);
                                             }
                                         }}
-                                        className={`flex items-center justify-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition cursor-pointer ${
+                                        className={`flex cursor-pointer items-center justify-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
                                             task.completed
-                                                ? ' text-green-500 hover:text-green-600'
-                                                : ' text-gray-600 hover:text-green-500 '
+                                                ? 'text-green-500 hover:text-green-600'
+                                                : 'text-gray-600 hover:text-green-500'
                                         } `}
                                         title={
                                             task.completed
@@ -150,29 +150,23 @@ export default function TaskTable({
                                         {task.completed ? (
                                             <>
                                                 <i className="fa-solid fa-square-check text-2xl"></i>
-                                                
                                             </>
                                         ) : (
                                             <>
                                                 <i className="fa-regular fa-square text-2xl"></i>
-                                               
                                             </>
                                         )}
                                     </button>
                                 </td>
 
                                 <td className="p-3">
-                                  
-                                        <span className="font-medium">
-                                            {task.title}
-                                        </span>
-                                  
+                                    <span className="font-medium">
+                                        {task.title}
+                                    </span>
                                 </td>
 
                                 <td className="p-3">
-                                   
-                                        <span>{task.user?.name ?? '—'}</span>
-                                    
+                                    <span>{task.user?.name ?? '—'}</span>
                                 </td>
 
                                 <td className="p-3">
@@ -182,7 +176,9 @@ export default function TaskTable({
                                     {task.expiration_formatted ?? '—'}
                                 </td>
                                 <td className="p-3">
-                                    {task.completed_at_formatted ?? '—'}
+                                    {task.completed
+                                        ? task.completed_at_formatted
+                                        : '—'}
                                 </td>
 
                                 <td className="p-3 text-right whitespace-nowrap">

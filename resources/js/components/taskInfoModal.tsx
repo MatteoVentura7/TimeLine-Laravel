@@ -37,20 +37,26 @@ export default function TaskInfoModal({
         return local.toISOString().slice(0, 16);
     };
 
-useEffect(() => {
-    if (task) {
-        setTitle(task.title);
-        setUserId(task.user?.id ?? '');
-        setCompleted(task.completed);
-        setCompletedAt(task.completed_at_iso ? isoToLocal(task.completed_at_iso) : '');
-        setExpiration(task.expiration_iso ? isoToLocal(task.expiration_iso) : '');
-        setCreatedAt(task.created_at_iso ? isoToLocal(task.created_at_iso) : '');
-        setIsEditing(false);
-        setExpirationError('');
-        setCompletedError('');
-        setCreatedError('');
-    }
-}, [task]);
+    useEffect(() => {
+        if (task) {
+            setTitle(task.title);
+            setUserId(task.user?.id ?? '');
+            setCompleted(task.completed);
+            setCompletedAt(
+                task.completed_at_iso ? isoToLocal(task.completed_at_iso) : '',
+            );
+            setExpiration(
+                task.expiration_iso ? isoToLocal(task.expiration_iso) : '',
+            );
+            setCreatedAt(
+                task.created_at_iso ? isoToLocal(task.created_at_iso) : '',
+            );
+            setIsEditing(false);
+            setExpirationError('');
+            setCompletedError('');
+            setCreatedError('');
+        }
+    }, [task]);
 
     const saveChanges = () => {
         if (!task) return;
@@ -241,9 +247,7 @@ useEffect(() => {
                                 setCompletedAt('');
                             } else {
                                 setCompleted(true);
-                                setCompletedAt(
-                                    ''
-                                );
+                                setCompletedAt('');
                             }
                         }}
                         disabled={!isEditing}
@@ -342,7 +346,9 @@ useEffect(() => {
                             </>
                         ) : (
                             <p className="font-medium">
-                                {task.completed_at_formatted ?? '—'}
+                                {task.completed
+                                    ? task.completed_at_formatted
+                                    : '—'}
                             </p>
                         )}
                     </div>
