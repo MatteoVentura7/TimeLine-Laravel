@@ -6,17 +6,20 @@ use Illuminate\Http\Request;
 
 class SubTaskController extends Controller
 {
-    public function store(Request $request, Task $task)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-        ]);
+  public function store(Request $request, Task $task)
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+    ]);
 
-        $task->subtasks()->create([
-            'title' => $request->title,
-            'completed' => false,
-        ]);
+    $subtask = $task->subtasks()->create([
+        'title' => $request->title,
+        'completed' => false,
+    ]);
 
-        return back();
-    }
+    return response()->json([
+        'subtask' => $subtask,
+    ]);
+}
+
 }

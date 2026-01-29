@@ -1,30 +1,43 @@
 import { useState } from 'react';
-import { router } from '@inertiajs/core';
-import type { Task } from '@/types/task-user';
+import type { Task, SubTask } from '@/types/task-user';
 
 export default function SubTaskList({ task }: { task: Task }) {
+    const [subtasks, setSubtasks] = useState<SubTask[]>(task.subtasks);
     const [showForm, setShowForm] = useState(false);
     const [title, setTitle] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const addSubTask = (e: React.FormEvent) => {
+    const addSubTask = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!title.trim()) return;
 
-        router.post(`/tasks/${task.id}/subtasks`, { title }, {
-            onSuccess: () => {
-                setTitle('');
-                setShowForm(false);
+        setLoading(true);
+
+        const response = await fetch(`/tasks/${task.id}/subtasks`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': (document.querySelector(
+                    'meta[name="csrf-token"]'
+                ) as HTMLMetaElement).content,
             },
+            body: JSON.stringify({ title }),
         });
+
+        const data = await response.json();
+
+        setSubtasks((prev) => [...prev, data.subtask]);
+        setTitle('');
+        setShowForm(false);
+        setLoading(false);
     };
 
     return (
         <div className="rounded-lg border bg-gray-50 p-4 dark:bg-neutral-800">
-            <h4 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">
-                Subtasks
-            </h4>
+            <h4 className="mb-3 text-sm font-semibold">Subtasks</h4>
 
             <ul className="space-y-2">
-                {task.subtasks.map((st) => (
+                {subtasks.map((st) => (
                     <li key={st.id} className="flex items-center gap-2 text-sm">
                         <i
                             className={`fa-regular ${
@@ -32,7 +45,7 @@ export default function SubTaskList({ task }: { task: Task }) {
                                     ? 'fa-square-check text-green-500'
                                     : 'fa-square'
                             }`}
-                        ></i>
+                        />
                         {st.title}
                     </li>
                 ))}
@@ -45,22 +58,19 @@ export default function SubTaskList({ task }: { task: Task }) {
                         onChange={(e) => setTitle(e.target.value)}
                         className="flex-1 rounded-lg border px-3 py-1 text-sm"
                         placeholder="New subtask"
+                        disabled={loading}
                     />
-                    <button className="rounded-lg bg-blue-500 px-3 py-1 text-white">
-                        Add
-                    </button>
                     <button
-                        type="button"
-                        onClick={() => setShowForm(false)}
-                        className="text-sm text-gray-500"
+                        disabled={loading}
+                        className="rounded-lg bg-blue-500 px-3 py-1 text-white"
                     >
-                        Cancel
+                        {loading ? '...' : 'Add'}
                     </button>
                 </form>
             ) : (
                 <button
                     onClick={() => setShowForm(true)}
-                    className="mt-3 text-sm text-blue-600 hover:underline"
+                    className="mt-3 text-sm text-blue-600 hover:underline cursor-pointer"
                 >
                     + Add subtask
                 </button>

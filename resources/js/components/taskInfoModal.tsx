@@ -3,6 +3,9 @@ import { router as Inertia } from '@inertiajs/core';
 import { useEffect, useState } from 'react';
 import Modal from './modal';
 import SubTaskList from './subTaskList';
+import { router } from '@inertiajs/core';
+
+
 
 interface TaskInfoModalProps {
     task: Task | null;
@@ -130,6 +133,12 @@ export default function TaskInfoModal({
         setCreatedError('');
     };
 
+    const handleClose = () => {
+    router.reload({ only: ['tasks'] });
+    onClose();
+};
+
+
     if (!task) return null;
 
     const selectedUser = users.find((u) => u.id === userId) ?? task.user;
@@ -137,7 +146,7 @@ export default function TaskInfoModal({
     return (
         <Modal
             open={open}
-            onClose={onClose}
+            onClose={handleClose}
             title="Task Details"
             width="w-[1200px]"
         >
