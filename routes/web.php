@@ -21,6 +21,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy'); 
     Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete']);
     Route::post('/tasks/{task}/subtasks', [SubTaskController::class, 'store']);
+    Route::delete(
+    '/subtasks/{subtask}',
+    [SubTaskController::class, 'destroy']
+);
+
 
 
 

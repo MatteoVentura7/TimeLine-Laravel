@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Task, SubTask } from '@/types/task-user';
+import { router } from '@inertiajs/react';
 
 export default function SubTaskList({ task }: { task: Task }) {
     const [subtasks, setSubtasks] = useState<SubTask[]>(task.subtasks);
@@ -32,22 +33,49 @@ export default function SubTaskList({ task }: { task: Task }) {
         setLoading(false);
     };
 
+    const deleteSubTask = (id: number) => {
+    router.delete(`/subtasks/${id}`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            setSubtasks((prev) => prev.filter((st) => st.id !== id));
+        },
+    });
+};
+
     return (
         <div className="rounded-lg border bg-gray-50 p-4 dark:bg-neutral-800">
             <h4 className="mb-3 text-sm font-semibold">Subtasks</h4>
 
             <ul className="space-y-2">
                 {subtasks.map((st) => (
-                    <li key={st.id} className="flex items-center gap-2 text-sm">
-                        <i
-                            className={`fa-regular ${
-                                st.completed
-                                    ? 'fa-square-check text-green-500'
-                                    : 'fa-square'
-                            }`}
-                        />
-                        {st.title}
-                    </li>
+                    <li
+    key={st.id}
+    className="group flex items-center justify-between gap-2 text-sm"
+>
+    <div
+        className="flex cursor-pointer items-center gap-2"
+       
+    >
+        <i
+            className={`fa-regular ${
+                st.completed
+                    ? 'fa-square-check text-green-500'
+                    : 'fa-square'
+            }`}
+        />
+        <span className={st.completed ? 'line-through text-gray-400' : ''}>
+            {st.title}
+        </span>
+    </div>
+
+    <button
+        onClick={() => deleteSubTask(st.id)}
+        className='cursor-pointer'
+    >
+        <i className="fa-solid fa-trash text-red-500 hover:text-red-700" />
+    </button>
+</li>
+
                 ))}
             </ul>
 

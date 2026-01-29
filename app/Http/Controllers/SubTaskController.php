@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use App\Models\SubTask;
 
 class SubTaskController extends Controller
 {
@@ -21,5 +22,16 @@ class SubTaskController extends Controller
         'subtask' => $subtask,
     ]);
 }
+
+
+
+public function destroy(SubTask $subtask)
+{
+    $subtask->delete();
+
+    return redirect()->back();
+
+}
+
 
 }
