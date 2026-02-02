@@ -21,18 +21,20 @@ public function store(Request $request, Task $task)
         'completed' => false,
     ]);
 
-   return Inertia::location(url()->previous());
+//    return Inertia::location(url()->previous());
+return redirect()->back();
+
 
 }
-
-
 
 
 public function destroy(SubTask $subtask)
 {
     $subtask->delete();
 
-     return Inertia::location(url()->previous());
+    return redirect()->back();
+
+    //  return Inertia::location(url()->previous());
 
 }
 
