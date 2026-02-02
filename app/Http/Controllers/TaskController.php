@@ -26,6 +26,7 @@ class TaskController extends Controller
             'tasks' => $tasks,
             'statistc' => $statistc,
             'users' => User::select('id', 'name')->get(),
+            
         ]);
     }
 
@@ -51,6 +52,7 @@ class TaskController extends Controller
             'statistc' => $statistc,
             'search' => $search,
             'users' => User::select('id', 'name')->get(),
+           
         ]);
     }
 

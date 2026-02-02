@@ -4,24 +4,27 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Models\SubTask;
+use Inertia\Inertia;
 
 class SubTaskController extends Controller
 {
-  public function store(Request $request, Task $task)
+
+
+public function store(Request $request, Task $task)
 {
-    $request->validate([
+    $validated = $request->validate([
         'title' => 'required|string|max:255',
     ]);
 
-    $subtask = $task->subtasks()->create([
-        'title' => $request->title,
+    $task->subtasks()->create([
+        'title' => $validated['title'],
         'completed' => false,
     ]);
 
-    return response()->json([
-        'subtask' => $subtask,
-    ]);
+   return Inertia::location(url()->previous());
+
 }
+
 
 
 
@@ -29,7 +32,7 @@ public function destroy(SubTask $subtask)
 {
     $subtask->delete();
 
-    return redirect()->back();
+     return Inertia::location(url()->previous());
 
 }
 

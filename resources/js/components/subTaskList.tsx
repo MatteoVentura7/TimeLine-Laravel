@@ -2,52 +2,36 @@ import { useState } from 'react';
 import type { Task, SubTask } from '@/types/task-user';
 import { router } from '@inertiajs/react';
 
+
+
 export default function SubTaskList({ task }: { task: Task }) {
-    const [subtasks, setSubtasks] = useState<SubTask[]>(task.subtasks);
+   
     const [showForm, setShowForm] = useState(false);
     const [title, setTitle] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const addSubTask = async (e: React.FormEvent) => {
+   
+
+    const addSubTask = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title.trim()) return;
 
-        setLoading(true);
-
-        const response = await fetch(`/tasks/${task.id}/subtasks`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': (document.querySelector(
-                    'meta[name="csrf-token"]'
-                ) as HTMLMetaElement).content,
-            },
-            body: JSON.stringify({ title }),
+        router.post(`/tasks/${task.id}/subtasks`, {
+            title,
         });
-
-        const data = await response.json();
-
-        setSubtasks((prev) => [...prev, data.subtask]);
-        setTitle('');
-        setShowForm(false);
-        setLoading(false);
     };
 
     const deleteSubTask = (id: number) => {
-    router.delete(`/subtasks/${id}`, {
-        preserveScroll: true,
-        onSuccess: () => {
-            setSubtasks((prev) => prev.filter((st) => st.id !== id));
-        },
-    });
-};
+        router.delete(`/subtasks/${id}`, {
+            preserveScroll: true,
+        });
+    };
 
     return (
         <div className="rounded-lg border bg-gray-50 p-4 dark:bg-neutral-800">
             <h4 className="mb-3 text-sm font-semibold">Subtasks</h4>
 
             <ul className="space-y-2">
-                {subtasks.map((st) => (
+                {task.subtasks.map((st) => (
                     <li
     key={st.id}
     className="group flex items-center justify-between gap-2 text-sm"
