@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Task;
@@ -10,33 +11,37 @@ class SubTaskController extends Controller
 {
 
 
-public function store(Request $request, Task $task)
-{
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-    ]);
+    public function store(Request $request, Task $task)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+        ]);
 
-    $task->subtasks()->create([
-        'title' => $validated['title'],
-        'completed' => false,
-    ]);
+        $task->subtasks()->create([
+            'title' => $validated['title'],
+            'completed' => false,
+        ]);
 
-//    return Inertia::location(url()->previous());
-return redirect()->back();
+        //    return Inertia::location(url()->previous());
 
-
-}
-
-
-public function destroy(SubTask $subtask)
-{
-    $subtask->delete();
-
-    return redirect()->back();
-
-    //  return Inertia::location(url()->previous());
-
-}
+        return redirect()->back();
+    }
 
 
+    public function destroy(SubTask $subtask)
+    {
+        $subtask->delete();
+
+        return redirect()->back();
+    }
+
+    public function toggleComplete(SubTask $subtask)
+    {
+        $subtask->update([
+            'completed' => ! $subtask->completed,
+            'completed_at' => $subtask->completed ? null : now(),
+        ]);
+
+        return back();
+    }
 }

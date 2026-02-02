@@ -25,6 +25,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/tasks/{task}/subtasks', [SubTaskController::class, 'store']);
     Route::delete('/subtasks/{subtask}', [SubTaskController::class, 'destroy']);
+    Route::patch('/subtasks/{subtask}/toggle', [SubTaskController::class, 'toggleComplete'])
+    ->name('subtasks.toggle');
+
 
     });
 

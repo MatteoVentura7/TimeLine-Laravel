@@ -74,7 +74,7 @@ class TaskController extends Controller
 
         if (!empty($validated['start'])) {
             $task->created_at = Carbon::parse($validated['start']);
-            $task->timestamps = false; // per modificare created_at
+            $task->timestamps = false; 
         }
 
         $task->expiration = $validated['expiration'] ?? null;
@@ -83,9 +83,7 @@ class TaskController extends Controller
         return Inertia::location(url()->previous());
     }
 
-    /**
-     * Toggle completo / undo completo
-     */
+    
     public function toggleComplete(Task $task)
     {
         $task->update([
@@ -96,9 +94,7 @@ class TaskController extends Controller
        return Inertia::location(url()->previous());
     }
 
-    /**
-     * Aggiorna task parzialmente senza cancellare altri campi
-     */
+   
     public function updateTitle(Request $request, Task $task)
     {
         $validated = $request->validate([
@@ -133,9 +129,7 @@ class TaskController extends Controller
         return Inertia::location(url()->previous());
     }
 
-    /**
-     * Completa task con data inserita dalla modal
-     */
+   
     public function complete(Request $request, Task $task)
     {
         $request->validate([
