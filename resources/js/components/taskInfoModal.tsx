@@ -261,11 +261,11 @@ export default function TaskInfoModal({
                             }
                         }}
                         disabled={!isEditing}
-                        className={`flex cursor-pointer items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
+                        className={`flex  items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
                             completed
-                                ? 'text-green-500 hover:text-green-600'
-                                : 'text-gray-600 hover:text-green-500'
-                        } ${!isEditing ? 'cursor-not-allowed opacity-60' : ''} `}
+                                ? 'text-green-500 hover:text-green-600 cursor-pointer'
+                                : 'text-gray-600'
+                        } ${!isEditing ? 'cursor-not-allowed opacity-60' : 'cursor-pointer  hover:text-green-500'} `}
                         title={completed ? 'Undo complete' : 'Complete task'}
                     >
                         {completed ? (

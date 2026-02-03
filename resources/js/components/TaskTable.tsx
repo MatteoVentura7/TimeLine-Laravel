@@ -100,11 +100,11 @@ export default function TaskTable({
                 <thead>
                     <tr className="border-b dark:border-neutral-700">
                         <th className="p-3 text-left">Done</th>
-                        <th className="p-3 text-left">Title</th>
-                        <th className="p-3 text-left">Assigned To</th>
-                        <th className="p-3 text-left">Created At</th>
-                        <th className="p-3 text-left">Expire</th>
-                        <th className="p-3 text-left">Completed On</th>
+                        <th className="p-3 text-left"> <i className="pr-2 fa-solid fa-list-ul"></i>Title</th>
+                        <th className="p-3 text-left">  <i className="pr-2 fa-solid fa-user"></i>To Assigned</th>
+                        <th className="p-3 text-left"> <i className="pr-2 fa-solid fa-hourglass-start"></i>Start</th>
+                        <th className="p-3 text-left"> <i className="pr-2 fa-solid fa-hourglass-end"></i>Expire</th>
+                        <th className="p-3 text-left"> <i className="pr-2 fa-solid fa-check"></i>Completed On</th>
                         <th className="p-3 text-right">Actions</th>
                     </tr>
                 </thead>
@@ -174,6 +174,7 @@ export default function TaskTable({
                                 </td>
                                 <td className="p-3">
                                     {task.expiration_formatted ?? '—'}
+                                    
                                 </td>
                                 <td className="p-3">
                                     {task.completed

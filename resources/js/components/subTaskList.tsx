@@ -69,12 +69,16 @@ export default function SubTaskList({ task }: { task: Task }) {
             ),
         );
 
-        router.patch(`/subtasks/${id}/toggle`, {}, {
-            preserveScroll: true,
-            onError: () => {
-                setSubtasks(previous);
+        router.patch(
+            `/subtasks/${id}/toggle`,
+            {},
+            {
+                preserveScroll: true,
+                onError: () => {
+                    setSubtasks(previous);
+                },
             },
-        });
+        );
     };
 
     return (
@@ -82,14 +86,15 @@ export default function SubTaskList({ task }: { task: Task }) {
             {/* ACCORDION HEADER */}
             <button
                 onClick={() => setOpen(!open)}
+                disabled={showForm}
                 className="flex w-full items-center justify-between p-4 text-sm font-semibold"
             >
                 <span>Subtasks ({subtasks.length})</span>
 
                 <i
-                    className={`fa-solid fa-chevron-down transition-transform duration-200 cursor-pointer ${
+                    className={`fa-solid fa-chevron-down cursor-pointer transition-transform duration-200 ${
                         open ? 'rotate-180' : ''
-                    }`}
+                    } ${showForm ? 'cursor-not-allowed text-gray-300' : ''}`}
                 />
             </button>
 
@@ -107,19 +112,31 @@ export default function SubTaskList({ task }: { task: Task }) {
                                 className="flex items-center justify-between gap-2 text-sm"
                             >
                                 <div className="flex items-center gap-2">
-                                    <i
+                                    <button
+                                        disabled={showForm}
                                         onClick={() => toggleSubTask(st.id)}
-                                        className={`fa-regular cursor-pointer ${
-                                            st.completed
-                                                ? 'fa-square-check text-green-500'
-                                                : 'fa-square'
-                                        }`}
-                                    />
+                                        className="cursor-pointer"
+                                    >
+                                        <i
+                                            className={`fa-regular ${
+                                                st.completed
+                                                    ? 'fa-square-check text-green-500'
+                                                    : 'fa-square'
+                                            } ${showForm ? 'cursor-not-allowed text-gray-300' : ''}`}
+                                        />
+                                    </button>
+
                                     <span>{st.title}</span>
                                 </div>
 
-                                <button onClick={() => deleteSubTask(st.id)}>
-                                    <i className="fa-solid fa-trash text-red-500 hover:text-red-700 cursor-pointer" />
+                                <button
+                                    disabled={showForm}
+                                    onClick={() => deleteSubTask(st.id)}
+                                    className="cursor-pointer"
+                                >
+                                    <i
+                                        className={`fa-solid fa-trash ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-red-500 hover:text-red-700'}`}
+                                    />
                                 </button>
                             </li>
                         ))}
@@ -132,18 +149,19 @@ export default function SubTaskList({ task }: { task: Task }) {
                                 onChange={(e) => setTitle(e.target.value)}
                                 className="flex-1 rounded-lg border px-3 py-1 text-sm"
                                 placeholder="New subtask"
+                                required
                                 disabled={loading}
                             />
                             <button
                                 disabled={loading}
-                                className="rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600 cursor-pointer"
+                                className="cursor-pointer rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
                             >
                                 {loading ? '...' : 'Add'}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setShowForm(false)}
-                                className="rounded-lg bg-gray-500 px-3 py-1 text-white hover:bg-gray-600 cursor-pointer"
+                                className="cursor-pointer rounded-lg bg-gray-500 px-3 py-1 text-white hover:bg-gray-600"
                             >
                                 Cancel
                             </button>
@@ -151,7 +169,7 @@ export default function SubTaskList({ task }: { task: Task }) {
                     ) : (
                         <button
                             onClick={() => setShowForm(true)}
-                            className="mt-4 rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600 cursor-pointer"
+                            className="mt-4 cursor-pointer rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
                         >
                             + Add subtask
                         </button>
