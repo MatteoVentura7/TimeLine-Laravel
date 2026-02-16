@@ -80,7 +80,7 @@ class TaskController extends Controller
         $task->expiration = $validated['expiration'] ?? null;
         $task->save();
 
-        // SOLUZIONE: redirect con preserveState permette a Inertia di aggiornare solo i dati
+      
         return redirect()->back();
     }
 
@@ -92,7 +92,7 @@ class TaskController extends Controller
             'completed_at' => $task->completed ? null : now(),
         ]);
 
-        // SOLUZIONE: redirect con preserveState permette a Inertia di aggiornare solo i dati
+        
         return redirect()->back();
     }
 
@@ -122,7 +122,7 @@ class TaskController extends Controller
 
         $task->update($data);
 
-        // SOLUZIONE: redirect con preserveState permette a Inertia di aggiornare solo i dati
+        
         return redirect()->back();
     }
 
@@ -130,7 +130,7 @@ class TaskController extends Controller
     {
         $task->delete();
         
-        // SOLUZIONE: redirect con preserveState permette a Inertia di aggiornare solo i dati
+        
         return redirect()->back();
     }
 

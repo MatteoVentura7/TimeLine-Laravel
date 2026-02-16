@@ -21,7 +21,6 @@ export default function TableUser({
                 users={users}
                 showEdit={showEdit}
                 onUpdateTask={(updatedTask) => {
-                    // Aggiorna la task via Inertia con opzioni per preservare lo stato
                     Inertia.patch(
                         `/tasks/${updatedTask.id}`,
                         {
@@ -31,25 +30,22 @@ export default function TableUser({
                             completed_at: updatedTask.completed_at_iso,
                         },
                         {
-                            // Preserva la posizione dello scroll
                             preserveScroll: true,
-                            // Preserva lo stato corrente (form aperti, modal, ecc.)
+
                             preserveState: true,
-                            // Dopo il successo, ricarica solo i dati necessari
+
                             onSuccess: () => {
                                 Inertia.reload({ only: ['tasks', 'statistc'] });
                             },
-                        }
+                        },
                     );
                 }}
                 onDeleteTask={(taskId) => {
-                    // Cancella la task via Inertia con opzioni per preservare lo stato
                     Inertia.delete(`/tasks/${taskId}`, {
-                        // Preserva la posizione dello scroll
                         preserveScroll: true,
-                        // Preserva lo stato corrente
+
                         preserveState: true,
-                        // Dopo il successo, ricarica solo i dati necessari
+
                         onSuccess: () => {
                             Inertia.reload({ only: ['tasks', 'statistc'] });
                         },
