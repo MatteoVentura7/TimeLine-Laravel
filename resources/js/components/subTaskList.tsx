@@ -1,5 +1,6 @@
+import { subtasksInfo } from '@/routes';
 import type { SubTask, Task } from '@/types/task-user';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 export default function SubTaskList({ task }: { task: Task }) {
@@ -128,16 +129,28 @@ export default function SubTaskList({ task }: { task: Task }) {
 
                                     <span>{st.title}</span>
                                 </div>
+                                <div className="flex">
+                                    <Link
+                                        as="button"
+                                        disabled={showForm}
+                                        href={subtasksInfo(st.id)}
+                                        className="mr-2 cursor-pointer rounded-sm text-sm"
+                                    >
+                                        <i
+                                            className={`fa-solid fa-circle-info ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-blue-500 hover:text-blue-700'}`}
+                                        ></i>
+                                    </Link>
 
-                                <button
-                                    disabled={showForm}
-                                    onClick={() => deleteSubTask(st.id)}
-                                    className="cursor-pointer"
-                                >
-                                    <i
-                                        className={`fa-solid fa-trash ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-red-500 hover:text-red-700'}`}
-                                    />
-                                </button>
+                                    <button
+                                        disabled={showForm}
+                                        onClick={() => deleteSubTask(st.id)}
+                                        className="cursor-pointer"
+                                    >
+                                        <i
+                                            className={`fa-solid fa-trash ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-red-500 hover:text-red-700'}`}
+                                        />
+                                    </button>
+                                </div>
                             </li>
                         ))}
                     </ul>

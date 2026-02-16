@@ -44,4 +44,12 @@ class SubTaskController extends Controller
 
         return back();
     }
+
+    public function info(SubTask $subtask)
+{
+    return Inertia::render('subtaskInfo', [
+        'subtask' => $subtask->load('task', 'task.user'),
+    ]);
+}
+
 }
