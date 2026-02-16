@@ -1,7 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
 import { subtasksInfo } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+import { useState } from 'react';
 
 export default function SubtaskInfo({ subtask }: any) {
     const breadcrumbs: BreadcrumbItem[] = [
@@ -13,12 +14,31 @@ export default function SubtaskInfo({ subtask }: any) {
 
     const isCompleted = subtask.completed;
 
+    const [isEditing, setIsEditing] = useState(false);
+    const [title, setTitle] = useState(subtask.title);
+
+    const handleUpdate = () => {
+        router.patch(
+            `/subtasks/${subtask.id}`,
+            { title },
+            {
+                onSuccess: () => setIsEditing(false),
+            },
+        );
+    };
+
+    const handleDelete = () => {
+        if (confirm('Are you sure you want to delete this subtask?')) {
+            router.delete(`/subtasks/${subtask.id}`, {});
+        }
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Subtask Details" />
 
             <div className="min-h-screen bg-gray-50 px-4 py-10">
-                <div className="mx-auto max-w-4xl space-y-6"> 
+                <div className="mx-auto max-w-4xl space-y-6">
                     <button
                         onClick={() => window.history.back()}
                         className="text-sm text-gray-500 transition hover:text-gray-900"
@@ -31,14 +51,28 @@ export default function SubtaskInfo({ subtask }: any) {
                             <div>
                                 <p className="text-md font-bold text-gray-500">
                                     Task{' '}
-                                    <span className="ml-1 text-md font-light text-gray-400">
+                                    <span className="text-md ml-1 font-light text-gray-400">
                                         {subtask.task.title}
                                     </span>
                                 </p>
-<h1 className="mt-4 text-xl font-bold text-gray-900">Subtask</h1>
-                                <h1 className="mt-2 text-xl font-light text-gray-700">
-                                    {subtask.title}
+
+                                <h1 className="mt-4 text-xl font-bold text-gray-900">
+                                    Subtask
                                 </h1>
+
+                                {isEditing ? (
+                                    <input
+                                        value={title}
+                                        onChange={(e) =>
+                                            setTitle(e.target.value)
+                                        }
+                                        className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-xl font-light focus:border-blue-500 focus:outline-none"
+                                    />
+                                ) : (
+                                    <h1 className="mt-2 text-xl font-light text-gray-700">
+                                        {subtask.title}
+                                    </h1>
+                                )}
                             </div>
 
                             <span
@@ -53,13 +87,42 @@ export default function SubtaskInfo({ subtask }: any) {
                         </div>
 
                         <div className="mt-8 flex gap-3">
-                            <a className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700">
-                                Edit
-                            </a>
+                            {isEditing ? (
+                                <>
+                                    <button
+                                        onClick={handleUpdate}
+                                        className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700"
+                                    >
+                                        Save
+                                    </button>
 
-                            <button className="rounded-lg bg-red-50 px-5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100">
-                                Delete
-                            </button>
+                                    <button
+                                        onClick={() => {
+                                            setIsEditing(false);
+                                            setTitle(subtask.title);
+                                        }}
+                                        className="rounded-lg bg-gray-100 px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
+                                    >
+                                        Cancel
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button
+                                        onClick={() => setIsEditing(true)}
+                                        className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
+                                    >
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        onClick={handleDelete}
+                                        className="rounded-lg bg-red-50 px-5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100"
+                                    >
+                                        Delete
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
 
