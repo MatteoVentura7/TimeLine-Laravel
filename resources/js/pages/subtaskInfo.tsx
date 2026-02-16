@@ -29,14 +29,14 @@ export default function SubtaskInfo({ subtask }: any) {
                     <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-lg">
                         <div className="flex items-start justify-between">
                             <div>
-                                <p className="text-md tracking-wide text-gray-400">
+                                <p className="text-md font-bold text-gray-500">
                                     Task{' '}
-                                    <span className="ml-2 text-lg font-bold text-gray-500">
+                                    <span className="ml-1 text-md font-light text-gray-400">
                                         {subtask.task.title}
                                     </span>
                                 </p>
-
-                                <h1 className="mt-4 text-xl font-bold text-gray-800">
+<h1 className="mt-4 text-xl font-bold text-gray-900">Subtask</h1>
+                                <h1 className="mt-2 text-xl font-light text-gray-700">
                                     {subtask.title}
                                 </h1>
                             </div>
