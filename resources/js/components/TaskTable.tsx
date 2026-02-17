@@ -10,6 +10,8 @@ interface TaskTableProps {
     onUpdateTask: (task: Task) => void;
     onDeleteTask: (taskId: number) => void;
     showEdit?: boolean;
+    openTaskId?: number | null;
+    onTaskOpened?: () => void;
 }
 
 export default function TaskTable({
@@ -18,6 +20,8 @@ export default function TaskTable({
     onUpdateTask,
     onDeleteTask,
     showEdit = false,
+    openTaskId,
+    onTaskOpened,
 }: TaskTableProps) {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editTitle, setEditTitle] = useState('');
@@ -36,6 +40,17 @@ export default function TaskTable({
             if (updated) setSelectedTask(updated);
         }
     }, [tasks]);
+
+    useEffect(() => {
+        if (openTaskId && tasks.length > 0) {
+            const task = tasks.find((t) => t.id === openTaskId);
+            if (task) {
+                setSelectedTask(task);
+                setInfoModalOpen(true);
+                onTaskOpened?.();
+            }
+        }
+    }, [openTaskId, tasks]);
 
     const saveEdit = (task: Task) => {
         onUpdateTask({

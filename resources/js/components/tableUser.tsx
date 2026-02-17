@@ -7,12 +7,16 @@ interface TableUserProps {
     users: User[];
     showEdit?: boolean;
     onEditChange: React.Dispatch<React.SetStateAction<boolean>>;
+    openTaskId?: number | null;
+    onTaskOpened?: () => void;
 }
 
 export default function TableUser({
     tasks,
     users,
     showEdit = false,
+    openTaskId,
+    onTaskOpened,
 }: TableUserProps) {
     return (
         <div className="flex h-full flex-col">
@@ -20,6 +24,8 @@ export default function TableUser({
                 tasks={tasks}
                 users={users}
                 showEdit={showEdit}
+                openTaskId={openTaskId}
+                onTaskOpened={onTaskOpened}
                 onUpdateTask={(updatedTask) => {
                     Inertia.patch(
                         `/tasks/${updatedTask.id}`,

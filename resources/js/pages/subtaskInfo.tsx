@@ -17,6 +17,15 @@ export default function SubtaskInfo({ subtask }: any) {
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState(subtask.title);
 
+    const handleBack = () => {
+        const params = new URLSearchParams(window.location.search);
+        const fromTask = params.get('from_task');
+        const url = fromTask
+            ? `${dashboardActivity().url}?open_task=${fromTask}`
+            : dashboardActivity().url;
+        router.visit(url);
+    };
+
     const handleUpdate = () => {
         router.patch(
             `/subtasks/${subtask.id}`,
@@ -41,7 +50,7 @@ export default function SubtaskInfo({ subtask }: any) {
             <div className="min-h-screen bg-gray-50 px-4 py-10">
                 <div className="mx-auto max-w-4xl space-y-6">
                     <button
-                        onClick={() => router.visit(dashboardActivity().url)}
+                        onClick={handleBack}
                         className="text-sm text-gray-500 transition hover:text-gray-900"
                     >
                         ← Back

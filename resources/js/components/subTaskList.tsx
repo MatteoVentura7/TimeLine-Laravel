@@ -130,7 +130,7 @@ export default function SubTaskList({ task }: { task: Task }) {
                                     <Link
                                         as="button"
                                         disabled={showForm}
-                                        href={subtasksInfo(st.id)}
+                                        href={`${subtasksInfo(st.id).url}?from_task=${task.id}`}
                                         className="mr-2 cursor-pointer rounded-sm text-sm"
                                     >
                                         <i
