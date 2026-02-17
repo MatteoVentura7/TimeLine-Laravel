@@ -1,3 +1,4 @@
+import ConfirmDeleteModal from '@/components/confirmDeleteModal';
 import AppLayout from '@/layouts/app-layout';
 import { subtasksInfo, dashboardActivity } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -16,6 +17,7 @@ export default function SubtaskInfo({ subtask }: any) {
 
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState(subtask.title);
+    const [confirmOpen, setConfirmOpen] = useState(false);
 
     const handleBack = () => {
         const params = new URLSearchParams(window.location.search);
@@ -38,9 +40,7 @@ export default function SubtaskInfo({ subtask }: any) {
     };
 
     const handleDelete = () => {
-        if (confirm('Are you sure you want to delete this subtask?')) {
-            router.delete(`/subtasks/${subtask.id}`, {});
-        }
+        router.delete(`/subtasks/${subtask.id}`, {});
     };
 
     return (
@@ -126,7 +126,7 @@ export default function SubtaskInfo({ subtask }: any) {
                                     </button>
 
                                     <button
-                                        onClick={handleDelete}
+                                        onClick={() => setConfirmOpen(true)}
                                         className="rounded-lg bg-red-50 px-5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100"
                                     >
                                         Delete
@@ -181,6 +181,13 @@ export default function SubtaskInfo({ subtask }: any) {
                     </div>
                 </div>
             </div>
+
+            <ConfirmDeleteModal
+                open={confirmOpen}
+                message="Are you sure you want to delete this subtask?"
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={handleDelete}
+            />
         </AppLayout>
     );
 }

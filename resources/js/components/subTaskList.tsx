@@ -1,3 +1,4 @@
+import ConfirmDeleteModal from '@/components/confirmDeleteModal';
 import { subtasksInfo } from '@/routes';
 import type { SubTask, Task } from '@/types/task-user';
 import { Link, router } from '@inertiajs/react';
@@ -9,6 +10,8 @@ export default function SubTaskList({ task }: { task: Task }) {
     const [title, setTitle] = useState('');
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(true);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [subtaskToDelete, setSubtaskToDelete] = useState<number | null>(null);
 
     useEffect(() => {
         setSubtasks(task.subtasks);
@@ -42,8 +45,18 @@ export default function SubTaskList({ task }: { task: Task }) {
         );
     };
 
-    const deleteSubTask = (id: number) => {
+    const askDeleteSubTask = (id: number) => {
+        setSubtaskToDelete(id);
+        setConfirmOpen(true);
+    };
+
+    const deleteSubTask = () => {
+        if (!subtaskToDelete) return;
+        const id = subtaskToDelete;
         const previous = subtasks;
+
+        setConfirmOpen(false);
+        setSubtaskToDelete(null);
         setSubtasks((prev) => prev.filter((st) => st.id !== id));
 
         router.delete(`/subtasks/${id}`, {
@@ -80,6 +93,7 @@ export default function SubTaskList({ task }: { task: Task }) {
     };
 
     return (
+        <>
         <div className="rounded-lg border bg-gray-50 dark:bg-neutral-800">
             {/* ACCORDION HEADER */}
             <button
@@ -140,7 +154,7 @@ export default function SubTaskList({ task }: { task: Task }) {
 
                                     <button
                                         disabled={showForm}
-                                        onClick={() => deleteSubTask(st.id)}
+                                        onClick={() => askDeleteSubTask(st.id)}
                                         className="cursor-pointer"
                                     >
                                         <i
@@ -187,5 +201,16 @@ export default function SubTaskList({ task }: { task: Task }) {
                 </div>
             </div>
         </div>
+
+        <ConfirmDeleteModal
+            open={confirmOpen}
+            message="Are you sure you want to delete this subtask?"
+            onClose={() => {
+                setConfirmOpen(false);
+                setSubtaskToDelete(null);
+            }}
+            onConfirm={deleteSubTask}
+        />
+        </>
     );
 }
