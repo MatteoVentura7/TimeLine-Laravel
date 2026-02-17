@@ -1,5 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
-import { subtasksInfo } from '@/routes';
+import { subtasksInfo, dashboardActivity } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -22,6 +22,7 @@ export default function SubtaskInfo({ subtask }: any) {
             `/subtasks/${subtask.id}`,
             { title },
             {
+                preserveState: false,
                 onSuccess: () => setIsEditing(false),
             },
         );
@@ -40,7 +41,7 @@ export default function SubtaskInfo({ subtask }: any) {
             <div className="min-h-screen bg-gray-50 px-4 py-10">
                 <div className="mx-auto max-w-4xl space-y-6">
                     <button
-                        onClick={() => window.history.back()}
+                        onClick={() => router.visit(dashboardActivity().url)}
                         className="text-sm text-gray-500 transition hover:text-gray-900"
                     >
                         ← Back

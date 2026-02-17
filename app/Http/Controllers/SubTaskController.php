@@ -32,8 +32,7 @@ class SubTaskController extends Controller
     {
         $subtask->delete();
 
-       
-    return redirect()->route('dashboardActivity'); 
+        return redirect()->route('dashboardActivity');
     }
 
     public function toggleComplete(SubTask $subtask)

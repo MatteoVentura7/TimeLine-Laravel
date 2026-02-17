@@ -8,7 +8,7 @@ export default function SubTaskList({ task }: { task: Task }) {
     const [showForm, setShowForm] = useState(false);
     const [title, setTitle] = useState('');
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
 
     useEffect(() => {
         setSubtasks(task.subtasks);
@@ -18,18 +18,6 @@ export default function SubTaskList({ task }: { task: Task }) {
         e.preventDefault();
         if (!title.trim()) return;
 
-        const tempId = Date.now();
-
-        const optimisticSubtask: SubTask = {
-            id: tempId,
-            title,
-            completed: false,
-        };
-
-        setSubtasks((prev) => [...prev, optimisticSubtask]);
-        setTitle('');
-        setShowForm(false);
-        setOpen(true);
         setLoading(true);
 
         router.post(
@@ -37,10 +25,15 @@ export default function SubTaskList({ task }: { task: Task }) {
             { title },
             {
                 preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    setTitle('');
+                    setShowForm(false);
+                    setOpen(true);
+                    router.reload({ only: ['tasks'] });
+                },
                 onError: () => {
-                    setSubtasks((prev) =>
-                        prev.filter((st) => st.id !== tempId),
-                    );
+                    setLoading(false);
                 },
                 onFinish: () => {
                     setLoading(false);
@@ -55,6 +48,10 @@ export default function SubTaskList({ task }: { task: Task }) {
 
         router.delete(`/subtasks/${id}`, {
             preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                router.reload({ only: ['tasks'] });
+            },
             onError: () => {
                 setSubtasks(previous);
             },

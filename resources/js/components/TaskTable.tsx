@@ -1,5 +1,5 @@
 import type { Task, User } from '@/types/task-user';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CompleteTaskModal from './CompleteTaskModal';
 import ConfirmDeleteModal from './confirmDeleteModal';
 import TaskInfoModal from './taskInfoModal';
@@ -29,6 +29,13 @@ export default function TaskTable({
     const [completedAt, setCompletedAt] = useState('');
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (selectedTask) {
+            const updated = tasks.find((t) => t.id === selectedTask.id);
+            if (updated) setSelectedTask(updated);
+        }
+    }, [tasks]);
 
     const saveEdit = (task: Task) => {
         onUpdateTask({
