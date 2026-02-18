@@ -39,6 +39,16 @@ export default function SubtaskInfo({ subtask }: any) {
         );
     };
 
+    const handleToggleComplete = () => {
+        router.patch(
+            `/subtasks/${subtask.id}/toggle`,
+            {},
+            {
+                preserveState: false,
+            },
+        );
+    };
+
     const handleDelete = () => {
         router.delete(`/subtasks/${subtask.id}`, {});
     };
@@ -85,15 +95,16 @@ export default function SubtaskInfo({ subtask }: any) {
                                 )}
                             </div>
 
-                            <span
-                                className={`rounded-full px-4 py-1.5 text-sm font-semibold ${
+                            <button
+                                onClick={handleToggleComplete}
+                                className={`rounded-full px-4 py-1.5 text-sm font-semibold transition cursor-pointer ${
                                     isCompleted
-                                        ? 'bg-green-50 text-green-600'
-                                        : 'bg-yellow-50 text-yellow-600'
+                                        ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                                        : 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
                                 }`}
                             >
-                                {isCompleted ? 'Completed' : 'Pending'}
-                            </span>
+                                {isCompleted ? '✓ Completed' : '○ Pending'}
+                            </button>
                         </div>
 
                         <div className="mt-8 flex gap-3">
