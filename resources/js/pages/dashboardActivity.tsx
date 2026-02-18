@@ -29,6 +29,7 @@ export default function DashboardActivity({
     const [searchMessage, setSearchMessage] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openTaskId, setOpenTaskId] = useState<number | null>(null);
 
     useEffect(() => {
         const storedSearch = localStorage.getItem('searchTerm');
@@ -37,6 +38,15 @@ export default function DashboardActivity({
             setSearchMessage(
                 `Search results with the word : "${storedSearch}"`,
             );
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const fromTask = params.get('open_task');
+        if (fromTask) {
+            setOpenTaskId(Number(fromTask));
+            // pulisce il param dall'URL senza ricaricare la pagina
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
         }
     }, []);
 
@@ -129,6 +139,8 @@ export default function DashboardActivity({
                         showEdit={true}
                         onEditChange={setIsEditing}
                         users={users}
+                        openTaskId={openTaskId}
+                        onTaskOpened={() => setOpenTaskId(null)}
                     />
 
                     {/* PAGINATION */}

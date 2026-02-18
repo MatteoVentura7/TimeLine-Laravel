@@ -1,12 +1,14 @@
 import ListItem from '@/components/listItem';
 import TaskForm from '@/components/taskForm';
+import TaskInfoModal from '@/components/taskInfoModal';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
 import ChartCounter from '../components/chartCounter';
-import type { TaskPagination,User } from '@/types/task-user'
+import type { TaskPagination, User, Task } from '@/types/task-user'
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -25,6 +27,21 @@ export default function Dashboard({
     statistc: { todo: number; done: number };
     users: User[];
 }) {
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [modalOpen, setModalOpen] = useState(false);
+
+    useEffect(() => {
+        if (selectedTask) {
+            const updated = tasks.data.find((t) => t.id === selectedTask.id);
+            if (updated) setSelectedTask(updated);
+        }
+    }, [tasks.data]);
+
+    const handleTaskClick = (task: Task) => {
+        setSelectedTask(task);
+        setModalOpen(true);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -33,7 +50,7 @@ export default function Dashboard({
                     <div className="relative aspect-video min-h-95 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* LISTA TASK */}
 
-                        <ListItem tasks={tasks.data} />
+                        <ListItem tasks={tasks.data} onTaskClick={handleTaskClick} />
                     </div>
 
                     <div className="relative flex aspect-video min-h-95 w-full items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
@@ -53,6 +70,16 @@ export default function Dashboard({
                     <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                 </div>
             </div>
+
+            <TaskInfoModal
+                task={selectedTask}
+                users={users}
+                open={modalOpen}
+                onClose={() => {
+                    setModalOpen(false);
+                    setSelectedTask(null);
+                }}
+            />
         </AppLayout>
     );
 }

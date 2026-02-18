@@ -1,5 +1,7 @@
+import ConfirmDeleteModal from '@/components/confirmDeleteModal';
+import { subtasksInfo } from '@/routes';
 import type { SubTask, Task } from '@/types/task-user';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 export default function SubTaskList({ task }: { task: Task }) {
@@ -7,7 +9,9 @@ export default function SubTaskList({ task }: { task: Task }) {
     const [showForm, setShowForm] = useState(false);
     const [title, setTitle] = useState('');
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [subtaskToDelete, setSubtaskToDelete] = useState<number | null>(null);
 
     useEffect(() => {
         setSubtasks(task.subtasks);
@@ -17,18 +21,6 @@ export default function SubTaskList({ task }: { task: Task }) {
         e.preventDefault();
         if (!title.trim()) return;
 
-        const tempId = Date.now();
-
-        const optimisticSubtask: SubTask = {
-            id: tempId,
-            title,
-            completed: false,
-        };
-
-        setSubtasks((prev) => [...prev, optimisticSubtask]);
-        setTitle('');
-        setShowForm(false);
-        setOpen(true);
         setLoading(true);
 
         router.post(
@@ -36,10 +28,15 @@ export default function SubTaskList({ task }: { task: Task }) {
             { title },
             {
                 preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    setTitle('');
+                    setShowForm(false);
+                    setOpen(true);
+                    router.reload({ only: ['tasks'] });
+                },
                 onError: () => {
-                    setSubtasks((prev) =>
-                        prev.filter((st) => st.id !== tempId),
-                    );
+                    setLoading(false);
                 },
                 onFinish: () => {
                     setLoading(false);
@@ -48,12 +45,26 @@ export default function SubTaskList({ task }: { task: Task }) {
         );
     };
 
-    const deleteSubTask = (id: number) => {
+    const askDeleteSubTask = (id: number) => {
+        setSubtaskToDelete(id);
+        setConfirmOpen(true);
+    };
+
+    const deleteSubTask = () => {
+        if (!subtaskToDelete) return;
+        const id = subtaskToDelete;
         const previous = subtasks;
+
+        setConfirmOpen(false);
+        setSubtaskToDelete(null);
         setSubtasks((prev) => prev.filter((st) => st.id !== id));
 
         router.delete(`/subtasks/${id}`, {
             preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                router.reload({ only: ['tasks'] });
+            },
             onError: () => {
                 setSubtasks(previous);
             },
@@ -82,6 +93,7 @@ export default function SubTaskList({ task }: { task: Task }) {
     };
 
     return (
+        <>
         <div className="rounded-lg border bg-gray-50 dark:bg-neutral-800">
             {/* ACCORDION HEADER */}
             <button
@@ -128,16 +140,28 @@ export default function SubTaskList({ task }: { task: Task }) {
 
                                     <span>{st.title}</span>
                                 </div>
+                                <div className="flex">
+                                    <Link
+                                        as="button"
+                                        disabled={showForm}
+                                        href={`${subtasksInfo(st.id).url}?from_task=${task.id}`}
+                                        className="mr-2 cursor-pointer rounded-sm text-sm"
+                                    >
+                                        <i
+                                            className={`fa-solid fa-circle-info ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-blue-500 hover:text-blue-700'}`}
+                                        ></i>
+                                    </Link>
 
-                                <button
-                                    disabled={showForm}
-                                    onClick={() => deleteSubTask(st.id)}
-                                    className="cursor-pointer"
-                                >
-                                    <i
-                                        className={`fa-solid fa-trash ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-red-500 hover:text-red-700'}`}
-                                    />
-                                </button>
+                                    <button
+                                        disabled={showForm}
+                                        onClick={() => askDeleteSubTask(st.id)}
+                                        className="cursor-pointer"
+                                    >
+                                        <i
+                                            className={`fa-solid fa-trash ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-red-500 hover:text-red-700'}`}
+                                        />
+                                    </button>
+                                </div>
                             </li>
                         ))}
                     </ul>
@@ -177,5 +201,16 @@ export default function SubTaskList({ task }: { task: Task }) {
                 </div>
             </div>
         </div>
+
+        <ConfirmDeleteModal
+            open={confirmOpen}
+            message="Are you sure you want to delete this subtask?"
+            onClose={() => {
+                setConfirmOpen(false);
+                setSubtaskToDelete(null);
+            }}
+            onConfirm={deleteSubTask}
+        />
+        </>
     );
 }

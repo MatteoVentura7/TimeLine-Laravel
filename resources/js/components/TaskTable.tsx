@@ -1,5 +1,5 @@
 import type { Task, User } from '@/types/task-user';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CompleteTaskModal from './CompleteTaskModal';
 import ConfirmDeleteModal from './confirmDeleteModal';
 import TaskInfoModal from './taskInfoModal';
@@ -10,6 +10,8 @@ interface TaskTableProps {
     onUpdateTask: (task: Task) => void;
     onDeleteTask: (taskId: number) => void;
     showEdit?: boolean;
+    openTaskId?: number | null;
+    onTaskOpened?: () => void;
 }
 
 export default function TaskTable({
@@ -18,6 +20,8 @@ export default function TaskTable({
     onUpdateTask,
     onDeleteTask,
     showEdit = false,
+    openTaskId,
+    onTaskOpened,
 }: TaskTableProps) {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editTitle, setEditTitle] = useState('');
@@ -29,6 +33,24 @@ export default function TaskTable({
     const [completedAt, setCompletedAt] = useState('');
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (selectedTask) {
+            const updated = tasks.find((t) => t.id === selectedTask.id);
+            if (updated) setSelectedTask(updated);
+        }
+    }, [tasks]);
+
+    useEffect(() => {
+        if (openTaskId && tasks.length > 0) {
+            const task = tasks.find((t) => t.id === openTaskId);
+            if (task) {
+                setSelectedTask(task);
+                setInfoModalOpen(true);
+                onTaskOpened?.();
+            }
+        }
+    }, [openTaskId, tasks]);
 
     const saveEdit = (task: Task) => {
         onUpdateTask({

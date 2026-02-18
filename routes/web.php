@@ -18,17 +18,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('tasks', [TaskController::class, 'store'])->name('tasks.store');
     Route::patch('tasks/{task}', [TaskController::class, 'updateTitle'])->name('tasks.updateTitle');
     Route::patch('tasks/{task}/toggle', [TaskController::class, 'update'])->name('tasks.toggle');
-    Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy'); 
+    Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete']);
 
     // ------ SUBTASKS ------- //
 
     Route::post('/tasks/{task}/subtasks', [SubTaskController::class, 'store']);
-    Route::delete('/subtasks/{subtask}', [SubTaskController::class, 'destroy']);
-    Route::patch('/subtasks/{subtask}/toggle', [SubTaskController::class, 'toggleComplete'])
-    ->name('subtasks.toggle');
-
-
-    });
+    Route::patch('/subtasks/{subtask}', [SubTaskController::class, 'update']) ->name('subtasks.update');
+    Route::delete('/subtasks/{subtask}', [SubTaskController::class, 'destroy'])->name('subtasks.destroy');
+    Route::patch('/subtasks/{subtask}/toggle', [SubTaskController::class, 'toggleComplete']) ->name('subtasks.toggle');
+    Route::get('/subtasks/{subtask}/info', [SubTaskController::class, 'info'])->name('subtasksInfo');
+});
 
 require __DIR__ . '/settings.php';

@@ -80,7 +80,8 @@ class TaskController extends Controller
         $task->expiration = $validated['expiration'] ?? null;
         $task->save();
 
-        return Inertia::location(url()->previous());
+      
+        return redirect()->back();
     }
 
     
@@ -91,7 +92,8 @@ class TaskController extends Controller
             'completed_at' => $task->completed ? null : now(),
         ]);
 
-       return Inertia::location(url()->previous());
+        
+        return redirect()->back();
     }
 
    
@@ -120,13 +122,16 @@ class TaskController extends Controller
 
         $task->update($data);
 
-         return Inertia::location(url()->previous());
+        
+        return redirect()->back();
     }
 
     public function destroy(Task $task)
     {
         $task->delete();
-        return Inertia::location(url()->previous());
+        
+        
+        return redirect()->back();
     }
 
    
@@ -150,9 +155,8 @@ class TaskController extends Controller
             'completed_at' => Carbon::parse($request->completed_at),
         ]);
 
-        return back();
+        return redirect()->back();
     }
 
     
 }
-

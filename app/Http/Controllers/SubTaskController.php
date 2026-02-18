@@ -22,7 +22,7 @@ class SubTaskController extends Controller
             'completed' => false,
         ]);
 
-        //    return Inertia::location(url()->previous());
+
 
         return redirect()->back();
     }
@@ -32,7 +32,7 @@ class SubTaskController extends Controller
     {
         $subtask->delete();
 
-        return redirect()->back();
+        return redirect()->route('dashboardActivity');
     }
 
     public function toggleComplete(SubTask $subtask)
@@ -43,5 +43,25 @@ class SubTaskController extends Controller
         ]);
 
         return back();
+    }
+
+    public function info(SubTask $subtask)
+    {
+        return Inertia::render('subtaskInfo', [
+            'subtask' => $subtask->load('task', 'task.user'),
+        ]);
+    }
+
+    public function update(Request $request, SubTask $subtask)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+        ]);
+
+        $subtask->update([
+            'title' => $validated['title'],
+        ]);
+
+        return redirect()->back();
     }
 }
