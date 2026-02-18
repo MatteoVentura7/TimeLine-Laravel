@@ -3,8 +3,10 @@ import type { Task } from '@/types/task-user';
 
 export default function ListItem({
     tasks = [],
+    onTaskClick,
 }: {
     tasks: Task[];
+    onTaskClick?: (task: Task) => void;
     showEdit?: boolean;
     onEditChange?: (value: boolean) => void;
 }) {
@@ -30,7 +32,8 @@ export default function ListItem({
                         return (
                             <li
                                 key={task.id}
-                                className="flex items-center justify-between rounded-xl bg-white p-4 shadow hover:shadow-lg dark:bg-neutral-800"
+                                onClick={() => onTaskClick?.(task)}
+                                className="flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 shadow transition-all hover:shadow-lg hover:scale-[1.02] dark:bg-neutral-800"
                             >
                                 <div className="flex items-center space-x-3">
                                     <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
