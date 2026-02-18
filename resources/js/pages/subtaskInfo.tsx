@@ -1,6 +1,6 @@
 import ConfirmDeleteModal from '@/components/confirmDeleteModal';
 import AppLayout from '@/layouts/app-layout';
-import { subtasksInfo, dashboardActivity } from '@/routes';
+import { dashboardActivity, subtasksInfo } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -97,7 +97,7 @@ export default function SubtaskInfo({ subtask }: any) {
 
                             <button
                                 onClick={handleToggleComplete}
-                                className={`rounded-full px-4 py-1.5 text-sm font-semibold transition cursor-pointer ${
+                                className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold transition ${
                                     isCompleted
                                         ? 'bg-green-50 text-green-600 hover:bg-green-100'
                                         : 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'

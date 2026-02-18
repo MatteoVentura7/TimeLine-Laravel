@@ -9,6 +9,14 @@ class SubTask extends Model
         'task_id',
         'title',
         'completed',
+        'completed_at',
+    ];
+
+    protected $casts = [
+        'completed' => 'boolean',
+        'completed_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function task()
