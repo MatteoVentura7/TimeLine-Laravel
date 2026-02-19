@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import CompleteTaskModal from './CompleteTaskModal';
 import ConfirmDeleteModal from './confirmDeleteModal';
 import TaskInfoModal from './taskInfoModal';
+import Modal from './modal';
+import { router } from '@inertiajs/react';
 
 interface TaskTableProps {
     tasks: Task[];
@@ -33,6 +35,10 @@ export default function TaskTable({
     const [completedAt, setCompletedAt] = useState('');
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
+    const [addSubtaskModalOpen, setAddSubtaskModalOpen] = useState(false);
+    const [taskForSubtask, setTaskForSubtask] = useState<Task | null>(null);
+    const [subtaskTitle, setSubtaskTitle] = useState('');
+    const [subtaskLoading, setSubtaskLoading] = useState(false);
 
     useEffect(() => {
         if (selectedTask) {
@@ -51,6 +57,40 @@ export default function TaskTable({
             }
         }
     }, [openTaskId, tasks]);
+
+    const openAddSubtaskModal = (task: Task) => {
+        setTaskForSubtask(task);
+        setSubtaskTitle('');
+        setAddSubtaskModalOpen(true);
+    };
+
+    const handleAddSubtask = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!taskForSubtask || !subtaskTitle.trim()) return;
+
+        setSubtaskLoading(true);
+
+        router.post(
+            `/tasks/${taskForSubtask.id}/subtasks`,
+            { title: subtaskTitle },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    setAddSubtaskModalOpen(false);
+                    setTaskForSubtask(null);
+                    setSubtaskTitle('');
+                    router.reload({ only: ['tasks'] });
+                },
+                onError: () => {
+                    setSubtaskLoading(false);
+                },
+                onFinish: () => {
+                    setSubtaskLoading(false);
+                },
+            },
+        );
+    };
 
     const saveEdit = (task: Task) => {
         onUpdateTask({
@@ -206,6 +246,13 @@ export default function TaskTable({
 
                                 <td className="p-3 text-right whitespace-nowrap">
                                     <button
+                                        onClick={() => openAddSubtaskModal(task)}
+                                        className="mr-3 cursor-pointer text-green-500 hover:text-green-700"
+                                        title="Add subtask"
+                                    >
+                                        <i className="fa-solid fa-plus"></i>
+                                    </button>
+                                    <button
                                         onClick={() => openInfoModal(task)}
                                         className="mr-3 cursor-pointer text-blue-500"
                                     >
@@ -256,6 +303,57 @@ export default function TaskTable({
                 }}
                 onConfirm={confirmDelete}
             />
+
+            {/* Add Subtask Modal */}
+            <Modal
+                open={addSubtaskModalOpen}
+                onClose={() => {
+                    setAddSubtaskModalOpen(false);
+                    setTaskForSubtask(null);
+                    setSubtaskTitle('');
+                }}
+                title="Add Subtask"
+                width="w-96"
+            >
+                <form onSubmit={handleAddSubtask} className="space-y-4">
+                    <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Task: {taskForSubtask?.title}
+                        </label>
+                        <input
+                            type="text"
+                            value={subtaskTitle}
+                            onChange={(e) => setSubtaskTitle(e.target.value)}
+                            placeholder="Subtask title"
+                            required
+                            disabled={subtaskLoading}
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                            autoFocus
+                        />
+                    </div>
+                    <div className="flex justify-end gap-2">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setAddSubtaskModalOpen(false);
+                                setTaskForSubtask(null);
+                                setSubtaskTitle('');
+                            }}
+                            disabled={subtaskLoading}
+                            className="cursor-pointer rounded-lg bg-gray-200 px-4 py-2 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={subtaskLoading}
+                            className="cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {subtaskLoading ? 'Adding...' : 'Add'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }
