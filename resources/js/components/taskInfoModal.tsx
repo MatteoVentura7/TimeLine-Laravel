@@ -190,7 +190,13 @@ export default function TaskInfoModal({
                 <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4 shadow-sm transition dark:bg-neutral-700">
                     {isEditing ? (
                         <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
-                            <i className="fa-solid fa-list-check text-blue-500"></i>
+                             <i
+                                className={`fa-solid fa-list-check ${
+                                    completed
+                                        ? 'text-green-500'
+                                        : 'text-blue-500'
+                                }`}
+                            ></i>
                             <input
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}

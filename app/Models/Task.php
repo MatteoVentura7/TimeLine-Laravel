@@ -28,7 +28,9 @@ class Task extends Model
         'created_at_formatted',
         'completed_at_formatted',
         'created_at_iso',
-        'expiration_formatted'
+        'completed_at_iso',
+        'expiration_formatted',
+        'expiration_iso',
     ];
 
     public function user()
@@ -65,6 +67,20 @@ class Task extends Model
 {
     return $this->expiration
         ? $this->expiration->setTimezone('Europe/Rome')->format('d/m/Y H:i')
+        : null;
+}
+
+public function getCompletedAtIsoAttribute()
+{
+    return $this->completed_at
+        ? $this->completed_at->utc()->toISOString()
+        : null;
+}
+
+public function getExpirationIsoAttribute()
+{
+    return $this->expiration
+        ? $this->expiration->utc()->toISOString()
         : null;
 }
 
