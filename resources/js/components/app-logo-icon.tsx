@@ -2,6 +2,6 @@ import { SVGAttributes } from 'react';
 
 export default function AppLogoIcon(props: SVGAttributes<SVGElement>) {
     return (
-        <img src="logo-only.png" alt="" />
+        <img src="/logo-only.png" alt="Logo"  />
     );
 }
