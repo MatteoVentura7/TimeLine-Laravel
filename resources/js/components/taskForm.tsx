@@ -1,9 +1,18 @@
 import { useState } from 'react';
 import { queryParams } from '@/wayfinder';
 import { router, useForm } from '@inertiajs/react';
-import type {User } from '@/types/task-user'
-
-
+import type { User } from '@/types/task-user';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 
 interface TaskFormProps {
     users: User[];
@@ -38,94 +47,99 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
     const isDisabled = processing || submitted;
 
     return (
-        <form onSubmit={submit} className="space-y-6">
+        <form onSubmit={submit} className="space-y-4 p-4 mt-2 mb-2">
             <fieldset disabled={isDisabled} className="space-y-4">
                 {/* Activity */}
-                <div className="flex flex-col">
-                    <label htmlFor="title" className="mb-1 text-sm font-medium text-gray-700">
-                        Activity
-                    </label>
-                    <input
+                <div className="space-y-2">
+                    <Label htmlFor="title">Activity</Label>
+                    <Input
                         id="title"
                         type="text"
                         value={data.title}
                         onChange={(e) => setData('title', e.target.value)}
                         placeholder="Enter activity..."
                         required
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2
-                                   focus:outline-none focus:ring-2 focus:ring-blue-500
-                                   focus:border-blue-500 shadow-sm transition"
+                        className="w-full"
                     />
                 </div>
 
                 {/* Assigned User */}
-                <div className="flex flex-col">
-                    <label htmlFor="user_id" className="mb-1 text-sm font-medium text-gray-700">
-                        Assigned
-                    </label>
-                    <select
-                        id="user_id"
+                <div className="space-y-2">
+                    <Label htmlFor="user_id">Assigned To</Label>
+                    <Select
                         value={data.user_id}
-                        onChange={(e) => setData('user_id', e.target.value)}
+                        onValueChange={(value) => setData('user_id', value)}
                         required
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2
-                                   focus:outline-none focus:ring-2 focus:ring-blue-500
-                                   focus:border-blue-500 shadow-sm transition"
                     >
-                        <option value="">Select user...</option>
-                        {users.map((user) => (
-                            <option key={user.id} value={user.id}>
-                                {user.name}
-                            </option>
-                        ))}
-                    </select>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select user..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {users.map((user) => (
+                                <SelectItem key={user.id} value={user.id.toString()}>
+                                    {user.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
-                {/* Start */}
-                <div className="flex flex-col">
-                    <label htmlFor="start" className="mb-1 text-sm font-medium text-gray-700">
-                        Start
-                    </label>
-                    <input
+                {/* Start Date */}
+                <div className="space-y-2">
+                    <Label htmlFor="start" className="flex items-center gap-2">
+                        <CalendarIcon className="h-4 w-4" />
+                        Start Date
+                    </Label>
+                    <Input
                         id="start"
                         type="datetime-local"
                         value={data.start}
                         onChange={(e) => setData('start', e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2
-                                   focus:outline-none focus:ring-2 focus:ring-blue-500
-                                   focus:border-blue-500 shadow-sm transition"
+                        className="w-full"
                     />
                 </div>
 
-                {/* Expiration */}
-                <div className="flex flex-col">
-                    <label htmlFor="expiration" className="mb-1 text-sm font-medium text-gray-700">
-                        Expiration
-                    </label>
-                    <input
+                {/* Expiration Date */}
+                <div className="space-y-2">
+                    <Label
+                        htmlFor="expiration"
+                        className="flex items-center gap-2"
+                    >
+                        <CalendarIcon className="h-4 w-4" />
+                        Expiration Date
+                    </Label>
+                    <Input
                         id="expiration"
                         type="datetime-local"
                         value={data.expiration}
                         onChange={(e) => setData('expiration', e.target.value)}
                         min={data.start || undefined}
                         disabled={!data.start}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2
-                                   focus:outline-none focus:ring-2 focus:ring-blue-500
-                                   focus:border-blue-500 shadow-sm transition
-                                   disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        className="w-full"
                     />
+                    {!data.start && (
+                        <p className="text-xs text-muted-foreground">
+                            Select a start date first
+                        </p>
+                    )}
                 </div>
 
                 {/* Submit Button */}
-                <button
+                <Button
                     type="submit"
                     disabled={isDisabled}
-                    className="w-full rounded-lg bg-blue-600 text-white py-2 font-medium
-                               hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400
-                               disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer"
+                    className="w-full bg-blue-500 hover:bg-blue-700 cursor-pointer"
+                    size="lg"
                 >
-                    {processing ? 'Saving...' : 'Add '}
-                </button>
+                    {processing ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                        </>
+                    ) : (
+                        'Add Activity'
+                    )}
+                </Button>
             </fieldset>
         </form>
     );

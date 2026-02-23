@@ -1,4 +1,10 @@
 import ConfirmDeleteModal from '@/components/confirmDeleteModal';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
 import { subtasksInfo } from '@/routes';
 import type { SubTask, Task } from '@/types/task-user';
 import { Link, router } from '@inertiajs/react';
@@ -94,123 +100,131 @@ export default function SubTaskList({ task }: { task: Task }) {
 
     return (
         <>
-        <div className="rounded-lg border bg-gray-50 dark:bg-neutral-800">
-            {/* ACCORDION HEADER */}
-            <button
-                onClick={() => setOpen(!open)}
-                disabled={showForm}
-                className="flex w-full items-center justify-between p-4 text-sm font-semibold"
+            <Accordion
+                type="single"
+                collapsible
+                defaultValue="item-1"
+                className='rounded-lg dark:bg-neutral-800" border bg-gray-50'
             >
-                <span>Subtasks ({subtasks.length})</span>
-
-                <i
-                    className={`fa-solid fa-chevron-down cursor-pointer transition-transform duration-200 ${
-                        open ? 'rotate-180' : ''
-                    } ${showForm ? 'cursor-not-allowed text-gray-300' : ''}`}
-                />
-            </button>
-
-            {/* ACCORDION BODY */}
-            <div
-                className={`overflow-hidden transition-all duration-300 ${
-                    open ? 'max-h-250 opacity-100' : 'max-h-0 opacity-0'
-                }`}
-            >
-                <div className="px-4 pb-4">
-                    <ul className="space-y-2">
-                        {subtasks.map((st) => (
-                            <li
-                                key={st.id}
-                                className="flex items-center justify-between gap-2 text-sm"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        disabled={showForm}
-                                        onClick={() => toggleSubTask(st.id)}
-                                        className="cursor-pointer"
-                                    >
-                                        <i
-                                            className={`fa-regular ${
-                                                st.completed
-                                                    ? 'fa-square-check text-green-500'
-                                                    : 'fa-square'
-                                            } ${showForm ? 'cursor-not-allowed text-gray-300' : ''}`}
-                                        />
-                                    </button>
-
-                                    <span>{st.title}</span>
-                                </div>
-                                <div className="flex">
-                                    <Link
-                                        as="button"
-                                        disabled={showForm}
-                                        href={`${subtasksInfo(st.id).url}?from_task=${task.id}`}
-                                        className="mr-2 cursor-pointer rounded-sm text-sm"
-                                    >
-                                        <i
-                                            className={`fa-solid fa-circle-info ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-blue-500 hover:text-blue-700'}`}
-                                        ></i>
-                                    </Link>
-
-                                    <button
-                                        disabled={showForm}
-                                        onClick={() => askDeleteSubTask(st.id)}
-                                        className="cursor-pointer"
-                                    >
-                                        <i
-                                            className={`fa-solid fa-trash ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-red-500 hover:text-red-700'}`}
-                                        />
-                                    </button>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-
-                    {showForm ? (
-                        <form onSubmit={addSubTask} className="mt-3 flex gap-2">
-                            <input
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                className="flex-1 rounded-lg border px-3 py-1 text-sm"
-                                placeholder="New subtask"
-                                required
-                                disabled={loading}
-                            />
-                            <button
-                                disabled={loading}
-                                className="cursor-pointer rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
-                            >
-                                {loading ? '...' : 'Add'}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setShowForm(false)}
-                                className="cursor-pointer rounded-lg bg-gray-500 px-3 py-1 text-white hover:bg-gray-600"
-                            >
-                                Cancel
-                            </button>
-                        </form>
-                    ) : (
-                        <button
-                            onClick={() => setShowForm(true)}
-                            className="mt-4 cursor-pointer rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
+                <AccordionItem value="item-1">
+                    <AccordionTrigger className='className="flex font-semibold" w-full items-center justify-between p-4 text-sm'>
+                        Subtasks ({subtasks.length})
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        {/* ACCORDION BODY */}
+                        <div
+                            className={`overflow-hidden transition-all duration-300 ${
+                                open
+                                    ? 'max-h-250 opacity-100'
+                                    : 'max-h-0 opacity-0'
+                            }`}
                         >
-                            + Add subtask
-                        </button>
-                    )}
-                </div>
-            </div>
-        </div>
+                            <div className="px-4 pb-4">
+                                <ul className="space-y-2">
+                                    {subtasks.map((st) => (
+                                        <li
+                                            key={st.id}
+                                            className="flex items-center justify-between gap-2 text-sm"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    disabled={showForm}
+                                                    onClick={() =>
+                                                        toggleSubTask(st.id)
+                                                    }
+                                                    className="cursor-pointer"
+                                                >
+                                                    <i
+                                                        className={`fa-regular ${
+                                                            st.completed
+                                                                ? 'fa-square-check text-green-500'
+                                                                : 'fa-square'
+                                                        } ${showForm ? 'cursor-not-allowed text-gray-300' : ''}`}
+                                                    />
+                                                </button>
 
-        <ConfirmDeleteModal
-            open={confirmOpen}
-            message="Are you sure you want to delete this subtask?"
-            onClose={() => {
-                setConfirmOpen(false);
-                setSubtaskToDelete(null);
-            }}
-            onConfirm={deleteSubTask}
-        />
+                                                <span>{st.title}</span>
+                                            </div>
+                                            <div className="flex">
+                                                <Link
+                                                    as="button"
+                                                    disabled={showForm}
+                                                    href={`${subtasksInfo(st.id).url}?from_task=${task.id}`}
+                                                    className="mr-2 cursor-pointer rounded-sm text-sm"
+                                                >
+                                                    <i
+                                                        className={`fa-solid fa-circle-info ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-blue-500 hover:text-blue-700'}`}
+                                                    ></i>
+                                                </Link>
+
+                                                <button
+                                                    disabled={showForm}
+                                                    onClick={() =>
+                                                        askDeleteSubTask(st.id)
+                                                    }
+                                                    className="cursor-pointer"
+                                                >
+                                                    <i
+                                                        className={`fa-solid fa-trash ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-red-500 hover:text-red-700'}`}
+                                                    />
+                                                </button>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {showForm ? (
+                                    <form
+                                        onSubmit={addSubTask}
+                                        className="mt-3 flex gap-2"
+                                    >
+                                        <input
+                                            value={title}
+                                            onChange={(e) =>
+                                                setTitle(e.target.value)
+                                            }
+                                            className="flex-1 rounded-lg border px-3 py-1 text-sm"
+                                            placeholder="New subtask"
+                                            required
+                                            disabled={loading}
+                                        />
+                                        <button
+                                            disabled={loading}
+                                            className="cursor-pointer rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
+                                        >
+                                            {loading ? '...' : 'Add'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowForm(false)}
+                                            className="cursor-pointer rounded-lg bg-gray-500 px-3 py-1 text-white hover:bg-gray-600"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </form>
+                                ) : (
+                                    <button
+                                        onClick={() => setShowForm(true)}
+                                        className="mt-4 cursor-pointer rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
+                                    >
+                                        + Add subtask
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+
+            <ConfirmDeleteModal
+                open={confirmOpen}
+                message="Are you sure you want to delete this subtask?"
+                onClose={() => {
+                    setConfirmOpen(false);
+                    setSubtaskToDelete(null);
+                }}
+                onConfirm={deleteSubTask}
+            />
         </>
     );
 }

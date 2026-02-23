@@ -5,6 +5,12 @@ import ConfirmDeleteModal from './confirmDeleteModal';
 import TaskInfoModal from './taskInfoModal';
 import Modal from './modal';
 import { router } from '@inertiajs/react';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
 
 interface TaskTableProps {
     tasks: Task[];
@@ -313,12 +319,17 @@ export default function TaskTable({
                     setSubtaskTitle('');
                 }}
                 title="Add Subtask"
-                width="w-96"
+                width="w-[600px]"
             >
                 <form onSubmit={handleAddSubtask} className="space-y-4">
                     <div>
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
+                            <i className="fa-solid fa-list-check text-blue-500"></i>
+                            <span>{taskForSubtask?.title}</span>
+                        </h3>
+                        
                         <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Task: {taskForSubtask?.title}
+                            New Subtask
                         </label>
                         <input
                             type="text"
@@ -327,9 +338,48 @@ export default function TaskTable({
                             placeholder="Subtask title"
                             required
                             disabled={subtaskLoading}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:border-neutral-600"
                             autoFocus
                         />
+                        
+                        {/* Show existing subtasks */}
+                        {taskForSubtask && taskForSubtask.subtasks && taskForSubtask.subtasks.length > 0 && (
+                            <div className="mt-4">
+                                <Accordion
+                                    type="single"
+                                    collapsible
+                                    defaultValue="item-1"
+                                    className="rounded-lg border bg-gray-50 dark:bg-neutral-800"
+                                >
+                                    <AccordionItem value="item-1" className="border-none">
+                                        <AccordionTrigger className="px-4 py-3 text-sm font-semibold hover:no-underline">
+                                            Existing Subtasks ({taskForSubtask.subtasks.length})
+                                        </AccordionTrigger>
+                                        <AccordionContent className="px-4 pb-4">
+                                            <ul className="space-y-2">
+                                                {taskForSubtask.subtasks.map((st) => (
+                                                    <li
+                                                        key={st.id}
+                                                        className="flex items-center gap-2 text-sm"
+                                                    >
+                                                        <i
+                                                            className={`fa-regular ${
+                                                                st.completed
+                                                                    ? 'fa-square-check text-green-500'
+                                                                    : 'fa-square text-gray-400'
+                                                            }`}
+                                                        />
+                                                        <span className={st.completed ? 'line-through text-gray-500' : ''}>
+                                                            {st.title}
+                                                        </span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
+                            </div>
+                        )}
                     </div>
                     <div className="flex justify-end gap-2">
                         <button
@@ -340,7 +390,7 @@ export default function TaskTable({
                                 setSubtaskTitle('');
                             }}
                             disabled={subtaskLoading}
-                            className="cursor-pointer rounded-lg bg-gray-200 px-4 py-2 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="cursor-pointer rounded-lg bg-gray-200 px-4 py-2 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-700 dark:hover:bg-neutral-600"
                         >
                             Cancel
                         </button>

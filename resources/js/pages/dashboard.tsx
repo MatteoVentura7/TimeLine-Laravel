@@ -60,7 +60,7 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                    <div className="relative flex aspect-video min-h-95 w-full items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* STATISTICHE */}
                         <ChartCounter statistc={statistc} />
                     </div>
