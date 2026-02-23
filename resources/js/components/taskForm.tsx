@@ -1,7 +1,3 @@
-import { useState } from 'react';
-import { queryParams } from '@/wayfinder';
-import { router, useForm } from '@inertiajs/react';
-import type { User } from '@/types/task-user';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +8,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import type { User } from '@/types/task-user';
+import { queryParams } from '@/wayfinder';
+import { router, useForm } from '@inertiajs/react';
+import { CalendarIcon } from 'lucide-react';
+import { useState } from 'react';
+import { Spinner } from "@/components/ui/spinner"
 
 interface TaskFormProps {
     users: User[];
@@ -47,7 +48,7 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
     const isDisabled = processing || submitted;
 
     return (
-        <form onSubmit={submit} className="space-y-4 p-4 mt-2 mb-2">
+        <form onSubmit={submit} className="mt-2 mb-2 space-y-4 p-4">
             <fieldset disabled={isDisabled} className="space-y-4">
                 {/* Activity */}
                 <div className="space-y-2">
@@ -76,7 +77,10 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                         </SelectTrigger>
                         <SelectContent>
                             {users.map((user) => (
-                                <SelectItem key={user.id} value={user.id.toString()}>
+                                <SelectItem
+                                    key={user.id}
+                                    value={user.id.toString()}
+                                >
                                     {user.name}
                                 </SelectItem>
                             ))}
@@ -128,17 +132,10 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                 <Button
                     type="submit"
                     disabled={isDisabled}
-                    className="w-full bg-blue-500 hover:bg-blue-700 cursor-pointer"
+                    className="w-full cursor-pointer bg-blue-500 hover:bg-blue-700"
                     size="lg"
                 >
-                    {processing ? (
-                        <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
-                        </>
-                    ) : (
-                        'Add Activity'
-                    )}
+                    {processing ? <> <Spinner/> Saving...</> : 'Add Activity'}
                 </Button>
             </fieldset>
         </form>

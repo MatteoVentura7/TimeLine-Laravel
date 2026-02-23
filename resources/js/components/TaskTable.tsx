@@ -5,6 +5,7 @@ import ConfirmDeleteModal from './confirmDeleteModal';
 import TaskInfoModal from './taskInfoModal';
 import Modal from './modal';
 import { router } from '@inertiajs/react';
+import { Spinner } from "@/components/ui/spinner"
 import {
     Accordion,
     AccordionContent,
@@ -399,7 +400,7 @@ export default function TaskTable({
                             disabled={subtaskLoading}
                             className="cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            {subtaskLoading ? 'Adding...' : 'Add'}
+                            {subtaskLoading ? <Spinner /> : 'Add'}
                         </button>
                     </div>
                 </form>
