@@ -4,6 +4,7 @@ import CompleteTaskModal from './CompleteTaskModal';
 import ConfirmDeleteModal from './confirmDeleteModal';
 import TaskInfoModal from './taskInfoModal';
 import Modal from './modal';
+import IncompleteSubtasksWarningModal from './Incompletesubtaskswarningmodal';
 import { router } from '@inertiajs/react';
 import {
     Accordion,
@@ -270,14 +271,12 @@ export default function TaskTable({
                                     <button
                                         onClick={() => openInfoModal(task)}
                                         className="mr-3 cursor-pointer text-blue-500"
-                                        title='Info activity'
                                     >
                                         <i className="fa-solid fa-circle-info"></i>
                                     </button>
                                     <button
                                         onClick={() => removeTask(task.id)}
                                         className="cursor-pointer text-red-500"
-                                        title="Delete activity"
                                     >
                                         <i className="fa-solid fa-trash"></i>
                                     </button>
@@ -417,64 +416,21 @@ export default function TaskTable({
             </Modal>
 
             {/* Incomplete Subtasks Warning Modal */}
-            <Modal
+            <IncompleteSubtasksWarningModal
                 open={incompleteSubtasksWarning}
+                subtasks={taskWithIncompleteSubtasks?.subtasks || []}
                 onClose={() => {
                     setIncompleteSubtasksWarning(false);
                     setTaskWithIncompleteSubtasks(null);
                 }}
-                title="⚠️ Incomplete Subtasks"
-                width="w-[500px]"
-                footer={
-                    <>
-                        <button
-                            onClick={() => {
-                                setIncompleteSubtasksWarning(false);
-                                setTaskWithIncompleteSubtasks(null);
-                            }}
-                            className="cursor-pointer rounded-lg bg-gray-200 px-4 py-2 hover:bg-gray-300 dark:bg-neutral-700 dark:hover:bg-neutral-600"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={() => {
-                                setIncompleteSubtasksWarning(false);
-                                if (taskWithIncompleteSubtasks) {
-                                    openCompleteModal(taskWithIncompleteSubtasks);
-                                }
-                                setTaskWithIncompleteSubtasks(null);
-                            }}
-                            className="cursor-pointer rounded-lg bg-amber-500 px-4 py-2 text-white hover:bg-amber-600"
-                        >
-                            Complete Anyway
-                        </button>
-                    </>
-                }
-            >
-                <div className="space-y-4">
-                    <p className="text-gray-700 dark:text-gray-300">
-                        This task has <strong>incomplete subtasks</strong>. Are you sure you want to mark it as complete?
-                    </p>
-                    
-                    {taskWithIncompleteSubtasks && taskWithIncompleteSubtasks.subtasks && (
-                        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
-                            <h4 className="mb-2 text-sm font-semibold text-amber-900 dark:text-amber-100">
-                                Incomplete Subtasks:
-                            </h4>
-                            <ul className="space-y-1">
-                                {taskWithIncompleteSubtasks.subtasks
-                                    .filter(st => !st.completed)
-                                    .map(st => (
-                                        <li key={st.id} className="flex items-center gap-2 text-sm text-amber-800 dark:text-amber-200">
-                                            <i className="fa-regular fa-square text-amber-600" />
-                                            <span>{st.title}</span>
-                                        </li>
-                                    ))}
-                            </ul>
-                        </div>
-                    )}
-                </div>
-            </Modal>
+                onConfirm={() => {
+                    setIncompleteSubtasksWarning(false);
+                    if (taskWithIncompleteSubtasks) {
+                        openCompleteModal(taskWithIncompleteSubtasks);
+                    }
+                    setTaskWithIncompleteSubtasks(null);
+                }}
+            />
         </div>
     );
 }
