@@ -1,12 +1,14 @@
 import type { Task, User } from '@/types/task-user';
-import { useEffect, useState } from 'react';
-import AddSubtaskModal from './AddSubtaskModal';
+import { useState, useEffect } from 'react';
 import CompleteTaskModal from './CompleteTaskModal';
 import ConfirmDeleteModal from './confirmDeleteModal';
-import IncompleteSubtasksWarningModal from './InCompleteSubtasksWarningModal';
 import TaskInfoModal from './taskInfoModal';
-import TaskTableHeader from './TaskTableHeader';
-import TaskTableRow from './TaskTableRow';
+import IncompleteSubtasksWarningModal from './InCompleteSubtasksWarningModal';
+import AddSubtaskModal from './AddSubtaskModal';
+import TaskTableHeaderModern from './TaskTableHeader';
+import TaskTableRowModern from './TaskTableRow';
+import { Table, TableBody } from '@/components/ui/table';
+import { Card } from '@/components/ui/card';
 
 interface TaskTableProps {
     tasks: Task[];
@@ -45,10 +47,8 @@ export default function TaskTable({
     const [taskForSubtask, setTaskForSubtask] = useState<Task | null>(null);
 
     // Incomplete Subtasks Warning
-    const [incompleteSubtasksWarning, setIncompleteSubtasksWarning] =
-        useState(false);
-    const [taskWithIncompleteSubtasks, setTaskWithIncompleteSubtasks] =
-        useState<Task | null>(null);
+    const [incompleteSubtasksWarning, setIncompleteSubtasksWarning] = useState(false);
+    const [taskWithIncompleteSubtasks, setTaskWithIncompleteSubtasks] = useState<Task | null>(null);
 
     // Sync selected task when tasks update
     useEffect(() => {
@@ -81,9 +81,7 @@ export default function TaskTable({
             });
         } else {
             // Check for incomplete subtasks
-            const hasIncompleteSubtasks = task.subtasks?.some(
-                (st) => !st.completed,
-            );
+            const hasIncompleteSubtasks = task.subtasks?.some((st) => !st.completed);
             if (hasIncompleteSubtasks) {
                 setTaskWithIncompleteSubtasks(task);
                 setIncompleteSubtasksWarning(true);
@@ -135,36 +133,49 @@ export default function TaskTable({
     // Empty state
     if (tasks.length === 0) {
         return (
-            <div className="mt-6 flex flex-col items-center justify-center">
-                <img
-                    src="/9264828.jpg"
-                    className="max-w-36 opacity-90"
-                    alt="No tasks"
-                />
-                <p className="mt-4 text-xl text-gray-500">
-                    No activity found 🎉
+            <div className="flex flex-col items-center justify-center py-12">
+                <div className="rounded-full bg-muted p-6 mb-4">
+                    <svg
+                        className="h-12 w-12 text-muted-foreground"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                    </svg>
+                </div>
+                <h3 className="text-lg font-semibold mb-1">No tasks found</h3>
+                <p className="text-sm text-muted-foreground">
+                    Get started by creating your first task
                 </p>
             </div>
         );
     }
 
     return (
-        <div className="m-4 overflow-x-auto">
-            <table className="w-full border-collapse rounded-xl bg-white shadow dark:bg-neutral-800">
-                <TaskTableHeader />
-                <tbody>
-                    {tasks.map((task) => (
-                        <TaskTableRow
-                            key={task.id}
-                            task={task}
-                            onComplete={handleComplete}
-                            onAddSubtask={handleAddSubtask}
-                            onOpenInfo={handleOpenInfo}
-                            onDelete={handleDelete}
-                        />
-                    ))}
-                </tbody>
-            </table>
+        <div>
+            <div className="rounded-md border">
+                <Table>
+                    <TaskTableHeaderModern />
+                    <TableBody>
+                        {tasks.map((task) => (
+                            <TaskTableRowModern
+                                key={task.id}
+                                task={task}
+                                onComplete={handleComplete}
+                                onAddSubtask={handleAddSubtask}
+                                onOpenInfo={handleOpenInfo}
+                                onDelete={handleDelete}
+                            />
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
 
             {/* Modals */}
             <CompleteTaskModal
