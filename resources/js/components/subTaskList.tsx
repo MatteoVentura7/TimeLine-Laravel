@@ -1,221 +1,105 @@
-import ConfirmDeleteModal from '@/components/confirmDeleteModal';
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '@/components/ui/accordion';
-import { subtasksInfo } from '@/routes';
-import type { SubTask, Task } from '@/types/task-user';
-import { Link, router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import type { Task } from '@/types/task-user';
+import ConfirmDeleteModal from './confirmDeleteModal';
+import SubTaskItem from './Subtaskitem';
+import SubTaskForm from './SubTaskForm';
+import { useSubTasks } from '@/hooks/useSubTask';
 
-export default function SubTaskList({ task }: { task: Task }) {
-    const [subtasks, setSubtasks] = useState<SubTask[]>(task.subtasks);
-    const [showForm, setShowForm] = useState(false);
-    const [title, setTitle] = useState('');
-    const [loading, setLoading] = useState(false);
+interface SubTaskListProps {
+    task: Task;
+}
+
+export default function SubTaskList({ task }: SubTaskListProps) {
     const [open, setOpen] = useState(true);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [subtaskToDelete, setSubtaskToDelete] = useState<number | null>(null);
 
-    useEffect(() => {
-        setSubtasks(task.subtasks);
-    }, [task.subtasks]);
+    const {
+        subtasks,
+        showForm,
+        loading,
+        setShowForm,
+        addSubTask,
+        toggleSubTask,
+        deleteSubTask,
+    } = useSubTasks({
+        taskId: task.id,
+        initialSubtasks: task.subtasks,
+    });
 
-    const addSubTask = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!title.trim()) return;
-
-        setLoading(true);
-
-        router.post(
-            `/tasks/${task.id}/subtasks`,
-            { title },
-            {
-                preserveScroll: true,
-                preserveState: true,
-                onSuccess: () => {
-                    setTitle('');
-                    setShowForm(false);
-                    setOpen(true);
-                    router.reload({ only: ['tasks'] });
-                },
-                onError: () => {
-                    setLoading(false);
-                },
-                onFinish: () => {
-                    setLoading(false);
-                },
-            },
-        );
-    };
-
-    const askDeleteSubTask = (id: number) => {
+    const handleDelete = (id: number) => {
         setSubtaskToDelete(id);
         setConfirmOpen(true);
     };
 
-    const deleteSubTask = () => {
+    const confirmDelete = () => {
         if (!subtaskToDelete) return;
-        const id = subtaskToDelete;
-        const previous = subtasks;
-
-        setConfirmOpen(false);
+        deleteSubTask(subtaskToDelete);
         setSubtaskToDelete(null);
-        setSubtasks((prev) => prev.filter((st) => st.id !== id));
-
-        router.delete(`/subtasks/${id}`, {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => {
-                router.reload({ only: ['tasks'] });
-            },
-            onError: () => {
-                setSubtasks(previous);
-            },
-        });
-    };
-
-    const toggleSubTask = (id: number) => {
-        const previous = subtasks;
-
-        setSubtasks((prev) =>
-            prev.map((st) =>
-                st.id === id ? { ...st, completed: !st.completed } : st,
-            ),
-        );
-
-        router.patch(
-            `/subtasks/${id}/toggle`,
-            {},
-            {
-                preserveScroll: true,
-                onError: () => {
-                    setSubtasks(previous);
-                },
-            },
-        );
+        setConfirmOpen(false);
     };
 
     return (
         <>
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="item-1"
-                className='rounded-lg dark:bg-neutral-800" border bg-gray-50'
-            >
-                <AccordionItem value="item-1">
-                    <AccordionTrigger className='className="flex font-semibold" w-full items-center justify-between p-4 text-sm'>
-                        Subtasks ({subtasks.length})
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        {/* ACCORDION BODY */}
-                        <div
-                            className={`overflow-hidden transition-all duration-300 ${
-                                open
-                                    ? 'max-h-250 opacity-100'
-                                    : 'max-h-0 opacity-0'
-                            }`}
-                        >
-                            <div className="px-4 pb-4">
-                                <ul className="space-y-2">
-                                    {subtasks.map((st) => (
-                                        <li
-                                            key={st.id}
-                                            className="flex items-center justify-between gap-2 text-sm"
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    disabled={showForm}
-                                                    onClick={() =>
-                                                        toggleSubTask(st.id)
-                                                    }
-                                                    className="cursor-pointer"
-                                                >
-                                                    <i
-                                                        className={`fa-regular ${
-                                                            st.completed
-                                                                ? 'fa-square-check text-green-500'
-                                                                : 'fa-square'
-                                                        } ${showForm ? 'cursor-not-allowed text-gray-300' : ''}`}
-                                                    />
-                                                </button>
+            <div className="rounded-lg border bg-gray-50 dark:bg-neutral-800">
+                {/* Accordion Header */}
+                <button
+                    onClick={() => setOpen(!open)}
+                    disabled={showForm}
+                    className="flex w-full items-center justify-between p-4 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-neutral-700 transition disabled:cursor-not-allowed"
+                >
+                    <span>Subtasks ({subtasks.length})</span>
+                    <i
+                        className={`fa-solid fa-chevron-down cursor-pointer transition-transform duration-200 ${
+                            open ? 'rotate-180' : ''
+                        } ${showForm ? 'text-gray-300' : ''}`}
+                    />
+                </button>
 
-                                                <span>{st.title}</span>
-                                            </div>
-                                            <div className="flex">
-                                                <Link
-                                                    as="button"
-                                                    disabled={showForm}
-                                                    href={`${subtasksInfo(st.id).url}?from_task=${task.id}`}
-                                                    className="mr-2 cursor-pointer rounded-sm text-sm"
-                                                >
-                                                    <i
-                                                        className={`fa-solid fa-circle-info ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-blue-500 hover:text-blue-700'}`}
-                                                    ></i>
-                                                </Link>
+                {/* Accordion Body */}
+                <div
+                    className={`overflow-hidden transition-all duration-300 ${
+                        open ? 'max-h-125 opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+                >
+                    <div className="px-4 pb-4">
+                        {/* Subtask List */}
+                        {subtasks.length > 0 && (
+                            <ul className="space-y-2 mb-4">
+                                {subtasks.map((st) => (
+                                    <SubTaskItem
+                                        key={st.id}
+                                        subtask={st}
+                                        taskId={task.id}
+                                        disabled={showForm}
+                                        onToggle={toggleSubTask}
+                                        onDelete={handleDelete}
+                                    />
+                                ))}
+                            </ul>
+                        )}
 
-                                                <button
-                                                    disabled={showForm}
-                                                    onClick={() =>
-                                                        askDeleteSubTask(st.id)
-                                                    }
-                                                    className="cursor-pointer"
-                                                >
-                                                    <i
-                                                        className={`fa-solid fa-trash ${showForm ? 'cursor-not-allowed text-gray-300' : 'text-red-500 hover:text-red-700'}`}
-                                                    />
-                                                </button>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
+                        {/* Add Form or Button */}
+                        {showForm ? (
+                            <SubTaskForm
+                                onSubmit={addSubTask}
+                                onCancel={() => setShowForm(false)}
+                                loading={loading}
+                            />
+                        ) : (
+                            <button
+                                onClick={() => setShowForm(true)}
+                                className="w-full cursor-pointer rounded-lg bg-blue-500 px-3 py-2 text-sm text-white hover:bg-blue-600 transition"
+                            >
+                                <i className="fa-solid fa-plus mr-2"></i>
+                                Add subtask
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
 
-                                {showForm ? (
-                                    <form
-                                        onSubmit={addSubTask}
-                                        className="mt-3 flex gap-2"
-                                    >
-                                        <input
-                                            value={title}
-                                            onChange={(e) =>
-                                                setTitle(e.target.value)
-                                            }
-                                            className="flex-1 rounded-lg border px-3 py-1 text-sm"
-                                            placeholder="New subtask"
-                                            required
-                                            disabled={loading}
-                                        />
-                                        <button
-                                            disabled={loading}
-                                            className="cursor-pointer rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
-                                        >
-                                            {loading ? '...' : 'Add'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowForm(false)}
-                                            className="cursor-pointer rounded-lg bg-gray-500 px-3 py-1 text-white hover:bg-gray-600"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </form>
-                                ) : (
-                                    <button
-                                        onClick={() => setShowForm(true)}
-                                        className="mt-4 cursor-pointer rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
-                                    >
-                                        + Add subtask
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-
+            {/* Delete Confirmation Modal */}
             <ConfirmDeleteModal
                 open={confirmOpen}
                 message="Are you sure you want to delete this subtask?"
@@ -223,7 +107,7 @@ export default function SubTaskList({ task }: { task: Task }) {
                     setConfirmOpen(false);
                     setSubtaskToDelete(null);
                 }}
-                onConfirm={deleteSubTask}
+                onConfirm={confirmDelete}
             />
         </>
     );
