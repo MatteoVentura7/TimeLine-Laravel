@@ -1,12 +1,12 @@
 import type { Task, User } from '@/types/task-user';
 import { useEffect, useState } from 'react';
-import AddSubtaskModal from './Addsubtaskmodal';
+import AddSubtaskModal from './AddSubtaskModal';
 import CompleteTaskModal from './CompleteTaskModal';
 import ConfirmDeleteModal from './confirmDeleteModal';
-import IncompleteSubtasksWarningModal from './Incompletesubtaskswarningmodal';
+import IncompleteSubtasksWarningModal from './InCompleteSubtasksWarningModal';
 import TaskInfoModal from './taskInfoModal';
-import TaskTableHeader from './Tasktableheader';
-import TaskTableRow from './Tasktablerow';
+import TaskTableHeader from './TaskTableHeader';
+import TaskTableRow from './TaskTableRow';
 
 interface TaskTableProps {
     tasks: Task[];

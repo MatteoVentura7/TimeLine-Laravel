@@ -3,7 +3,7 @@ import { router as Inertia } from '@inertiajs/core';
 import { useEffect, useState } from 'react';
 import Modal from './modal';
 import SubTaskList from './subTaskList';
-import IncompleteSubtasksWarningModal from './Incompletesubtaskswarningmodal';
+import IncompleteSubtasksWarningModal from './InCompleteSubtasksWarningModal';
 import { router } from '@inertiajs/core';
 
 
