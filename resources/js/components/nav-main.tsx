@@ -9,10 +9,12 @@ import { resolveUrl } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {  dashboardActivity } from '@/routes';
+import { BookOpen, Wrench } from 'lucide-react';
 
 export function NavMain({ items = [] }: { items: NavItem[] }) {
     const page = usePage();
     return (
+        <>
         <SidebarGroup className="px-2 py-0">
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarMenu>
@@ -55,5 +57,36 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                 ))}
             </SidebarMenu>
         </SidebarGroup>
+
+        <SidebarGroup className="px-2 py-0 mt-4">
+            <SidebarGroupLabel>Documentation</SidebarGroupLabel>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton
+                        asChild
+                        isActive={page.url.startsWith('/docs/user-guide')}
+                        tooltip={{ children: 'User Guide' }}
+                    >
+                        <Link href="/docs/user-guide">
+                            <BookOpen className="h-4 w-4" />
+                            <span>User Guide</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton
+                        asChild
+                        isActive={page.url.startsWith('/docs/technical')}
+                        tooltip={{ children: 'Technical Docs' }}
+                    >
+                        <Link href="/docs/technical">
+                            <Wrench className="h-4 w-4" />
+                            <span>Technical Docs</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+        </SidebarGroup>
+        </>
     );
 }

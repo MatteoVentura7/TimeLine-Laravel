@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SubTaskController;
+use App\Http\Controllers\DocsController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -28,6 +29,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/subtasks/{subtask}', [SubTaskController::class, 'destroy'])->name('subtasks.destroy');
     Route::patch('/subtasks/{subtask}/toggle', [SubTaskController::class, 'toggleComplete']) ->name('subtasks.toggle');
     Route::get('/subtasks/{subtask}/info', [SubTaskController::class, 'info'])->name('subtasksInfo');
+
+    // ------ DOCS ------- //
+    Route::get('/docs/user-guide', [DocsController::class, 'userGuide'])->name('docs.userGuide');
+    Route::get('/docs/technical', [DocsController::class, 'technical'])->name('docs.technical');
 });
 
 require __DIR__ . '/settings.php';

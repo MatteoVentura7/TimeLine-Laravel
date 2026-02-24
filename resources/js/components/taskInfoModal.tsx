@@ -3,6 +3,7 @@ import { router as Inertia } from '@inertiajs/core';
 import { useEffect, useState } from 'react';
 import Modal from './modal';
 import SubTaskList from './subTaskList';
+import IncompleteSubtasksWarningModal from './Incompletesubtaskswarningmodal';
 import { router } from '@inertiajs/core';
 
 
@@ -32,6 +33,7 @@ export default function TaskInfoModal({
     const [expirationError, setExpirationError] = useState('');
     const [completedError, setCompletedError] = useState('');
     const [createdError, setCreatedError] = useState('');
+    const [incompleteSubtasksWarning, setIncompleteSubtasksWarning] = useState(false);
 
     const isoToLocal = (iso: string | null) => {
         if (!iso) return '';
@@ -190,13 +192,7 @@ export default function TaskInfoModal({
                 <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4 shadow-sm transition dark:bg-neutral-700">
                     {isEditing ? (
                         <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
-                             <i
-                                className={`fa-solid fa-list-check ${
-                                    completed
-                                        ? 'text-green-500'
-                                        : 'text-blue-500'
-                                }`}
-                            ></i>
+                            <i className="fa-solid fa-list-check text-blue-500"></i>
                             <input
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
@@ -259,11 +255,18 @@ export default function TaskInfoModal({
                             if (!isEditing) return;
 
                             if (completed) {
+                                // Uncompleting - no warning needed
                                 setCompleted(false);
                                 setCompletedAt('');
                             } else {
-                                setCompleted(true);
-                                setCompletedAt('');
+                                // Completing - check for incomplete subtasks
+                                const hasIncompleteSubtasks = task?.subtasks?.some(st => !st.completed);
+                                if (hasIncompleteSubtasks) {
+                                    setIncompleteSubtasksWarning(true);
+                                } else {
+                                    setCompleted(true);
+                                    setCompletedAt('');
+                                }
                             }
                         }}
                         disabled={!isEditing}
@@ -373,6 +376,19 @@ export default function TaskInfoModal({
                   <SubTaskList task={task} />
                 
             </div>
+              {/* Incomplete Subtasks Warning Modal */}
+        <IncompleteSubtasksWarningModal
+            open={incompleteSubtasksWarning}
+            subtasks={task?.subtasks || []}
+            onClose={() => setIncompleteSubtasksWarning(false)}
+            onConfirm={() => {
+                setIncompleteSubtasksWarning(false);
+                setCompleted(true);
+                setCompletedAt('');
+            }}
+        />
         </Modal>
+
+      
     );
 }
