@@ -32,6 +32,7 @@ export default function TaskInfoModal({
     const [expirationError, setExpirationError] = useState('');
     const [completedError, setCompletedError] = useState('');
     const [createdError, setCreatedError] = useState('');
+    const [incompleteSubtasksWarning, setIncompleteSubtasksWarning] = useState(false);
 
     const isoToLocal = (iso: string | null) => {
         if (!iso) return '';
@@ -190,13 +191,7 @@ export default function TaskInfoModal({
                 <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4 shadow-sm transition dark:bg-neutral-700">
                     {isEditing ? (
                         <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
-                             <i
-                                className={`fa-solid fa-list-check ${
-                                    completed
-                                        ? 'text-green-500'
-                                        : 'text-blue-500'
-                                }`}
-                            ></i>
+                            <i className="fa-solid fa-list-check text-blue-500"></i>
                             <input
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
@@ -259,11 +254,18 @@ export default function TaskInfoModal({
                             if (!isEditing) return;
 
                             if (completed) {
+                                // Uncompleting - no warning needed
                                 setCompleted(false);
                                 setCompletedAt('');
                             } else {
-                                setCompleted(true);
-                                setCompletedAt('');
+                                // Completing - check for incomplete subtasks
+                                const hasIncompleteSubtasks = task?.subtasks?.some(st => !st.completed);
+                                if (hasIncompleteSubtasks) {
+                                    setIncompleteSubtasksWarning(true);
+                                } else {
+                                    setCompleted(true);
+                                    setCompletedAt('');
+                                }
                             }
                         }}
                         disabled={!isEditing}
@@ -373,6 +375,59 @@ export default function TaskInfoModal({
                   <SubTaskList task={task} />
                 
             </div>
+             {/* Incomplete Subtasks Warning Modal */}
+        <Modal
+            open={incompleteSubtasksWarning}
+            onClose={() => setIncompleteSubtasksWarning(false)}
+            title="⚠️ Incomplete Subtasks"
+            width="w-[500px]"
+            footer={
+                <>
+                    <button
+                        onClick={() => setIncompleteSubtasksWarning(false)}
+                        className="cursor-pointer rounded-lg bg-gray-200 px-4 py-2 hover:bg-gray-300 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={() => {
+                            setIncompleteSubtasksWarning(false);
+                            setCompleted(true);
+                            setCompletedAt('');
+                        }}
+                        className="cursor-pointer rounded-lg bg-amber-500 px-4 py-2 text-white hover:bg-amber-600"
+                    >
+                        Complete Anyway
+                    </button>
+                </>
+            }
+        >
+            <div className="space-y-4">
+                <p className="text-gray-700 dark:text-gray-300">
+                    This task has <strong>incomplete subtasks</strong>. Are you sure you want to mark it as complete?
+                </p>
+                
+                {task && task.subtasks && (
+                    <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
+                        <h4 className="mb-2 text-sm font-semibold text-amber-900 dark:text-amber-100">
+                            Incomplete Subtasks:
+                        </h4>
+                        <ul className="space-y-1">
+                            {task.subtasks
+                                .filter(st => !st.completed)
+                                .map(st => (
+                                    <li key={st.id} className="flex items-center gap-2 text-sm text-amber-800 dark:text-amber-200">
+                                        <i className="fa-regular fa-square text-amber-600" />
+                                        <span>{st.title}</span>
+                                    </li>
+                                ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
         </Modal>
+        </Modal>
+
+       
     );
 }
