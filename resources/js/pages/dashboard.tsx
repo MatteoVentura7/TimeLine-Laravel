@@ -1,6 +1,7 @@
 import ListItem from '@/components/listItem';
 import TaskForm from '@/components/taskForm';
 import TaskInfoModal from '@/components/taskInfoModal';
+import UpcomingDeadlines from '@/components/upComingDeadlines';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
@@ -66,8 +67,8 @@ export default function Dashboard({
                     </div>
                 </div>
 
-                <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+                 <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl md:min-h-min">
+                    <UpcomingDeadlines tasks={tasks.data} />
                 </div>
             </div>
 
