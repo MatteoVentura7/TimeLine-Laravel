@@ -8,12 +8,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
 import type { User } from '@/types/task-user';
 import { queryParams } from '@/wayfinder';
 import { router, useForm } from '@inertiajs/react';
 import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
-import { Spinner } from "@/components/ui/spinner"
 
 interface TaskFormProps {
     users: User[];
@@ -73,13 +73,14 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                         required
                     >
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select user..." />
+                            <SelectValue placeholder="Select user..."  />
                         </SelectTrigger>
                         <SelectContent>
                             {users.map((user) => (
                                 <SelectItem
                                     key={user.id}
                                     value={user.id.toString()}
+                                    
                                 >
                                     {user.name}
                                 </SelectItem>
@@ -132,10 +133,20 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                 <Button
                     type="submit"
                     disabled={isDisabled}
-                    className="w-full cursor-pointer bg-blue-500 hover:bg-blue-700"
+                    className="w-full cursor-pointer bg-black"
                     size="lg"
                 >
-                    {processing ? <> <Spinner/> Saving...</> : 'Add Activity'}
+                    {processing ? (
+                        <>
+                            {' '}
+                            <Spinner /> Saving...
+                        </>
+                    ) : (
+                        <>
+                            <i className="fa-solid fa-plus mr-2"></i>
+                            Add activity
+                        </>
+                    )}
                 </Button>
             </fieldset>
         </form>

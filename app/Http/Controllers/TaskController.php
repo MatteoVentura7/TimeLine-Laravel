@@ -15,7 +15,7 @@ class TaskController extends Controller
     {
         $tasks = Task::with('user','subtasks')
             ->latest()
-            ->paginate(5);
+            ->paginate(4);
 
         $statistc = [
             'todo' => Task::where('completed', false)->count(),
