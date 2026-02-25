@@ -66,7 +66,7 @@ export default function TaskTableRow({
             {/* Title */}
             <TableCell className="font-medium">
                 <div className="flex items-center gap-2">
-                    <span className={task.completed ? 'line-through text-muted-foreground' : ''}>
+                    <span >
                         {task.title}
                     </span>
                     {task.subtasks && task.subtasks.length > 0 && (

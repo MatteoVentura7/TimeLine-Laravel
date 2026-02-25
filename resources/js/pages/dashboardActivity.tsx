@@ -147,13 +147,13 @@ export default function DashboardActivity({
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-                            <div className="h-4 w-4 rounded-full bg-gradient-to-r from-blue-500 to-green-500" />
+                            <div className="h-4 w-4 rounded-full bg-linear-to-r from-blue-500 to-green-500" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{completionRate}%</div>
                             <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
                                 <div
-                                    className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-500"
+                                    className="h-full bg-linear-to-r from-blue-500 to-green-500 transition-all duration-500"
                                     style={{ width: `${completionRate}%` }}
                                 />
                             </div>
@@ -161,9 +161,19 @@ export default function DashboardActivity({
                     </Card>
                 </div>
 
-                {/* Search Bar */}
+               
+
+                {/* Task Table */}
                 <Card>
-                    <CardContent className="pt-6">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <span>Tasks</span>
+                            <Badge variant="outline">{tasks.total} total</Badge>
+                        </CardTitle>
+                    </CardHeader>
+                     {/* Search Bar */}
+                
+                    <CardContent className="pt-2">
                         <form onSubmit={handleSearchSubmit} className="flex gap-2">
                             <div className="relative flex-1">
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -207,17 +217,8 @@ export default function DashboardActivity({
                             </div>
                         )}
                     </CardContent>
-                </Card>
-
-                {/* Task Table */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <span>Tasks</span>
-                            <Badge variant="outline">{tasks.total} total</Badge>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
+               
+                 
                         <TableUser
                             tasks={tasks.data}
                             showEdit={true}
@@ -226,12 +227,10 @@ export default function DashboardActivity({
                             openTaskId={openTaskId}
                             onTaskOpened={() => setOpenTaskId(null)}
                         />
-                    </CardContent>
-                </Card>
-
-                {/* Pagination */}
+                   
+                    {/* Pagination */}
                 {tasks.last_page > 1 && (
-                    <Card>
+                    
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between">
                                 <div className="text-sm text-muted-foreground">
@@ -288,8 +287,11 @@ export default function DashboardActivity({
                                 </div>
                             </div>
                         </CardContent>
-                    </Card>
+                    
                 )}
+                </Card>
+
+               
 
                 {/* Create Task Modal */}
                 <TaskFormModal

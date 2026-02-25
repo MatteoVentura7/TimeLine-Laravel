@@ -8,6 +8,7 @@ import type { Task } from '@/types/task-user';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import Modal from './modal';
+import { Button } from '@/components/ui/button';
 
 interface AddSubtaskModalProps {
     open: boolean;
@@ -142,13 +143,16 @@ export default function AddSubtaskModal({
                     >
                         Cancel
                     </button>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        {loading ? 'Adding...' : 'Add'}
-                    </button>
+                 
+                       <Button
+                    type="submit"
+                    disabled={loading}
+                    className="cursor-pointer rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    size="lg"
+                > {loading ? 'Adding...' :   <>
+                                        <i className="fa-solid fa-plus mr-2"></i>
+                                        Add Subtask
+                                    </>}</Button>
                 </div>
             </form>
         </Modal>

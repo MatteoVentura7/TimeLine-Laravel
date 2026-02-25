@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface SubTaskFormProps {
     onSubmit: (title: string) => void;
@@ -31,18 +32,28 @@ export default function SubTaskForm({
                 disabled={loading}
                 autoFocus
             />
-            <button
-                type="submit"
-                disabled={loading}
-                className="cursor-pointer rounded-lg bg-blue-500 px-3 py-1 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                {loading ? '...' : 'Add'}
-            </button>
+            
+             <Button
+                              
+                                type="submit"
+                                disabled={loading}
+                                className=" cursor-pointer rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                {' '}
+                                {loading ? (
+                                    'Adding...'
+                                ) : (
+                                    <>
+                                        <i className="fa-solid fa-plus mr-2"></i>
+                                        Add Subtask
+                                    </>
+                                )}
+                            </Button>
             <button
                 type="button"
                 onClick={onCancel}
                 disabled={loading}
-                className="cursor-pointer rounded-lg bg-gray-500 px-3 py-1 text-white hover:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-600 dark:hover:bg-neutral-500"
+                className="cursor-pointer rounded-lg bg-gray-200 px-3 py-1  hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-600 dark:hover:bg-neutral-500"
             >
                 Cancel
             </button>

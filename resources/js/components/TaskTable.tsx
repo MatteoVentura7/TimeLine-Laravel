@@ -134,7 +134,7 @@ export default function TaskTable({
     if (tasks.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-12">
-                <div className="rounded-full bg-muted p-6 mb-4">
+                <div className=" p-6 mb-4">
                     <svg
                         className="h-12 w-12 text-muted-foreground"
                         fill="none"
@@ -159,7 +159,7 @@ export default function TaskTable({
 
     return (
         <div>
-            <div className="rounded-md border">
+            <div className='border'>
                 <Table>
                     <TaskTableHeaderModern />
                     <TableBody>

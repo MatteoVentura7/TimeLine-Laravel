@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import type { Task } from '@/types/task-user';
-import ConfirmDeleteModal from './confirmDeleteModal';
-import SubTaskItem from './Subtaskitem';
-import SubTaskForm from './SubTaskForm';
+import { Button } from '@/components/ui/button';
 import { useSubTasks } from '@/hooks/useSubTask';
+import type { Task } from '@/types/task-user';
+import { useState } from 'react';
+import ConfirmDeleteModal from './confirmDeleteModal';
+import SubTaskForm from './SubTaskForm';
+import SubTaskItem from './SubTaskItem';
 
 interface SubTaskListProps {
     task: Task;
@@ -46,7 +47,7 @@ export default function SubTaskList({ task }: SubTaskListProps) {
                 <button
                     onClick={() => setOpen(!open)}
                     disabled={showForm}
-                    className="flex w-full items-center justify-between p-4 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-neutral-700 transition disabled:cursor-not-allowed"
+                    className="flex w-full items-center justify-between p-4 text-sm font-semibold transition hover:bg-gray-100 disabled:cursor-not-allowed dark:hover:bg-neutral-700"
                 >
                     <span>Subtasks ({subtasks.length})</span>
                     <i
@@ -65,7 +66,7 @@ export default function SubTaskList({ task }: SubTaskListProps) {
                     <div className="px-4 pb-4">
                         {/* Subtask List */}
                         {subtasks.length > 0 && (
-                            <ul className="space-y-2 mb-4">
+                            <ul className="mb-4 space-y-2">
                                 {subtasks.map((st) => (
                                     <SubTaskItem
                                         key={st.id}
@@ -87,13 +88,23 @@ export default function SubTaskList({ task }: SubTaskListProps) {
                                 loading={loading}
                             />
                         ) : (
-                            <button
+                          
+                            <Button
                                 onClick={() => setShowForm(true)}
-                                className="w-full cursor-pointer rounded-lg bg-blue-500 px-3 py-2 text-sm text-white hover:bg-blue-600 transition"
+                                type="submit"
+                                disabled={loading}
+                                className="w-full cursor-pointer rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                                <i className="fa-solid fa-plus mr-2"></i>
-                                Add subtask
-                            </button>
+                                {' '}
+                                {loading ? (
+                                    'Adding...'
+                                ) : (
+                                    <>
+                                        <i className="fa-solid fa-plus mr-2"></i>
+                                        Add Subtask
+                                    </>
+                                )}
+                            </Button>
                         )}
                     </div>
                 </div>
