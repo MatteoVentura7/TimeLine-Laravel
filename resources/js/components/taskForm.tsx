@@ -73,13 +73,14 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                         required
                     >
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select user..." />
+                            <SelectValue placeholder="Select user..."  />
                         </SelectTrigger>
                         <SelectContent>
                             {users.map((user) => (
                                 <SelectItem
                                     key={user.id}
                                     value={user.id.toString()}
+                                    
                                 >
                                     {user.name}
                                 </SelectItem>

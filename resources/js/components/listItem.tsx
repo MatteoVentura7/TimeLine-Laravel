@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import type { Task } from '@/types/task-user';
+import { useEffect, useState } from 'react';
 
+import { CheckCircle2, Circle } from 'lucide-react';
 
 export default function ListItem({
     tasks = [],
@@ -27,18 +29,33 @@ export default function ListItem({
                     </p>
                 </div>
             ) : (
+
                 <ul className="m-4 max-h-220 grow space-y-3 p-0 pr-2 pb-2">
                     {localTasks.map((task) => {
-                        const iconColor = task.completed ? 'text-green-500' : 'text-blue-500';
+                     
                         return (
                             <li
                                 key={task.id}
                                 onClick={() => onTaskClick?.(task)}
-                                className="flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 shadow transition-all hover:shadow-lg hover:scale-[1.02] dark:bg-neutral-800"
+                                className="flex cursor-pointer items-center justify-between rounded-xl bg-white p-4 shadow transition-all hover:scale-[1.02] hover:shadow-lg dark:bg-neutral-800"
                             >
                                 <div className="flex items-center space-x-3">
                                     <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
-                                        <i className={`fa-solid fa-list-check ${iconColor}`}></i>
+                                        <Button
+                                            variant="ghost"
+                                            size="lg"
+                                            className={`h-8 w-8 p-0 ${
+                                                task.completed
+                                                    ? 'text-green-600 hover:text-green-700'
+                                                    : 'text-gray-400 hover:text-green-600'
+                                            }`}
+                                        >
+                                            {task.completed ? (
+                                                <CheckCircle2 className="h-5 w-5" />
+                                            ) : (
+                                                <Circle className="h-5 w-5" />
+                                            )}
+                                        </Button>
                                         {task.title}
                                     </h3>
                                 </div>

@@ -49,7 +49,7 @@ export default function Dashboard({
                 <div className="grid auto-rows-min gap-4 lg:grid-cols-3">
                     <div className="relative aspect-video min-h-95 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* LISTA TASK */}
-
+                     <h1 className='px-6 pt-4 font-bold text-[20px]'>Recenti</h1>
                         <ListItem tasks={tasks.data} onTaskClick={handleTaskClick} />
                     </div>
 

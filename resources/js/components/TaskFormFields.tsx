@@ -1,4 +1,6 @@
-import type { User, Task } from '@/types/task-user';
+import { Button } from '@/components/ui/button';
+import type { Task, User } from '@/types/task-user';
+import { Calendar, CalendarCheck, CalendarOff, CheckCircle2, Circle ,UserIcon } from 'lucide-react';
 
 interface TaskFormFieldsProps {
     isEditing: boolean;
@@ -49,21 +51,47 @@ export default function TaskFormFields({
             <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4 shadow-sm transition dark:bg-neutral-700">
                 {isEditing ? (
                     <div className="flex w-full items-center gap-2">
-                        <i className="fa-solid fa-list-check text-blue-500"></i>
+                        <Button
+                            onClick={onCompletedChange}
+                            disabled={!isEditing}
+                            variant="ghost"
+                            size="lg"
+                            className={`h-8 w-8 cursor-pointer p-0 ${
+                                completed
+                                    ? 'text-green-600 hover:text-green-700'
+                                    : 'text-gray-400 hover:text-green-600'
+                            }`}
+                        >
+                            {completed ? (
+                                <CheckCircle2 className="h-5 w-5" />
+                            ) : (
+                                <Circle className="h-5 w-5" />
+                            )}
+                        </Button>
                         <input
                             value={title}
                             onChange={(e) => onTitleChange(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-neutral-600 dark:border-neutral-500"
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-neutral-500 dark:bg-neutral-600"
                             placeholder="Task title"
                         />
                     </div>
                 ) : (
                     <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
-                        <i
-                            className={`fa-solid fa-list-check ${
-                                completed ? 'text-green-500' : 'text-blue-500'
+                        <Button
+                            variant="ghost"
+                            size="lg"
+                            className={`h-8 w-8 p-0 ${
+                                task.completed
+                                    ? 'text-green-600 hover:text-green-700'
+                                    : 'text-gray-400 hover:text-green-600'
                             }`}
-                        ></i>
+                        >
+                            {task.completed ? (
+                                <CheckCircle2 className="h-5 w-5" />
+                            ) : (
+                                <Circle className="h-5 w-5" />
+                            )}
+                        </Button>
                         {title}
                     </h3>
                 )}
@@ -72,12 +100,18 @@ export default function TaskFormFields({
             {/* User + Status */}
             <div className="flex flex-wrap items-center gap-3">
                 {isEditing ? (
+                    <>
+                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100">
+                            <UserIcon className="h-4 w-4" />
+                        </div>
                     <select
                         value={userId}
                         onChange={(e) =>
-                            onUserChange(e.target.value ? Number(e.target.value) : '')
+                            onUserChange(
+                                e.target.value ? Number(e.target.value) : '',
+                            )
                         }
-                        className="rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-neutral-700 dark:border-neutral-600"
+                        className="rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700"
                     >
                         {users.map((u) => (
                             <option key={u.id} value={u.id}>
@@ -85,49 +119,43 @@ export default function TaskFormFields({
                             </option>
                         ))}
                     </select>
+                    </>
                 ) : (
-                    <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition dark:bg-blue-900 dark:text-blue-100">
-                        <i className="fa-solid fa-user"></i>
-                        {selectedUser?.name ?? 'Unassigned'}
-                    </span>
+                    
+                     <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100">
+                            <UserIcon className="h-4 w-4" />
+                        </div>
+                        <span className="text-sm"> {selectedUser?.name ?? 'Unassigned'}</span>
+                    </div>
                 )}
-
-                <button
-                    onClick={onCompletedChange}
-                    disabled={!isEditing}
-                    className={`flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium transition ${
-                        completed
-                            ? 'text-green-500 hover:text-green-600 cursor-pointer'
-                            : 'text-gray-600'
-                    } ${!isEditing ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:text-green-500'}`}
-                    title={completed ? 'Undo complete' : 'Complete task'}
-                >
-                    {completed ? (
-                        <i className="fa-solid fa-square-check text-2xl"></i>
-                    ) : (
-                        <i className="fa-regular fa-square text-2xl"></i>
-                    )}
-                    <span>{completed ? 'Completed' : 'Not Completed'}</span>
-                </button>
             </div>
 
             {/* Dates */}
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                 {/* Created at */}
                 <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800">
-                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                        Created at
-                    </p>
+                    <span className="flex">
+                        <Calendar className="h-4 w-4 mr-2" />{' '}
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                            Start
+                        </p>
+                    </span>
+
                     {isEditing ? (
                         <>
                             <input
                                 type="datetime-local"
                                 value={createdAt}
-                                onChange={(e) => onCreatedAtChange(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-neutral-700 dark:border-neutral-600"
+                                onChange={(e) =>
+                                    onCreatedAtChange(e.target.value)
+                                }
+                                className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700"
                             />
                             {errors.created && (
-                                <p className="mt-1 text-sm text-red-500">{errors.created}</p>
+                                <p className="mt-1 text-sm text-red-500">
+                                    {errors.created}
+                                </p>
                             )}
                         </>
                     ) : (
@@ -139,16 +167,21 @@ export default function TaskFormFields({
 
                 {/* Expiration */}
                 <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800">
-                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                        Expiration
-                    </p>
+                     <span className="flex">
+                        <CalendarOff className="h-4 w-4 mr-2" />{' '}
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                            Expiration
+                        </p>
+                    </span>
                     {isEditing ? (
                         <>
                             <input
                                 type="datetime-local"
                                 value={expiration}
-                                onChange={(e) => onExpirationChange(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-neutral-700 dark:border-neutral-600"
+                                onChange={(e) =>
+                                    onExpirationChange(e.target.value)
+                                }
+                                className="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700"
                             />
                             {errors.expiration && (
                                 <p className="mt-1 text-sm text-red-500">
@@ -165,18 +198,25 @@ export default function TaskFormFields({
 
                 {/* Completed at */}
                 <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800">
-                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                        Completed on {completed && isEditing ? '*' : ''}
-                    </p>
+                    <span className="flex">
+                        <CalendarCheck className="h-4 w-4 mr-2" />{' '}
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                            Completed On
+                        </p>
+                    </span>
                     {isEditing ? (
                         <>
                             <input
                                 type="datetime-local"
                                 value={completedAt || ''}
-                                onChange={(e) => onCompletedAtChange(e.target.value)}
+                                onChange={(e) =>
+                                    onCompletedAtChange(e.target.value)
+                                }
                                 disabled={!completed}
-                                className={`w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-neutral-700 dark:border-neutral-600 ${
-                                    !completed ? 'cursor-not-allowed bg-gray-100 dark:bg-neutral-900' : ''
+                                className={`w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700 ${
+                                    !completed
+                                        ? 'cursor-not-allowed bg-gray-100 dark:bg-neutral-900'
+                                        : ''
                                 }`}
                             />
                             {errors.completed && (
