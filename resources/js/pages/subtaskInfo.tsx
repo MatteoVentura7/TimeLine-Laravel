@@ -4,6 +4,25 @@ import { dashboardActivity, subtasksInfo } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { 
+    ArrowLeft,
+    CheckCircle2, 
+    Circle,
+    Edit,
+    Save,
+    X,
+    Trash2,
+    Calendar,
+    Clock,
+    CheckCircle,
+    ListTodo,
+    Link as LinkIcon
+} from 'lucide-react';
 
 export default function SubtaskInfo({ subtask }: any) {
     const breadcrumbs: BreadcrumbItem[] = [
@@ -53,143 +72,221 @@ export default function SubtaskInfo({ subtask }: any) {
         router.delete(`/subtasks/${subtask.id}`, {});
     };
 
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Subtask Details" />
 
-            <div className="min-h-screen bg-gray-50 px-4 py-10">
+            <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
+                {/* Back Button */}
+                <Button
+                    variant="ghost"
+                    onClick={handleBack}
+                    className="gap-2 -ml-2"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Tasks
+                </Button>
+
+                {/* Main Content - Vertical Stack */}
                 <div className="mx-auto max-w-4xl space-y-6">
-                    <button
-                        onClick={handleBack}
-                        className="text-sm text-gray-500 transition hover:text-gray-900"
-                    >
-                        ← Back
-                    </button>
+                    {/* Subtask Details Card */}
+                    <Card>
+                        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex items-center gap-3 min-w-0 flex-1">
+                                    <div className={`p-2 rounded-lg ${
+                                        isCompleted 
+                                            ? 'bg-green-100 dark:bg-green-900' 
+                                            : 'bg-orange-100 dark:bg-orange-900'
+                                    }`}>
+                                        {isCompleted ? (
+                                            <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                        ) : (
+                                            <Circle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <CardTitle className="text-lg">Subtask Details</CardTitle>
+                                        <Badge 
+                                            variant={isCompleted ? "default" : "secondary"} 
+                                            className={`mt-1 ${isCompleted ? 'bg-green-500' : ''}`}
+                                        >
+                                            {isCompleted ? 'Completed' : 'In Progress'}
+                                        </Badge>
+                                    </div>
+                                </div>
+                                
+                                {/* Status Toggle Button */}
+                                <Button
+                                    onClick={handleToggleComplete}
+                                    variant="outline"
+                                    size="sm"
+                                    className={`gap-2 ${
+                                        isCompleted 
+                                            ? 'border-green-200 hover:bg-green-50 dark:border-green-800' 
+                                            : 'border-orange-200 hover:bg-orange-50 dark:border-orange-800'
+                                    }`}
+                                >
+                                    {isCompleted ? (
+                                        <>
+                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                            <span >Mark Incomplete</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Circle className="h-4 w-4 text-orange-600" />
+                                            <span >Mark Complete</span>
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
+                        </CardHeader>
 
-                    <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-lg">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-md font-bold text-gray-500">
-                                    Task{' '}
-                                    <span className="text-md ml-1 font-light text-gray-400">
-                                        {subtask.task.title}
-                                    </span>
-                                </p>
+                        <CardContent className="pt-6">
+                            {/* Parent Task Reference */}
+                            <div className="mb-6 flex items-center gap-2 rounded-lg bg-muted p-3">
+                                <LinkIcon className="h-4 w-4 text-muted-foreground" />
+                                <div>
+                                    <p className="text-xs text-muted-foreground">Parent Task</p>
+                                    <p className="text-sm font-medium">{subtask.task.title}</p>
+                                </div>
+                            </div>
 
-                                <h1 className="mt-4 text-xl font-bold text-gray-900">
-                                    Subtask
-                                </h1>
+                            <Separator className="mb-6" />
 
+                            {/* Subtask Title */}
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                                    Subtask Title
+                                </label>
                                 {isEditing ? (
-                                    <input
+                                    <Input
                                         value={title}
-                                        onChange={(e) =>
-                                            setTitle(e.target.value)
-                                        }
-                                        className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-xl font-light focus:border-blue-500 focus:outline-none"
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        className="text-lg"
+                                        placeholder="Enter subtask title"
                                     />
                                 ) : (
-                                    <h1 className="mt-2 text-xl font-light text-gray-700">
-                                        {subtask.title}
-                                    </h1>
+                                    <p className="text-lg font-medium">{subtask.title}</p>
                                 )}
                             </div>
 
-                            <button
-                                onClick={handleToggleComplete}
-                                className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold transition ${
-                                    isCompleted
-                                        ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                                        : 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
-                                }`}
-                            >
-                                {isCompleted ? '✓ Completed' : '○ Pending'}
-                            </button>
-                        </div>
-
-                        <div className="mt-8 flex gap-3">
-                            {isEditing ? (
-                                <>
-                                    <button
-                                        onClick={handleUpdate}
-                                        className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700"
-                                    >
-                                        Save
-                                    </button>
-
-                                    <button
-                                        onClick={() => {
-                                            setIsEditing(false);
-                                            setTitle(subtask.title);
-                                        }}
-                                        className="rounded-lg bg-gray-100 px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
-                                    >
-                                        Cancel
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <button
-                                        onClick={() => setIsEditing(true)}
-                                        className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        onClick={() => setConfirmOpen(true)}
-                                        className="rounded-lg bg-red-50 px-5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100"
-                                    >
-                                        Delete
-                                    </button>
-                                </>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-lg">
-                        <h2 className="mb-6 text-lg font-semibold text-gray-900">
-                            Activity Timeline
-                        </h2>
-
-                        <div className="relative space-y-8 border-l border-gray-200 pl-6">
-                            <div className="relative">
-                                <span className="absolute top-1 -left-3 h-2.5 w-2.5 rounded-full bg-blue-600"></span>
-                                <p className="text-sm text-gray-500">Created</p>
-                                <p className="font-medium text-gray-700">
-                                    {new Date(
-                                        subtask.created_at,
-                                    ).toLocaleString()}
-                                </p>
+                            {/* Action Buttons */}
+                            <div className="mt-6 flex flex-wrap gap-2">
+                                {isEditing ? (
+                                    <>
+                                        <Button
+                                            onClick={handleUpdate}
+                                            className="gap-2"
+                                        >
+                                            <Save className="h-4 w-4" />
+                                            Save Changes
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setIsEditing(false);
+                                                setTitle(subtask.title);
+                                            }}
+                                            variant="outline"
+                                            className="gap-2"
+                                        >
+                                            <X className="h-4 w-4" />
+                                            Cancel
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Button
+                                            onClick={() => setIsEditing(true)}
+                                            variant="secondary"
+                                            className="gap-2"
+                                        >
+                                            <Edit className="h-4 w-4" />
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            onClick={() => setConfirmOpen(true)}
+                                            variant="destructive"
+                                            className="gap-2"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                            Delete
+                                        </Button>
+                                    </>
+                                )}
                             </div>
+                        </CardContent>
+                    </Card>
 
-                            <div className="relative">
-                                <span className="absolute top-1 -left-3 h-2.5 w-2.5 rounded-full bg-gray-400"></span>
-                                <p className="text-sm text-gray-500">
-                                    Last Updated
-                                </p>
-                                <p className="font-medium text-gray-700">
-                                    {new Date(
-                                        subtask.updated_at,
-                                    ).toLocaleString()}
-                                </p>
-                            </div>
-
-                            {isCompleted && (
+                    {/* Timeline Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-lg">
+                                <Clock className="h-5 w-5 text-blue-500" />
+                                Activity Timeline
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="relative space-y-6 border-l-2 border-border pl-6">
+                                {/* Created */}
                                 <div className="relative">
-                                    <span className="absolute top-1 -left-3 h-2.5 w-2.5 rounded-full bg-green-600"></span>
-                                    <p className="text-sm text-gray-500">
-                                        Completed
-                                    </p>
-                                    <p className="font-medium text-gray-700">
-                                        {new Date(
-                                            subtask.completed_at,
-                                        ).toLocaleString()}
-                                    </p>
+                                    <div className="absolute -left-[1.6rem] top-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-background bg-blue-500">
+                                        <Calendar className="h-4 w-4 text-white" />
+                                    </div>
+                                    <div className='ml-3'>
+                                        <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 ">
+                                            Created
+                                        </p>
+                                        <p className="text-sm text-muted-foreground mt-1">
+                                            {formatDate(subtask.created_at)}
+                                        </p>
+                                    </div>
                                 </div>
-                            )}
-                        </div>
-                    </div>
+
+                                {/* Last Updated */}
+                                <div className="relative">
+                                    <div className="absolute -left-[1.6rem] top-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-background bg-gray-400">
+                                        <Clock className="h-4 w-4 text-white" />
+                                    </div>
+                                    <div className='ml-3'>
+                                        <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                                            Last Updated
+                                        </p>
+                                        <p className="text-sm text-muted-foreground mt-1">
+                                            {formatDate(subtask.updated_at)}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Completed (if applicable) */}
+                                {isCompleted && subtask.completed_at && (
+                                    <div className="relative">
+                                        <div className="absolute -left-[1.6rem] top-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-background bg-green-500">
+                                            <CheckCircle className="h-4 w-4 text-white" />
+                                        </div>
+                                        <div className='ml-3'>
+                                            <p className="text-sm font-semibold text-green-600 dark:text-green-400">
+                                                Completed
+                                            </p>
+                                            <p className="text-sm text-muted-foreground mt-1">
+                                                {formatDate(subtask.completed_at)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
 
