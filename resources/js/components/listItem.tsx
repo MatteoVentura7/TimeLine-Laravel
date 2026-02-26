@@ -23,11 +23,11 @@ export default function ListItem({
     return (
         <div className="flex h-full flex-col">
             <CardHeader className="mt-4 text-center">
-                <CardTitle className="flex items-center gap-2 justify-center">
+                <CardTitle className="flex items-center gap-2 justify-center ">
                     <Clock className="h-5 w-5" />
                     Recent Activity
                 </CardTitle>
-                <CardDescription>Your latest tasks</CardDescription>
+                <CardDescription className='border-b pb-3 dark:border-neutral-700'>Your latest tasks</CardDescription>
             </CardHeader>
             {localTasks.length === 0 ? (
                 <div className="animate-fadeInUp mt-6 flex flex-col items-center justify-center">

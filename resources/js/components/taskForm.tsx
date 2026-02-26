@@ -51,7 +51,7 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
 
     return (
         
-       <div >   <CardHeader className='text-center '>
+       <div >   <CardHeader className='text-center border-b pb-3 dark:border-neutral-700 w-full '>
                 <CardTitle className="flex items-center gap-2 justify-center">
                     <Plus className="h-5 w-5" />
                     Create New Task

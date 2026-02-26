@@ -19,12 +19,12 @@ export default function ChartCounter({
 
     return (
         <div className="flex h-full w-full flex-col items-center justify-center gap-5 p-4">
-            <CardHeader >
+            <CardHeader className='border-b pb-3 dark:border-neutral-700 w-full' >
             <CardTitle className="flex justify-center items-center gap-2 whitespace-nowrap ">
                 <Activity className="h-5 w-5" />
                 Statistics Overview
             </CardTitle>
-            <CardDescription className='whitespace-nowrap [@media(min-width:1024px)_and_(max-width:1200px)]:whitespace-normal [@media(max-width:1023px)]:whitespace-nowrap' >
+            <CardDescription className=' whitespace-nowrap text-center [@media(min-width:1024px)_and_(max-width:1200px)]:whitespace-normal [@media(max-width:1023px)]:whitespace-nowrap' >
                 Visual representation of your task progress
             </CardDescription>
             </CardHeader>
