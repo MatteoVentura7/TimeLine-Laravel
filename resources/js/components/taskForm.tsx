@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -12,8 +13,9 @@ import { Spinner } from '@/components/ui/spinner';
 import type { User } from '@/types/task-user';
 import { queryParams } from '@/wayfinder';
 import { router, useForm } from '@inertiajs/react';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, CalendarOff,  FileText,  UserIcon } from 'lucide-react';
 import { useState } from 'react';
+import { Plus } from 'lucide-react';
 
 interface TaskFormProps {
     users: User[];
@@ -48,11 +50,23 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
     const isDisabled = processing || submitted;
 
     return (
-        <form onSubmit={submit} className="mt-2 mb-2 space-y-4 p-4">
+        
+       <div >   <CardHeader className='text-center '>
+                <CardTitle className="flex items-center gap-2 justify-center">
+                    <Plus className="h-5 w-5" />
+                    Create New Task
+                </CardTitle>
+                <CardDescription className='whitespace-nowrap'>
+                    Add a new task to your workflow
+                </CardDescription>
+            </CardHeader>
+            
+        <form onSubmit={submit} className=" flex justify-center mt-2  ">
+          
             <fieldset disabled={isDisabled} className="space-y-4">
                 {/* Activity */}
                 <div className="space-y-2">
-                    <Label htmlFor="title">Activity</Label>
+                    <Label htmlFor="title" className='flex items-center gap-2'><FileText className="h-4 w-4" /> Activity</Label>
                     <Input
                         id="title"
                         type="text"
@@ -60,27 +74,27 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                         onChange={(e) => setData('title', e.target.value)}
                         placeholder="Enter activity..."
                         required
-                        className="w-full"
+                        className="max-w-64 [@media(min-width:1024px)_and_(max-width:1200px)]:w-50 [@media(max-width:1023px)]:max-w-64"
                     />
                 </div>
 
                 {/* Assigned User */}
                 <div className="space-y-2">
-                    <Label htmlFor="user_id">Assigned To</Label>
+                    
+                    <Label htmlFor="user_id" className='flex items-center gap-2'><UserIcon className="h-4 w-4" /> Assigned To</Label>
                     <Select
                         value={data.user_id}
                         onValueChange={(value) => setData('user_id', value)}
                         required
                     >
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select user..."  />
+                        <SelectTrigger className="max-w-64 [@media(min-width:1024px)_and_(max-width:1200px)]:w-50 [@media(max-width:1023px)]:max-w-64">
+                            <SelectValue placeholder="Select user..." />
                         </SelectTrigger>
                         <SelectContent>
                             {users.map((user) => (
                                 <SelectItem
                                     key={user.id}
                                     value={user.id.toString()}
-                                    
                                 >
                                     {user.name}
                                 </SelectItem>
@@ -90,17 +104,18 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                 </div>
 
                 {/* Start Date */}
+                <div className='flex gap-2'>
                 <div className="space-y-2">
                     <Label htmlFor="start" className="flex items-center gap-2">
                         <CalendarIcon className="h-4 w-4" />
-                        Start Date
+                        Start 
                     </Label>
                     <Input
                         id="start"
                         type="datetime-local"
                         value={data.start}
                         onChange={(e) => setData('start', e.target.value)}
-                        className="w-full"
+                        className="max-w-31 [@media(min-width:1024px)_and_(max-width:1200px)]:w-24 [@media(max-width:1023px)]:max-w-31"
                     />
                 </div>
 
@@ -110,8 +125,8 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                         htmlFor="expiration"
                         className="flex items-center gap-2"
                     >
-                        <CalendarIcon className="h-4 w-4" />
-                        Expiration Date
+                        <CalendarOff className="h-4 w-4" />
+                        Expiration 
                     </Label>
                     <Input
                         id="expiration"
@@ -120,7 +135,7 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                         onChange={(e) => setData('expiration', e.target.value)}
                         min={data.start || undefined}
                         disabled={!data.start}
-                        className="w-full"
+                        className="max-w-31 [@media(min-width:1024px)_and_(max-width:1200px)]:w-24 [@media(max-width:1023px)]:max-w-31"
                     />
                     {!data.start && (
                         <p className="text-xs text-muted-foreground">
@@ -128,12 +143,13 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                         </p>
                     )}
                 </div>
+                </div>
 
                 {/* Submit Button */}
                 <Button
                     type="submit"
                     disabled={isDisabled}
-                    className="w-full cursor-pointer bg-black"
+                    className="w-64 cursor-pointer bg-black [@media(min-width:1024px)_and_(max-width:1200px)]:w-50 [@media(max-width:1023px)]:w-64"
                     size="lg"
                 >
                     {processing ? (
@@ -150,5 +166,6 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                 </Button>
             </fieldset>
         </form>
+        </div>
     );
 }

@@ -132,7 +132,7 @@ export default function TaskInfoModal({
                     />
 
                     {/* Subtasks */}
-                    <SubTaskList task={task} />
+                    <SubTaskList task={task} disabled={form.isEditing} />
                 </div>
             </Modal>
 

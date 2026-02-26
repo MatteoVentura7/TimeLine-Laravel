@@ -1,15 +1,14 @@
 import ListItem from '@/components/listItem';
 import TaskForm from '@/components/taskForm';
 import TaskInfoModal from '@/components/taskInfoModal';
-import UpcomingDeadlines from '@/components/upComingDeadlines';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+import UpcomingDeadlines from '@/components/UpcomingDeadlines';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
+import type { Task, TaskPagination, User } from '@/types/task-user';
 import { Head } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ChartCounter from '../components/chartCounter';
-import type { TaskPagination, User, Task } from '@/types/task-user'
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -17,7 +16,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard().url,
     },
 ];
-
 
 export default function Dashboard({
     users,
@@ -50,13 +48,16 @@ export default function Dashboard({
                 <div className="grid auto-rows-min gap-4 lg:grid-cols-3">
                     <div className="relative aspect-video min-h-95 w-full overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* LISTA TASK */}
-                     <h1 className='px-6 pt-4 font-bold text-[20px]'>Recenti</h1>
-                        <ListItem tasks={tasks.data} onTaskClick={handleTaskClick} />
+
+                        <ListItem
+                            tasks={tasks.data}
+                            onTaskClick={handleTaskClick}
+                        />
                     </div>
 
                     <div className="relative flex aspect-video min-h-95 w-full items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {/* FORM AGGIUNTA TASK */}
-                        <div className='w-96'>
+                        <div className="w-96">
                             <TaskForm users={users} />
                         </div>
                     </div>
@@ -67,7 +68,7 @@ export default function Dashboard({
                     </div>
                 </div>
 
-                 <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl md:min-h-min">
+                <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl md:min-h-min">
                     <UpcomingDeadlines tasks={tasks.data} />
                 </div>
             </div>
