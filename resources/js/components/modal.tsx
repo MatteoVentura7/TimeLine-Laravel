@@ -48,7 +48,7 @@ export default function Modal({
                 )}
 
                 {/* CONTENT (scrollabile) */}
-                <div className="px-6 py-4  overflow-y-scroll [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden  flex-1">
+                <div className="px-6 py-4  overflow-y-scroll [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden  flex-1 rounded-2xl">
                     {children}
                 </div>
 

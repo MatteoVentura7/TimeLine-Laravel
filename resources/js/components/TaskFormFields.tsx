@@ -1,6 +1,18 @@
 import { Button } from '@/components/ui/button';
 import type { Task, User } from '@/types/task-user';
 import { Calendar, CalendarCheck, CalendarOff, CheckCircle2, Circle ,UserIcon } from 'lucide-react';
+import {
+    Card,
+    CardContent,
+} from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface TaskFormFieldsProps {
     isEditing: boolean;
@@ -46,9 +58,11 @@ export default function TaskFormFields({
     const selectedUser = users.find((u) => u.id === userId) ?? task.user;
 
     return (
+        <Card>
         <div className="space-y-6">
+            <CardContent>
             {/* Title */}
-            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4 shadow-sm transition dark:bg-neutral-700">
+            <div className="flex items-center justify-between  p-3 pl-1  dark:bg-neutral-700">
                 {isEditing ? (
                     <div className="flex w-full items-center gap-2">
                         <Button
@@ -98,12 +112,13 @@ export default function TaskFormFields({
             </div>
 
             {/* User + Status */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 p-3 pl-1">
                 {isEditing ? (
                     <>
                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100">
                             <UserIcon className="h-4 w-4" />
                         </div>
+                      
                     <select
                         value={userId}
                         onChange={(e) =>
@@ -134,7 +149,7 @@ export default function TaskFormFields({
             {/* Dates */}
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                 {/* Created at */}
-                <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800">
+                <div className=" p-3  dark:bg-neutral-800">
                     <span className="flex">
                         <Calendar className="h-4 w-4 mr-2" />{' '}
                         <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
@@ -166,7 +181,7 @@ export default function TaskFormFields({
                 </div>
 
                 {/* Expiration */}
-                <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800">
+                <div className=" p-3  dark:bg-neutral-800">
                      <span className="flex">
                         <CalendarOff className="h-4 w-4 mr-2" />{' '}
                         <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
@@ -197,7 +212,7 @@ export default function TaskFormFields({
                 </div>
 
                 {/* Completed at */}
-                <div className="rounded-lg border bg-gray-50 p-3 shadow-sm dark:bg-neutral-800">
+                <div className=" p-3  dark:bg-neutral-800">
                     <span className="flex">
                         <CalendarCheck className="h-4 w-4 mr-2" />{' '}
                         <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
@@ -232,6 +247,8 @@ export default function TaskFormFields({
                     )}
                 </div>
             </div>
+            </CardContent>
         </div>
+        </Card>
     );
 }

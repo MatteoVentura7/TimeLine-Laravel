@@ -108,7 +108,7 @@ export default function TaskInfoModal({
         <>
             <Modal open={open} onClose={handleClose} width="w-[1200px]">
                 {/* Header */}
-                <div className="-mx-6 -mt-6 mb-6  border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950 rounded-4xl ">
+                <div className="-mx-6 -mt-6 mb-6  border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950  ">
                     <div className="flex items-center justify-between gap-4 ">
                         <div className="flex min-w-0 flex-1 items-center gap-3 ">
                             <div
@@ -163,7 +163,8 @@ export default function TaskInfoModal({
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 rounded-2xl
+                        ">
                             {form.isEditing ? (
                                 <>
                                     <Button
@@ -220,7 +221,7 @@ export default function TaskInfoModal({
                 </div>
 
                 {/* Content */}
-                <div className="space-y-6">
+                <div className="space-y-6 ">
                     {/* Form Fields */}
                     <div>
                         <h3 className="mb-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
