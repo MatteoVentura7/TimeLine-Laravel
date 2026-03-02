@@ -87,7 +87,7 @@ export default function SubtaskInfo({ subtask }: any) {
             <Head title="Subtask Details" />
 
             <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
-                {/* Back Button */}
+            
                 <Button
                     variant="ghost"
                     onClick={handleBack}
@@ -97,11 +97,11 @@ export default function SubtaskInfo({ subtask }: any) {
                     Back to Tasks
                 </Button>
 
-                {/* Main Content - Vertical Stack */}
+               
                 <div className="mx-auto max-w-4xl space-y-6">
-                    {/* Subtask Details Card */}
+                  
                     <Card>
-                        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
+                        <CardHeader className="bg-linear-to-r dark:from-blue-950 dark:to-indigo-950">
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div className="flex items-center gap-3 min-w-0 flex-1">
                                     <div className={`p-2 rounded-lg ${
@@ -126,7 +126,6 @@ export default function SubtaskInfo({ subtask }: any) {
                                     </div>
                                 </div>
                                 
-                                {/* Status Toggle Button */}
                                 <Button
                                     onClick={handleToggleComplete}
                                     variant="outline"
@@ -153,7 +152,6 @@ export default function SubtaskInfo({ subtask }: any) {
                         </CardHeader>
 
                         <CardContent className="pt-6">
-                            {/* Parent Task Reference */}
                             <div className="mb-6 flex items-center gap-2 rounded-lg bg-muted p-3">
                                 <LinkIcon className="h-4 w-4 text-muted-foreground" />
                                 <div>
@@ -164,7 +162,7 @@ export default function SubtaskInfo({ subtask }: any) {
 
                             <Separator className="mb-6" />
 
-                            {/* Subtask Title */}
+                          
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                                     Subtask Title
@@ -181,7 +179,7 @@ export default function SubtaskInfo({ subtask }: any) {
                                 )}
                             </div>
 
-                            {/* Action Buttons */}
+                        
                             <div className="mt-6 flex flex-wrap gap-2">
                                 {isEditing ? (
                                     <>
@@ -228,7 +226,7 @@ export default function SubtaskInfo({ subtask }: any) {
                         </CardContent>
                     </Card>
 
-                    {/* Timeline Card */}
+                   
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-lg">
@@ -253,7 +251,7 @@ export default function SubtaskInfo({ subtask }: any) {
                                     </div>
                                 </div>
 
-                                {/* Last Updated */}
+                     
                                 <div className="relative">
                                     <div className="absolute -left-[1.6rem] top-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-background bg-gray-400">
                                         <Clock className="h-4 w-4 text-white" />
@@ -268,7 +266,7 @@ export default function SubtaskInfo({ subtask }: any) {
                                     </div>
                                 </div>
 
-                                {/* Completed (if applicable) */}
+                          
                                 {isCompleted && subtask.completed_at && (
                                     <div className="relative">
                                         <div className="absolute -left-[1.6rem] top-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-background bg-green-500">

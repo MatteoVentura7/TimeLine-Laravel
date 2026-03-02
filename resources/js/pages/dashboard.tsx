@@ -1,7 +1,6 @@
 import ListItem from '@/components/listItem';
 import TaskForm from '@/components/taskForm';
 import TaskInfoModal from '@/components/taskInfoModal';
-import UpcomingDeadlines from '@/components/UpcomingDeadlines';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -68,9 +67,7 @@ export default function Dashboard({
                     </div>
                 </div>
 
-                <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl md:min-h-min">
-                    <UpcomingDeadlines tasks={tasks.data} />
-                </div>
+                <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl md:min-h-min"></div>
             </div>
 
             <TaskInfoModal

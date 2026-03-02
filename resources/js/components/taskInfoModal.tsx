@@ -1,22 +1,23 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useTaskForm } from '@/hooks/useTaskForm';
 import type { Task, User } from '@/types/task-user';
 import { router } from '@inertiajs/core';
-import { useState } from 'react';
+import {
+    Check,
+    CheckCircle2,
+    Clock,
+    Edit,
+    ListTodo,
+    Loader2,
+    Save,
+    X,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import IncompleteSubtasksWarningModal from './InCompleteSubtasksWarningModal';
 import Modal from './modal';
 import SubTaskList from './subTaskList';
-import IncompleteSubtasksWarningModal from './InCompleteSubtasksWarningModal';
 import TaskFormFields from './TaskFormFields';
-import { useTaskForm } from '@/hooks/useTaskForm';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-    CheckCircle2, 
-    Clock, 
-    Edit, 
-    ListTodo, 
-    Loader2, 
-    Save, 
-    X 
-} from 'lucide-react';
 
 interface TaskInfoModalProps {
     task: Task | null;
@@ -32,16 +33,29 @@ export default function TaskInfoModal({
     onClose,
 }: TaskInfoModalProps) {
     const [loading, setLoading] = useState(false);
-    const [incompleteSubtasksWarning, setIncompleteSubtasksWarning] = useState(false);
+    const [incompleteSubtasksWarning, setIncompleteSubtasksWarning] =
+        useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
 
     const form = useTaskForm({ task });
+
+    useEffect(() => {
+        if (saveSuccess) {
+            const timer = setTimeout(() => {
+                setSaveSuccess(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [saveSuccess]);
 
     const handleCompletedToggle = () => {
         if (form.completed) {
             form.setCompleted(false);
             form.setCompletedAt('');
         } else {
-            const hasIncompleteSubtasks = task?.subtasks?.some(st => !st.completed);
+            const hasIncompleteSubtasks = task?.subtasks?.some(
+                (st) => !st.completed,
+            );
             if (hasIncompleteSubtasks) {
                 setIncompleteSubtasksWarning(true);
             } else {
@@ -55,18 +69,25 @@ export default function TaskInfoModal({
         if (!task || !form.validate()) return;
 
         setLoading(true);
+        setSaveSuccess(false);
 
-        router.patch(
-            `/tasks/${task.id}`,
-            form.getFormData(),
-            {
-                onFinish: () => {
-                    setLoading(false);
-                    form.resetEdit();
-                    handleClose();
-                },
+        router.patch(`/tasks/${task.id}`, form.getFormData(), {
+            preserveScroll: true,
+            onSuccess: () => {
+                router.reload({
+                    only: ['tasks'],
+
+                    onFinish: () => {
+                        setLoading(false);
+                        form.resetEdit();
+                        setSaveSuccess(true);
+                    },
+                });
             },
-        );
+            onError: () => {
+                setLoading(false);
+            },
+        });
     };
 
     const handleClose = () => {
@@ -76,46 +97,70 @@ export default function TaskInfoModal({
 
     if (!task) return null;
 
-    const subtaskStats = task.subtasks ? {
-        total: task.subtasks.length,
-        completed: task.subtasks.filter(st => st.completed).length,
-    } : { total: 0, completed: 0 };
+    const subtaskStats = task.subtasks
+        ? {
+              total: task.subtasks.length,
+              completed: task.subtasks.filter((st) => st.completed).length,
+          }
+        : { total: 0, completed: 0 };
 
     return (
         <>
             <Modal
                 open={open}
                 onClose={handleClose}
-                
+                title=""
                 width="w-[1200px]"
             >
                 {/* Header */}
-                <div className=" rounded-2xl px-6 py-4 -mt-6 -mx-6 mb-6 border-b bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
+                <div className="-mx-6 -mt-6 mb-6 border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950">
                     <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className={`p-2 rounded-lg ${
-                                task.completed 
-                                    ? 'bg-green-100 dark:bg-green-900' 
-                                    : 'bg-blue-100 dark:bg-blue-900'
-                            }`}>
+                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                            <div
+                                className={`rounded-lg p-2 ${
+                                    task.completed
+                                        ? 'bg-green-100 dark:bg-green-900'
+                                        : 'bg-blue-100 dark:bg-blue-900'
+                                }`}
+                            >
                                 {task.completed ? (
                                     <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                                 ) : (
                                     <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                 )}
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <h2 className="text-xl font-semibold truncate">
+                            <div className="min-w-0 flex-1">
+                                <h2 className="truncate text-xl font-semibold">
                                     Task Details
                                 </h2>
-                                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                    <Badge variant={task.completed ? "default" : "secondary"} className="text-xs">
-                                        {task.completed ? 'Completed' : 'In Progress'}
+                                <div className="mt-1 flex flex-wrap items-center gap-2">
+                                    <Badge
+                                        variant={
+                                            task.completed
+                                                ? 'default'
+                                                : 'secondary'
+                                        }
+                                        className="text-xs"
+                                    >
+                                        {task.completed
+                                            ? 'Completed'
+                                            : 'In Progress'}
                                     </Badge>
                                     {subtaskStats.total > 0 && (
-                                        <Badge variant="outline" className="text-xs gap-1">
+                                        <Badge
+                                            variant="outline"
+                                            className="gap-1 text-xs"
+                                        >
                                             <ListTodo className="h-3 w-3" />
-                                            {subtaskStats.completed}/{subtaskStats.total} subtasks
+                                            {subtaskStats.completed}/
+                                            {subtaskStats.total} subtasks
+                                        </Badge>
+                                    )}
+                                    {/* Success Message */}
+                                    {saveSuccess && (
+                                        <Badge className="animate-in gap-1 bg-green-500 text-xs fade-in slide-in-from-top-2">
+                                            <Check className="h-3 w-3" />
+                                            Saved successfully!
                                         </Badge>
                                     )}
                                 </div>
@@ -137,7 +182,9 @@ export default function TaskInfoModal({
                                         ) : (
                                             <Save className="h-4 w-4" />
                                         )}
-                                        <span className="hidden sm:inline">Save</span>
+                                        <span className="hidden sm:inline">
+                                            Save
+                                        </span>
                                     </Button>
                                     <Button
                                         onClick={form.cancelEdit}
@@ -146,10 +193,13 @@ export default function TaskInfoModal({
                                         className="gap-2"
                                     >
                                         <X className="h-4 w-4" />
-                                        <span className="hidden sm:inline">Cancel</span>
+                                        <span className="hidden sm:inline">
+                                            Cancel
+                                        </span>
                                     </Button>
                                 </>
                             ) : (
+                                <>
                                 <Button
                                     onClick={() => form.setIsEditing(true)}
                                     variant="secondary"
@@ -157,8 +207,18 @@ export default function TaskInfoModal({
                                     className="gap-2"
                                 >
                                     <Edit className="h-4 w-4" />
-                                    <span className="hidden sm:inline">Edit</span>
+                                    <span className="hidden sm:inline">
+                                        Edit
+                                    </span>
                                 </Button>
+                                   <button
+                            onClick={onClose}
+                            className="rounded-full p-2 text-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-neutral-700 cursor-pointer"
+                            aria-label="Close"
+                        >
+                            <i className="fa-solid fa-xmark"></i>
+                        </button>
+                        </>
                             )}
                         </div>
                     </div>
@@ -168,7 +228,7 @@ export default function TaskInfoModal({
                 <div className="space-y-6">
                     {/* Form Fields */}
                     <div>
-                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+                        <h3 className="mb-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
                             Task Information
                         </h3>
                         <TaskFormFields
@@ -196,10 +256,10 @@ export default function TaskInfoModal({
 
                     {/* Subtasks */}
                     <div>
-                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+                        <h3 className="mb-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
                             Subtasks
                         </h3>
-                        <SubTaskList task={task} disabled={form.isEditing} />
+                        <SubTaskList task={task} />
                     </div>
                 </div>
             </Modal>
