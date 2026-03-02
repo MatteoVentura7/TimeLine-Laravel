@@ -106,15 +106,10 @@ export default function TaskInfoModal({
 
     return (
         <>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                title=""
-                width="w-[1200px]"
-            >
+            <Modal open={open} onClose={handleClose} width="w-[1200px]">
                 {/* Header */}
-                <div className="-mx-6 -mt-6 mb-6 border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950">
-                    <div className="flex items-center justify-between gap-4">
+                <div className="-mx-6 -mt-6 mb-6 rounded-xl border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950 r">
+                    <div className="flex items-center justify-between gap-4 ">
                         <div className="flex min-w-0 flex-1 items-center gap-3">
                             <div
                                 className={`rounded-lg p-2 ${
@@ -200,25 +195,25 @@ export default function TaskInfoModal({
                                 </>
                             ) : (
                                 <>
-                                <Button
-                                    onClick={() => form.setIsEditing(true)}
-                                    variant="secondary"
-                                    size="sm"
-                                    className="gap-2"
-                                >
-                                    <Edit className="h-4 w-4" />
-                                    <span className="hidden sm:inline">
-                                        Edit
-                                    </span>
-                                </Button>
-                                   <button
-                            onClick={onClose}
-                            className="rounded-full p-2 text-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-neutral-700 cursor-pointer"
-                            aria-label="Close"
-                        >
-                            <i className="fa-solid fa-xmark"></i>
-                        </button>
-                        </>
+                                    <Button
+                                        onClick={() => form.setIsEditing(true)}
+                                        variant="secondary"
+                                        size="sm"
+                                        className="gap-2"
+                                    >
+                                        <Edit className="h-4 w-4" />
+                                        <span className="hidden sm:inline">
+                                            Edit
+                                        </span>
+                                    </Button>
+                                    <button
+                                        onClick={onClose}
+                                        className="cursor-pointer rounded-full p-2 text-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-neutral-700"
+                                        aria-label="Close"
+                                    >
+                                        <i className="fa-solid fa-xmark"></i>
+                                    </button>
+                                </>
                             )}
                         </div>
                     </div>

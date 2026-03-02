@@ -22,16 +22,17 @@ export default function Modal({
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm "
-            onClick={onClose} 
+            onClick={onClose}
         >
             <div
-                className={`relative rounded-2xl bg-white p-6 shadow-2xl dark:bg-neutral-800 ${width}
+                className={`relative rounded-2xl bg-white shadow-2xl dark:bg-neutral-800 m-auto ${width}
+                max-h-[90vh] flex flex-col
                 animate-in fade-in zoom-in-95 duration-200`}
-                onClick={(e) => e.stopPropagation()} 
+                onClick={(e) => e.stopPropagation()}
             >
                 {/* HEADER */}
                 {title && (
-                    <div className="mb-4 flex items-center justify-between border-b pb-3 dark:border-neutral-700">
+                    <div className="p-6 pb-3 flex items-center justify-between border-b dark:border-neutral-700">
                         <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                             {title}
                         </h2>
@@ -46,14 +47,14 @@ export default function Modal({
                     </div>
                 )}
 
-                {/* CONTENT */}
-                <div className="text-sm text-gray-700 dark:text-gray-300">
+                {/* CONTENT (scrollabile) */}
+                <div className="px-6 py-4  overflow-y-scroll [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden  flex-1">
                     {children}
                 </div>
 
                 {/* FOOTER */}
                 {footer && (
-                    <div className="mt-6 flex justify-end gap-2 border-t pt-4 dark:border-neutral-700">
+                    <div className="p-6 pt-4 flex justify-end gap-2 border-t dark:border-neutral-700">
                         {footer}
                     </div>
                 )}
