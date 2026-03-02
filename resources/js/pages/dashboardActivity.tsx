@@ -2,7 +2,7 @@ import TableUser from '@/components/tableUser';
 import TaskFormModal from '@/components/taskFormModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { dashboardActivity } from '@/routes';
@@ -119,14 +119,14 @@ export default function DashboardActivity({
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">
-                                Total Tasks
+                                Total Activity
                             </CardTitle>
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{total}</div>
                             <p className="text-xs text-muted-foreground">
-                                All active tasks
+                                All active Activity
                             </p>
                         </CardContent>
                     </Card>
@@ -143,7 +143,7 @@ export default function DashboardActivity({
                                 {statistc.todo ?? 0}
                             </div>
                             <p className="text-xs text-muted-foreground">
-                                Pending tasks
+                                Pending Activity
                             </p>
                         </CardContent>
                     </Card>
@@ -160,7 +160,7 @@ export default function DashboardActivity({
                                 {statistc.done ?? 0}
                             </div>
                             <p className="text-xs text-muted-foreground">
-                                Finished tasks
+                                Finished Activity
                             </p>
                         </CardContent>
                     </Card>
@@ -188,16 +188,12 @@ export default function DashboardActivity({
 
                 {/* Task Table */}
                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <span>Tasks</span>
-                            <Badge variant="outline">{tasks.total} total</Badge>
-                        </CardTitle>
-                    </CardHeader>
-                    {/* Search Bar */}
-
-                    <CardContent className="pt-2">
-                        <form
+                    <CardHeader >
+                        <CardTitle className="flex items-center gap-2 justify-between">
+                            <span >Activity <Badge className='ml-2' variant="outline">{tasks.total} total</Badge></span>
+                            
+                             {/* Search Bar */}
+                         <form
                             onSubmit={handleSearchSubmit}
                             className="flex gap-2"
                         >
@@ -205,7 +201,7 @@ export default function DashboardActivity({
                                 <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     type="text"
-                                    placeholder="Search tasks by title..."
+                                    placeholder="Search Activity by title..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     disabled={isEditing}
@@ -226,7 +222,9 @@ export default function DashboardActivity({
                                 </Button>
                             )}
                         </form>
-                        {searchMessage && (
+                       
+                        </CardTitle>
+                            {searchMessage && (
                             <div className="mt-3 flex items-center gap-2">
                                 <Badge variant="secondary">
                                     <Search className="mr-1 h-3 w-3" />
@@ -242,9 +240,12 @@ export default function DashboardActivity({
                                 </Button>
                             </div>
                         )}
-                    </CardContent>
+                    </CardHeader>
+                
 
-                    <TableUser
+                    <CardContent className="pt-2">
+                       
+                          <TableUser
                         tasks={tasks.data}
                         showEdit={true}
                         onEditChange={setIsEditing}
@@ -252,11 +253,13 @@ export default function DashboardActivity({
                         openTaskId={openTaskId}
                         onTaskOpened={() => setOpenTaskId(null)}
                     />
+                    </CardContent>
 
+                    <CardFooter >
                     {/* Pagination */}
                     {tasks.last_page > 1 && (
-                        <CardContent className="pt-6">
-                            <div className="flex items-center justify-between">
+                        <div className="pt-6 ">
+                            <div className="flex  justify-between  items-center ">
                                 <div className="text-sm text-muted-foreground">
                                     Showing page {tasks.current_page} of{' '}
                                     {tasks.last_page}
@@ -362,8 +365,11 @@ export default function DashboardActivity({
                                     </Button>
                                 </div>
                             </div>
-                        </CardContent>
-                    )}
+                        </div>
+                    )}</CardFooter>
+
+                  
+
                 </Card>
 
                 {/* Create Task Modal */}

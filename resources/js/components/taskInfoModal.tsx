@@ -108,9 +108,9 @@ export default function TaskInfoModal({
         <>
             <Modal open={open} onClose={handleClose} width="w-[1200px]">
                 {/* Header */}
-                <div className="-mx-6 -mt-6 mb-6 rounded-xl border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950 r">
+                <div className="-mx-6 -mt-6 mb-6  border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950 rounded-4xl ">
                     <div className="flex items-center justify-between gap-4 ">
-                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                        <div className="flex min-w-0 flex-1 items-center gap-3 ">
                             <div
                                 className={`rounded-lg p-2 ${
                                     task.completed
@@ -254,7 +254,7 @@ export default function TaskInfoModal({
                         <h3 className="mb-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
                             Subtasks
                         </h3>
-                        <SubTaskList task={task} />
+                        <SubTaskList task={task} disabled={form.isEditing} />
                     </div>
                 </div>
             </Modal>

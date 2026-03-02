@@ -60,10 +60,10 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
             <CardHeader className="w-full border-b pb-3 text-center dark:border-neutral-700">
                 <CardTitle className="flex items-center justify-center gap-2">
                     <Plus className="h-5 w-5" />
-                    Create New Task
+                    Create New Activity
                 </CardTitle>
                 <CardDescription className="whitespace-nowrap">
-                    Add a new task to your workflow
+                    Add a new activity to your workflow
                 </CardDescription>
             </CardHeader>
             <form onSubmit={submit} className="mt-2 flex justify-center">
