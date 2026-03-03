@@ -43,7 +43,7 @@ export default function TaskTableRow({
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => onComplete(task)}
-                                className={`h-8 w-8 p-0 ${
+                                className={`h-8 w-8 p-0 cursor-pointer ${
                                     task.completed
                                         ? 'text-green-600 hover:text-green-700'
                                         : 'text-gray-400 hover:text-green-600'
@@ -128,7 +128,7 @@ export default function TaskTableRow({
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => onAddSubtask(task)}
-                                    className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
+                                    className="h-8 w-8 p-0 text-green-600 hover:text-green-700 cursor-pointer"
                                 >
                                     <Plus className="h-4 w-4" />
                                 </Button>
@@ -144,7 +144,7 @@ export default function TaskTableRow({
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => onOpenInfo(task)}
-                                    className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700"
+                                    className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 cursor-pointer"
                                 >
                                     <Info className="h-4 w-4" />
                                 </Button>
@@ -160,12 +160,12 @@ export default function TaskTableRow({
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => onDelete(task.id)}
-                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 cursor-pointer"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent>Delete task</TooltipContent>
+                            <TooltipContent>Delete activity</TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                 </div>

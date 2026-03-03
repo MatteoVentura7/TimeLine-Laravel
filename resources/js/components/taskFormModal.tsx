@@ -1,8 +1,6 @@
+import type { User } from '@/types/task-user';
 import Modal from './modal';
 import TaskForm from './taskForm';
-import type { User } from '@/types/task-user'
-
-
 
 interface TaskFormModalProps {
     users: User[];
@@ -16,12 +14,7 @@ export default function TaskFormModal({
     onClose,
 }: TaskFormModalProps) {
     return (
-        <Modal
-            open={open}
-            onClose={onClose}
-            title="New activity"
-            width="w-[480px]"
-        >
+        <Modal open={open} onClose={onClose} width="w-[480px]">
             <TaskForm users={users} onSuccess={onClose} />
         </Modal>
     );

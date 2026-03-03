@@ -8,9 +8,10 @@ import SubTaskItem from './SubTaskItem';
 
 interface SubTaskListProps {
     task: Task;
+      disabled?: boolean;
 }
 
-export default function SubTaskList({ task }: SubTaskListProps) {
+export default function SubTaskList({ task, disabled }: SubTaskListProps) {
     const [open, setOpen] = useState(true);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [subtaskToDelete, setSubtaskToDelete] = useState<number | null>(null);
@@ -42,7 +43,7 @@ export default function SubTaskList({ task }: SubTaskListProps) {
 
     return (
         <>
-            <div className="rounded-lg border bg-gray-50 dark:bg-neutral-800">
+            <div className={`${disabled ? "pointer-events-none opacity-50" : ""} rounded-lg border bg-gray-50 dark:bg-neutral-800`}>
                 {/* Accordion Header */}
                 <button
                     onClick={() => setOpen(!open)}

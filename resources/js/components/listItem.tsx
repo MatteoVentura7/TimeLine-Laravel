@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button';
+import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Task } from '@/types/task-user';
 import { useEffect, useState } from 'react';
-
+import { Clock } from 'lucide-react';
 import { CheckCircle2, Circle } from 'lucide-react';
 
 export default function ListItem({
@@ -21,6 +22,13 @@ export default function ListItem({
 
     return (
         <div className="flex h-full flex-col">
+            <CardHeader className="mt-4 text-center">
+                <CardTitle className="flex items-center gap-2 justify-center ">
+                    <Clock className="h-5 w-5" />
+                    Recent Activity
+                </CardTitle>
+                <CardDescription className='border-b pb-3 dark:border-neutral-700'>Your latest tasks</CardDescription>
+            </CardHeader>
             {localTasks.length === 0 ? (
                 <div className="animate-fadeInUp mt-6 flex flex-col items-center justify-center">
                     <img src="9264828.jpg" className="max-w-36 opacity-90" />
@@ -29,10 +37,8 @@ export default function ListItem({
                     </p>
                 </div>
             ) : (
-
                 <ul className="m-4 max-h-220 grow space-y-3 p-0 pr-2 pb-2">
                     {localTasks.map((task) => {
-                     
                         return (
                             <li
                                 key={task.id}

@@ -1,5 +1,4 @@
 import {
-    Table,
     TableHead,
     TableHeader,
     TableRow,
@@ -10,7 +9,7 @@ export default function TaskTableHeader() {
     return (
         <TableHeader>
             <TableRow>
-                <TableHead className="w-[80px]">
+                <TableHead className="w-20">
                     <div className="flex items-center gap-2 ml-2">
                         <CheckCircle2 className="h-4 w-4" />
                         Status

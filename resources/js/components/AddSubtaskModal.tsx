@@ -58,14 +58,14 @@ export default function AddSubtaskModal({
                 setSubtaskTitle('');
                 onClose();
             }}
-            title="Add Subtask"
+           
             width="w-[600px]"
         >
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100">
-                        <i className="fa-solid fa-list-check text-blue-500"></i>
-                        <span>{task?.title}</span>
+                    <h3 className="mb-5 flex items-center gap-2 text-lg font-semibold text-gray-800 transition-all dark:text-gray-100  border-b dark:border-neutral-700 ">
+                     
+                        <span className='mb-3'>Task : {task?.title}</span>
                     </h3>
 
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">

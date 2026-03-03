@@ -1,11 +1,23 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useTaskForm } from '@/hooks/useTaskForm';
 import type { Task, User } from '@/types/task-user';
 import { router } from '@inertiajs/core';
-import { useState } from 'react';
+import {
+    Check,
+    CheckCircle2,
+    Clock,
+    Edit,
+    ListTodo,
+    Loader2,
+    Save,
+    X,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import IncompleteSubtasksWarningModal from './InCompleteSubtasksWarningModal';
 import Modal from './modal';
 import SubTaskList from './subTaskList';
-import IncompleteSubtasksWarningModal from './InCompleteSubtasksWarningModal';
 import TaskFormFields from './TaskFormFields';
-import { useTaskForm } from '@/hooks/useTaskForm';
 
 interface TaskInfoModalProps {
     task: Task | null;
@@ -21,18 +33,29 @@ export default function TaskInfoModal({
     onClose,
 }: TaskInfoModalProps) {
     const [loading, setLoading] = useState(false);
-    const [incompleteSubtasksWarning, setIncompleteSubtasksWarning] = useState(false);
+    const [incompleteSubtasksWarning, setIncompleteSubtasksWarning] =
+        useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
 
     const form = useTaskForm({ task });
 
+    useEffect(() => {
+        if (saveSuccess) {
+            const timer = setTimeout(() => {
+                setSaveSuccess(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [saveSuccess]);
+
     const handleCompletedToggle = () => {
         if (form.completed) {
-            // Uncompleting - no warning needed
             form.setCompleted(false);
             form.setCompletedAt('');
         } else {
-            // Completing - check for incomplete subtasks
-            const hasIncompleteSubtasks = task?.subtasks?.some(st => !st.completed);
+            const hasIncompleteSubtasks = task?.subtasks?.some(
+                (st) => !st.completed,
+            );
             if (hasIncompleteSubtasks) {
                 setIncompleteSubtasksWarning(true);
             } else {
@@ -46,18 +69,25 @@ export default function TaskInfoModal({
         if (!task || !form.validate()) return;
 
         setLoading(true);
+        setSaveSuccess(false);
 
-        router.patch(
-            `/tasks/${task.id}`,
-            form.getFormData(),
-            {
-                onFinish: () => {
-                    setLoading(false);
-                    form.resetEdit();
-                    handleClose();
-                },
+        router.patch(`/tasks/${task.id}`, form.getFormData(), {
+            preserveScroll: true,
+            onSuccess: () => {
+                router.reload({
+                    only: ['tasks'],
+
+                    onFinish: () => {
+                        setLoading(false);
+                        form.resetEdit();
+                        setSaveSuccess(true);
+                    },
+                });
             },
-        );
+            onError: () => {
+                setLoading(false);
+            },
+        });
     };
 
     const handleClose = () => {
@@ -67,72 +97,166 @@ export default function TaskInfoModal({
 
     if (!task) return null;
 
+    const subtaskStats = task.subtasks
+        ? {
+              total: task.subtasks.length,
+              completed: task.subtasks.filter((st) => st.completed).length,
+          }
+        : { total: 0, completed: 0 };
+
     return (
         <>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                title="Task Details"
-                width="w-[1200px]"
-            >
-                <div className="space-y-6">
-                    {/* Edit Actions */}
-                    <div className="flex items-center justify-end gap-2">
-                        {form.isEditing ? (
-                            <>
-                                <button
-                                    onClick={handleSave}
-                                    disabled={loading}
-                                    className="flex cursor-pointer items-center gap-1 rounded-lg bg-green-500 px-3 py-1 text-white transition hover:bg-green-600 focus:ring-2 focus:ring-green-400 focus:outline-none disabled:opacity-50"
-                                >
-                                    {loading ? (
-                                        <span className="h-4 w-4 animate-spin rounded-full border-b-2 border-white"></span>
-                                    ) : (
-                                        <i className="fa-solid fa-check"></i>
-                                    )}
-                                    Save
-                                </button>
-                                <button
-                                    onClick={form.cancelEdit}
-                                    className="flex cursor-pointer items-center gap-1 rounded-lg bg-gray-200 px-3 py-1 text-gray-700 transition hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none dark:bg-neutral-700 dark:text-gray-200"
-                                >
-                                    <i className="fa-solid fa-xmark"></i>
-                                    Cancel
-                                </button>
-                            </>
-                        ) : (
-                            <button
-                                onClick={() => form.setIsEditing(true)}
-                                className="flex cursor-pointer items-center gap-1 rounded-lg bg-yellow-100 px-3 py-1 text-yellow-700 transition hover:bg-yellow-200 focus:ring-2 focus:ring-yellow-300 focus:outline-none dark:bg-yellow-900 dark:text-yellow-100"
+            <Modal open={open} onClose={handleClose} width="w-[1200px]">
+                {/* Header */}
+                <div className="-mx-6 -mt-6 mb-6  border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950  ">
+                    <div className="flex items-center justify-between gap-4 ">
+                        <div className="flex min-w-0 flex-1 items-center gap-3 ">
+                            <div
+                                className={`rounded-lg p-2 ${
+                                    task.completed
+                                        ? 'bg-green-100 dark:bg-green-900'
+                                        : 'bg-blue-100 dark:bg-blue-900'
+                                }`}
                             >
-                                <i className="fa-solid fa-pen"></i>
-                                Edit
-                            </button>
-                        )}
+                                {task.completed ? (
+                                    <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                ) : (
+                                    <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <h2 className="truncate text-xl font-semibold">
+                                    Task Details
+                                </h2>
+                                <div className="mt-1 flex flex-wrap items-center gap-2">
+                                    <Badge
+                                        variant={
+                                            task.completed
+                                                ? 'default'
+                                                : 'secondary'
+                                        }
+                                        className="text-xs"
+                                    >
+                                        {task.completed
+                                            ? 'Completed'
+                                            : 'In Progress'}
+                                    </Badge>
+                                    {subtaskStats.total > 0 && (
+                                        <Badge
+                                            variant="outline"
+                                            className="gap-1 text-xs"
+                                        >
+                                            <ListTodo className="h-3 w-3" />
+                                            {subtaskStats.completed}/
+                                            {subtaskStats.total} subtasks
+                                        </Badge>
+                                    )}
+                                    {/* Success Message */}
+                                    {saveSuccess && (
+                                        <Badge className="animate-in gap-1 bg-green-500 text-xs fade-in slide-in-from-top-2">
+                                            <Check className="h-3 w-3" />
+                                            Saved successfully!
+                                        </Badge>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2 rounded-2xl
+                        ">
+                            {form.isEditing ? (
+                                <>
+                                    <Button
+                                        onClick={handleSave}
+                                        disabled={loading}
+                                        size="sm"
+                                        className="gap-2"
+                                    >
+                                        {loading ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <Save className="h-4 w-4" />
+                                        )}
+                                        <span className="hidden sm:inline">
+                                            Save
+                                        </span>
+                                    </Button>
+                                    <Button
+                                        onClick={form.cancelEdit}
+                                        variant="outline"
+                                        size="sm"
+                                        className="gap-2"
+                                    >
+                                        <X className="h-4 w-4" />
+                                        <span className="hidden sm:inline">
+                                            Cancel
+                                        </span>
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button
+                                        onClick={() => form.setIsEditing(true)}
+                                        variant="secondary"
+                                        size="sm"
+                                        className="gap-2"
+                                    >
+                                        <Edit className="h-4 w-4" />
+                                        <span className="hidden sm:inline">
+                                            Edit
+                                        </span>
+                                    </Button>
+                                    <button
+                                        onClick={onClose}
+                                        className="cursor-pointer rounded-full p-2 text-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-neutral-700"
+                                        aria-label="Close"
+                                    >
+                                        <i className="fa-solid fa-xmark"></i>
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="space-y-6 ">
+                    {/* Form Fields */}
+                    <div>
+                        <h3 className="mb-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+                            Task Information
+                        </h3>
+                        <TaskFormFields
+                            isEditing={form.isEditing}
+                            task={task}
+                            title={form.title}
+                            userId={form.userId}
+                            completed={form.completed}
+                            completedAt={form.completedAt}
+                            expiration={form.expiration}
+                            createdAt={form.createdAt}
+                            users={users}
+                            errors={form.errors}
+                            onTitleChange={form.setTitle}
+                            onUserChange={form.setUserId}
+                            onCompletedChange={handleCompletedToggle}
+                            onCompletedAtChange={form.setCompletedAt}
+                            onExpirationChange={form.setExpiration}
+                            onCreatedAtChange={form.setCreatedAt}
+                        />
                     </div>
 
-                    {/* Form Fields */}
-                    <TaskFormFields
-                        isEditing={form.isEditing}
-                        task={task}
-                        title={form.title}
-                        userId={form.userId}
-                        completed={form.completed}
-                        completedAt={form.completedAt}
-                        expiration={form.expiration}
-                        createdAt={form.createdAt}
-                        users={users}
-                        errors={form.errors}
-                        onTitleChange={form.setTitle}
-                        onUserChange={form.setUserId}
-                        onCompletedChange={handleCompletedToggle}
-                        onCompletedAtChange={form.setCompletedAt}
-                        onExpirationChange={form.setExpiration}
-                        onCreatedAtChange={form.setCreatedAt}
-                    />
+                    {/* Separator */}
+                    <div className="border-t"></div>
 
                     {/* Subtasks */}
-                    <SubTaskList task={task} />
+                    <div>
+                        <h3 className="mb-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+                            Subtasks
+                        </h3>
+                        <SubTaskList task={task} disabled={form.isEditing} />
+                    </div>
                 </div>
             </Modal>
 
