@@ -1,7 +1,13 @@
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
 import {
     Select,
     SelectContent,
@@ -9,49 +15,43 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Spinner } from '@/components/ui/spinner';
+import { cn } from '@/lib/utils';
 import type { User } from '@/types/task-user';
 import { queryParams } from '@/wayfinder';
 import { router, useForm } from '@inertiajs/react';
+import { format } from 'date-fns';
+import { it } from 'date-fns/locale';
 import {
     CalendarIcon,
     CalendarOff,
+    Clock,
     FileText,
     Plus,
     UserIcon,
-    Clock,
 } from 'lucide-react';
 import { useState } from 'react';
-import { format } from "date-fns";
-import { it } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 
 interface TaskFormProps {
     users: User[];
     onSuccess?: () => void;
 }
 
-function DateTimePicker({ 
-    value, 
-    onChange, 
+function DateTimePicker({
+    value,
+    onChange,
     disabled = false,
-    placeholder = "Seleziona una data",
-    minDate
-}: { 
-    value: string; 
+    placeholder = 'Seleziona una data',
+    minDate,
+}: {
+    value: string;
     onChange: (value: string) => void;
     disabled?: boolean;
     placeholder?: string;
     minDate?: string;
 }) {
     const [time, setTime] = useState(() => {
-        if (!value) return "12:00";
+        if (!value) return '12:00';
         const date = new Date(value);
         return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
     });
@@ -74,7 +74,7 @@ function DateTimePicker({
 
     const handleTimeChange = (newTime: string) => {
         setTime(newTime);
-        
+
         if (value) {
             const date = new Date(value);
             const [hours, minutes] = newTime.split(':');
@@ -94,9 +94,9 @@ function DateTimePicker({
                     variant="outline"
                     disabled={disabled}
                     className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !value && "text-muted-foreground",
-                        disabled && "cursor-not-allowed opacity-50"
+                        'w-full justify-start text-left font-normal',
+                        !value && 'text-muted-foreground',
+                        disabled && 'cursor-not-allowed opacity-50',
                     )}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -108,23 +108,31 @@ function DateTimePicker({
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-                <div className="p-3 space-y-3">
+                <div className="space-y-3 p-3">
                     <Calendar
                         mode="single"
                         selected={displayDate}
                         onSelect={handleDateSelect}
                         autoFocus
-                        disabled={disabled ? true : minDateObj ? { before: minDateObj } : false}
+                        disabled={
+                            disabled
+                                ? true
+                                : minDateObj
+                                  ? { before: minDateObj }
+                                  : false
+                        }
                         locale={it}
                     />
-                    <div className="border-t pt-3 space-y-2">
+                    <div className="space-y-2 border-t pt-3">
                         <Label className="text-sm font-medium">Ora</Label>
                         <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4 text-muted-foreground" />
                             <Input
                                 type="time"
                                 value={time}
-                                onChange={(e) => handleTimeChange(e.target.value)}
+                                onChange={(e) =>
+                                    handleTimeChange(e.target.value)
+                                }
                                 className="flex-1"
                                 disabled={disabled}
                             />
@@ -174,7 +182,7 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                     Add a new activity to your workflow
                 </CardDescription>
             </CardHeader>
-            <form onSubmit={submit} className="mt-2 flex justify-center">
+            <form onSubmit={submit} className="mt-3 flex justify-center">
                 <fieldset disabled={isDisabled} className="space-y-4">
                     {/* Activity */}
                     <div className="space-y-2">
@@ -226,44 +234,45 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
 
                     {/* Start Date */}
                     <div className="flex gap-2">
-                    <div className="space-y-2  max-w-31 [@media(max-width:1023px)]:max-w-31 [@media(min-width:1024px)_and_(max-width:1200px)]:w-24">
-                        <Label
-                            htmlFor="start"
-                            className="flex items-center gap-2"
-                        >
-                            <CalendarIcon className="h-4 w-4" />
+                        <div className="max-w-31 space-y-2 [@media(max-width:1023px)]:max-w-31 [@media(min-width:1024px)_and_(max-width:1200px)]:w-24">
+                            <Label
+                                htmlFor="start"
+                                className="flex items-center gap-2"
+                            >
+                                <CalendarIcon className="h-4 w-4" />
                                 Start
-                        </Label>
-                        <DateTimePicker
-                            value={data.start}
-                            onChange={(value) => setData('start', value)}
-                            
-                            placeholder="Date start" 
-                        />
-                    </div>
+                            </Label>
+                            <DateTimePicker
+                                value={data.start}
+                                onChange={(value) => setData('start', value)}
+                                placeholder="Date start"
+                            />
+                        </div>
 
-                    {/* Expiration Date */}
-                    <div className="space-y-2 max-w-31 [@media(max-width:1023px)]:max-w-31 [@media(min-width:1024px)_and_(max-width:1200px)]:w-24">
-                        <Label
-                            htmlFor="expiration"
-                            className="flex items-center gap-2"
-                        >
-                            <CalendarOff className="h-4 w-4" />
+                        {/* Expiration Date */}
+                        <div className="max-w-31 space-y-2 [@media(max-width:1023px)]:max-w-31 [@media(min-width:1024px)_and_(max-width:1200px)]:w-24">
+                            <Label
+                                htmlFor="expiration"
+                                className="flex items-center gap-2"
+                            >
+                                <CalendarOff className="h-4 w-4" />
                                 Expiration
-                        </Label>
-                        <DateTimePicker
-                            value={data.expiration}
-                            onChange={(value) => setData('expiration', value)}
-                            disabled={!data.start}
-                            minDate={data.start}
-                            placeholder="Date end"
-                        />
-                        {!data.start && (
-                            <p className="text-xs text-muted-foreground">
+                            </Label>
+                            <DateTimePicker
+                                value={data.expiration}
+                                onChange={(value) =>
+                                    setData('expiration', value)
+                                }
+                                disabled={!data.start}
+                                minDate={data.start}
+                                placeholder="Date end"
+                            />
+                            {!data.start && (
+                                <p className="text-xs text-muted-foreground">
                                     Select a start date first
-                            </p>
-                        )}
-                    </div>
+                                </p>
+                            )}
+                        </div>
                     </div>
 
                     {/* Submit Button */}
@@ -289,4 +298,8 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
             </form>
         </div>
     );
-}  
+}
+
+
+
+

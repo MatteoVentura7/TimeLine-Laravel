@@ -275,7 +275,7 @@ export default function TaskFormFields({
                             <DateTimePicker
                                 value={createdAt}
                                 onChange={onCreatedAtChange}
-                                placeholder="Seleziona data di inizio"
+                                placeholder="Select date of start"
                             />
                             {errors.created && (
                                 <p className="text-sm text-red-500">
@@ -303,7 +303,7 @@ export default function TaskFormFields({
                             <DateTimePicker
                                 value={expiration}
                                 onChange={onExpirationChange}
-                                placeholder="Seleziona data di scadenza"
+                                placeholder="Select date of expiration"
                             />
                             {errors.expiration && (
                                 <p className="text-sm text-red-500">
@@ -332,7 +332,7 @@ export default function TaskFormFields({
                                 value={completedAt}
                                 onChange={onCompletedAtChange}
                                 disabled={!completed}
-                                placeholder="Seleziona data di completamento"
+                                placeholder="Select date of completed"
                             />
                             {errors.completed && (
                                 <p className="text-sm text-red-500">

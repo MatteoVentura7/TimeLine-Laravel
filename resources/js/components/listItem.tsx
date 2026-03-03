@@ -17,7 +17,7 @@ export default function ListItem({
     const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
 
     useEffect(() => {
-        setLocalTasks(tasks); // aggiorna se il prop cambia
+        setLocalTasks(tasks); 
     }, [tasks]);
 
     return (
