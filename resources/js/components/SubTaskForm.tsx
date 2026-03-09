@@ -44,8 +44,8 @@ export default function SubTaskForm({
                                     'Adding...'
                                 ) : (
                                     <>
-                                        <i className="fa-solid fa-plus mr-2"></i>
-                                        Add Subtask
+                                       
+                                        Confirm
                                     </>
                                 )}
                             </Button>

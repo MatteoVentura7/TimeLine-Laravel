@@ -50,7 +50,7 @@ export default function TaskTable({
     const [incompleteSubtasksWarning, setIncompleteSubtasksWarning] = useState(false);
     const [taskWithIncompleteSubtasks, setTaskWithIncompleteSubtasks] = useState<Task | null>(null);
 
-    // Sync selected task when tasks update
+    
     useEffect(() => {
         if (selectedTask) {
             const updated = tasks.find((t) => t.id === selectedTask.id);
@@ -58,7 +58,7 @@ export default function TaskTable({
         }
     }, [tasks, selectedTask]);
 
-    // Auto-open task modal if openTaskId is provided
+    
     useEffect(() => {
         if (openTaskId && tasks.length > 0) {
             const task = tasks.find((t) => t.id === openTaskId);
@@ -70,17 +70,17 @@ export default function TaskTable({
         }
     }, [openTaskId, tasks, onTaskOpened]);
 
-    // Handlers
+    
     const handleComplete = (task: Task) => {
         if (task.completed) {
-            // Uncomplete task
+           
             onUpdateTask({
                 ...task,
                 completed: false,
                 completed_at_iso: null,
             });
         } else {
-            // Check for incomplete subtasks
+          
             const hasIncompleteSubtasks = task.subtasks?.some((st) => !st.completed);
             if (hasIncompleteSubtasks) {
                 setTaskWithIncompleteSubtasks(task);
@@ -130,7 +130,7 @@ export default function TaskTable({
         setAddSubtaskModalOpen(true);
     };
 
-    // Empty state
+   
     if (tasks.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-12">

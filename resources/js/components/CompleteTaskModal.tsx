@@ -1,5 +1,6 @@
 import Modal from '@/components/modal';
 import type { Task } from '@/types/task-user';
+import DateTimePicker from '@/components/ui/date-time-picker';
 
 interface CompleteTaskModalProps {
     open: boolean;
@@ -22,13 +23,6 @@ export default function CompleteTaskModal({
 }: CompleteTaskModalProps) {
     if (!task) return null;
 
-    const isoToLocalDatetime = (iso: string) => {
-        const d = new Date(iso);
-        const offset = d.getTimezoneOffset();
-        const local = new Date(d.getTime() - offset * 60_000);
-        return local.toISOString().slice(0, 16);
-    };
-
     return (
         <Modal
             open={open}
@@ -40,7 +34,7 @@ export default function CompleteTaskModal({
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="rounded bg-gray-300 px-4 py-2"
+                        className="rounded bg-gray-300 px-4 py-2 transition hover:bg-gray-400 disabled:cursor-not-allowed"
                     >
                         Cancel
                     </button>
@@ -48,21 +42,22 @@ export default function CompleteTaskModal({
                     <button
                         onClick={onConfirm}
                         disabled={loading || !completedAt}
-                        className="rounded bg-green-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60"
+                        className="rounded bg-green-500 px-4 py-2 text-white transition hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        Confirm
+                        {loading ? 'Saving...' : 'Confirm'}
                     </button>
                 </>
             }
         >
-            <input
-                type="datetime-local"
-                value={completedAt || ''}
-                required
-                min={isoToLocalDatetime(task.created_at_iso)}
-                onChange={(e) => onChangeCompletedAt(e.target.value)}
-                className="w-full rounded border p-2"
-            />
+            <div className="space-y-3">
+
+                <DateTimePicker
+                    value={completedAt}
+                    onChange={onChangeCompletedAt}
+                    minDate={task.created_at_iso}
+                    placeholder="Select completion date"
+                />
+            </div>
         </Modal>
     );
 }

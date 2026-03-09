@@ -1,6 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
+import { Circle, Info, Plus, Trash2 } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -94,7 +95,7 @@ export default function UserGuide() {
                         
                         <div className="space-y-3">
                             <div className="flex items-start gap-3">
-                                <span className="text-2xl">✅</span>
+                                <span className="text-2xl "><Circle/></span>
                                 <div>
                                     <h4 className="font-semibold text-gray-900 dark:text-white">Completamento Task</h4>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -104,7 +105,7 @@ export default function UserGuide() {
                             </div>
                             
                             <div className="flex items-start gap-3">
-                                <span className="text-2xl">➕</span>
+                                <span className="text-2xl text-green-500"><Plus/></span>
                                 <div>
                                     <h4 className="font-semibold text-gray-900 dark:text-white">Aggiunta Rapida Subtask</h4>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -114,7 +115,7 @@ export default function UserGuide() {
                             </div>
                             
                             <div className="flex items-start gap-3">
-                                <span className="text-2xl">ℹ️</span>
+                                <span className="text-2xl text-blue-500"><Info/></span>
                                 <div>
                                     <h4 className="font-semibold text-gray-900 dark:text-white">Dettagli Task</h4>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -124,7 +125,7 @@ export default function UserGuide() {
                             </div>
                             
                             <div className="flex items-start gap-3">
-                                <span className="text-2xl">🗑️</span>
+                                <span className="text-2xl text-red-500"><Trash2/></span>
                                 <div>
                                     <h4 className="font-semibold text-gray-900 dark:text-white">Eliminazione</h4>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -200,7 +201,7 @@ export default function UserGuide() {
                                     <li>Clicca "Subtasks (^)" per espandere/comprimere la lista</li>
                                     <li>Clicca "+ Add subtask" per aggiungerne una nuova</li>
                                     <li>Checkbox per completare/scompletare</li>
-                                    <li>Icona info (ℹ️) per vedere dettagli e modificare</li>
+                                    <li className='flex'>Icona info <span className='ml-2 mr-2 text-blue-500'><Info/></span> per vedere dettagli e modificare</li>
                                     <li>Icona cestino per eliminare (con conferma)</li>
                                 </ul>
                             </div>
