@@ -48,7 +48,7 @@ export default function SubTaskList({ task, disabled }: SubTaskListProps) {
                 <button
                     onClick={() => setOpen(!open)}
                     disabled={showForm}
-                    className="flex w-full items-center justify-between p-4 text-sm font-semibold transition hover:bg-gray-100 disabled:cursor-not-allowed dark:hover:bg-neutral-700"
+                    className="flex w-full items-center justify-between p-4 text-sm font-semibold transition hover:bg-gray-100 disabled:cursor-not-allowed dark:hover:bg-neutral-700 "
                 >
                     <span>Subtasks ({subtasks.length})</span>
                     <i
@@ -60,11 +60,11 @@ export default function SubTaskList({ task, disabled }: SubTaskListProps) {
 
                 {/* Accordion Body */}
                 <div
-                    className={`overflow-hidden transition-all duration-300 ${
+                    className={`overflow-hidden transition-all duration-300  ${
                         open ? 'max-h-125 opacity-100' : 'max-h-0 opacity-0'
                     }`}
                 >
-                    <div className="px-4 pb-4">
+                    <div className="px-4 pb-4 pt-3">
                         {/* Subtask List */}
                         {subtasks.length > 0 && (
                             <ul className="mb-4 space-y-2">

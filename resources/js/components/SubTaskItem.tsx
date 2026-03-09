@@ -19,7 +19,7 @@ export default function SubTaskItem({
     onDelete,
 }: SubTaskItemProps) {
     return (
-        <li className="flex items-center justify-between gap-2 pt-2 text-sm">
+        <li className="flex items-center justify-between gap-2  text-sm">
             <div className="flex items-center gap-2">
                 <button
                     disabled={disabled}
