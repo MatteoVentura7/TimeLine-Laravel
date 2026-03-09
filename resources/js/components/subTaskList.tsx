@@ -89,23 +89,24 @@ export default function SubTaskList({ task, disabled }: SubTaskListProps) {
                                 loading={loading}
                             />
                         ) : (
-                          
+                          <div className='flex justify-end'>
                             <Button
                                 onClick={() => setShowForm(true)}
                                 type="submit"
                                 disabled={loading}
-                                className="w-full cursor-pointer rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                className=" cursor-pointer rounded-lg bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {' '}
                                 {loading ? (
                                     'Adding...'
                                 ) : (
                                     <>
-                                        <i className="fa-solid fa-plus mr-2"></i>
-                                        Add Subtask
+                                        <i className="fa-solid fa-plus "></i>
+                                         Subtask
                                     </>
                                 )}
                             </Button>
+                            </div>
                         )}
                     </div>
                 </div>

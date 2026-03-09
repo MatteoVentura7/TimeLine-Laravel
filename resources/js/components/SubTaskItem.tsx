@@ -1,6 +1,7 @@
-import { Link } from '@inertiajs/react';
 import { subtasksInfo } from '@/routes';
 import type { SubTask } from '@/types/task-user';
+import { Link } from '@inertiajs/react';
+import { CheckCircle2, Circle, Info, Trash2 } from 'lucide-react';
 
 interface SubTaskItemProps {
     subtask: SubTask;
@@ -18,27 +19,33 @@ export default function SubTaskItem({
     onDelete,
 }: SubTaskItemProps) {
     return (
-        <li className="flex items-center justify-between gap-2 text-sm">
+        <li className="flex items-center justify-between gap-2 pt-2 text-sm">
             <div className="flex items-center gap-2">
                 <button
                     disabled={disabled}
                     onClick={() => onToggle(subtask.id)}
-                    className="cursor-pointer disabled:cursor-not-allowed"
+                    className={`cursor-pointer disabled:cursor-not-allowed ${
+                        subtask.completed
+                            ? 'text-green-600 hover:text-green-700'
+                            : 'text-gray-400 hover:text-green-600'
+                    }`}
                 >
-                    <i
-                        className={`fa-regular ${
-                            subtask.completed
-                                ? 'fa-square-check text-green-500'
-                                : 'fa-square text-gray-600'
-                        } ${disabled ? 'text-gray-300' : ''}`}
-                    />
+                    {subtask.completed ? (
+                        <CheckCircle2 className="h-5 w-5" />
+                    ) : (
+                        <Circle className="h-5 w-5" />
+                    )}
                 </button>
 
-                <span className={subtask.completed ? 'line-through text-gray-500' : ''}>
-                    {subtask.title}
+                <span
+                    className={
+                        subtask.completed ? 'text-gray-500 line-through' : ''
+                    }
+                >
+                    <p className="text-lg">{subtask.title}</p>
                 </span>
             </div>
-            
+
             <div className="flex gap-2">
                 <Link
                     as="button"
@@ -46,7 +53,7 @@ export default function SubTaskItem({
                     href={`${subtasksInfo(subtask.id).url}?from_task=${taskId}`}
                     className="cursor-pointer rounded-sm text-sm disabled:cursor-not-allowed"
                 >
-                    <i
+                    <Info
                         className={`fa-solid fa-circle-info ${
                             disabled
                                 ? 'cursor-not-allowed text-gray-300'
@@ -60,7 +67,7 @@ export default function SubTaskItem({
                     onClick={() => onDelete(subtask.id)}
                     className="cursor-pointer disabled:cursor-not-allowed"
                 >
-                    <i
+                    <Trash2
                         className={`fa-solid fa-trash ${
                             disabled
                                 ? 'cursor-not-allowed text-gray-300'

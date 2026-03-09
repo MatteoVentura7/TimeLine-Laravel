@@ -1,6 +1,5 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-
 import { useTaskForm } from '@/hooks/useTaskForm';
 import type { Task, User } from '@/types/task-user';
 import { router } from '@inertiajs/core';
@@ -130,7 +129,7 @@ export default function TaskInfoModal({
         <>
             <Modal open={open} onClose={handleClose} width="w-[1200px]">
                 {/* Header */}
-                <div className="-mx-6 -mt-6 mb-6 border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950">
+                <div className="-mx-6 -mt-6 mb-6 border-b bg-linear-to-r px-6 py-6 ">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex min-w-0 flex-1 items-center gap-3">
                             <div
