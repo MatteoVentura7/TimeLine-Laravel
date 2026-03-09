@@ -52,14 +52,14 @@ export default function TaskInfoModal({
         }
     }, [saveSuccess]);
 
-    useEffect(() => {
-        if (showCompletionDatePrompt) {
-            const timer = setTimeout(() => {
-                setShowCompletionDatePrompt(false);
-            }, 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [showCompletionDatePrompt]);
+    // useEffect(() => {
+    //     if (showCompletionDatePrompt) {
+    //         const timer = setTimeout(() => {
+    //             setShowCompletionDatePrompt(false);
+    //         }, 5000);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [showCompletionDatePrompt]);
 
     useEffect(() => {
         if (preserveEditMode && task) {
@@ -295,17 +295,7 @@ export default function TaskInfoModal({
 
                     setShowCompletionDatePrompt(true);
 
-                    setTimeout(() => {
-                        const completionDateSection = document.querySelector(
-                            '[data-completion-date]',
-                        );
-                        if (completionDateSection) {
-                            completionDateSection.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'center',
-                            });
-                        }
-                    }, 300);
+                 
                 }}
             />
         </>
