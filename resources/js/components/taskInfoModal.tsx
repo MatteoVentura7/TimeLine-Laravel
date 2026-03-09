@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+
 import { useTaskForm } from '@/hooks/useTaskForm';
 import type { Task, User } from '@/types/task-user';
 import { router } from '@inertiajs/core';
@@ -36,6 +37,9 @@ export default function TaskInfoModal({
     const [incompleteSubtasksWarning, setIncompleteSubtasksWarning] =
         useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [showCompletionDatePrompt, setShowCompletionDatePrompt] =
+        useState(false);
+    const [preserveEditMode, setPreserveEditMode] = useState(false);
 
     const form = useTaskForm({ task });
 
@@ -47,6 +51,24 @@ export default function TaskInfoModal({
             return () => clearTimeout(timer);
         }
     }, [saveSuccess]);
+
+    useEffect(() => {
+        if (showCompletionDatePrompt) {
+            const timer = setTimeout(() => {
+                setShowCompletionDatePrompt(false);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [showCompletionDatePrompt]);
+
+    useEffect(() => {
+        if (preserveEditMode && task) {
+            form.setIsEditing(true);
+            form.setCompleted(true);
+            form.setCompletedAt('');
+            setPreserveEditMode(false);
+        }
+    }, [task, preserveEditMode]);
 
     const handleCompletedToggle = () => {
         if (form.completed) {
@@ -108,9 +130,9 @@ export default function TaskInfoModal({
         <>
             <Modal open={open} onClose={handleClose} width="w-[1200px]">
                 {/* Header */}
-                <div className="-mx-6 -mt-6 mb-6  border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950  ">
-                    <div className="flex items-center justify-between gap-4 ">
-                        <div className="flex min-w-0 flex-1 items-center gap-3 ">
+                <div className="-mx-6 -mt-6 mb-6 border-b bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 dark:from-blue-950 dark:to-indigo-950">
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex min-w-0 flex-1 items-center gap-3">
                             <div
                                 className={`rounded-lg p-2 ${
                                     task.completed
@@ -163,8 +185,7 @@ export default function TaskInfoModal({
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-2 rounded-2xl
-                        ">
+                        <div className="flex items-center gap-2 rounded-2xl">
                             {form.isEditing ? (
                                 <>
                                     <Button
@@ -221,7 +242,7 @@ export default function TaskInfoModal({
                 </div>
 
                 {/* Content */}
-                <div className="space-y-6 ">
+                <div className="space-y-6">
                     {/* Form Fields */}
                     <div>
                         <h3 className="mb-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
@@ -267,8 +288,24 @@ export default function TaskInfoModal({
                 onClose={() => setIncompleteSubtasksWarning(false)}
                 onConfirm={() => {
                     setIncompleteSubtasksWarning(false);
+
+                    setPreserveEditMode(true);
+
                     form.setCompleted(true);
-                    form.setCompletedAt('');
+
+                    setShowCompletionDatePrompt(true);
+
+                    setTimeout(() => {
+                        const completionDateSection = document.querySelector(
+                            '[data-completion-date]',
+                        );
+                        if (completionDateSection) {
+                            completionDateSection.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center',
+                            });
+                        }
+                    }, 300);
                 }}
             />
         </>
