@@ -22,9 +22,11 @@ import {
     FileText,
     Plus,
     UserIcon,
+    UploadCloud
 } from 'lucide-react';
 
 import { useState } from 'react';
+
 
 interface TaskFormProps {
     users: User[];
@@ -73,63 +75,69 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
 
             <form onSubmit={submit} className="mt-3 flex justify-center">
                 <fieldset disabled={isDisabled} className="space-y-4">
-                    {/* Activity */}
-                    <div className="space-y-2">
-                        <Label
-                            htmlFor="title"
-                            className="flex items-center gap-2"
-                        >
-                            <FileText className="h-4 w-4" />
-                            Activity
-                        </Label>
+                    <div className="flex gap-2">
+                        {/* Activity */}
+                        <div className="space-y-2">
+                            <Label
+                                htmlFor="title"
+                                className="flex items-center gap-2"
+                            >
+                                <FileText className="h-4 w-4" />
+                                Activity
+                            </Label>
 
-                        <Input
-                            id="title"
-                            type="text"
-                            value={data.title}
-                            onChange={(e) => setData('title', e.target.value)}
-                            placeholder="Enter activity..."
-                            required
-                            className="max-w-64 [@media(max-width:1023px)]:max-w-64 [@media(min-width:1024px)_and_(max-width:1200px)]:w-50"
-                        />
-                    </div>
+                            <Input
+                                id="title"
+                                type="text"
+                                value={data.title}
+                                onChange={(e) =>
+                                    setData('title', e.target.value)
+                                }
+                                placeholder="Enter activity..."
+                                required
+                                className="w-80 [@media(max-width:1023px)]:max-w-64 [@media(min-width:1024px)_and_(max-width:1200px)]:w-50"
+                            />
+                        </div>
 
-                    {/* Assigned User */}
-                    <div className="space-y-2">
-                        <Label
-                            htmlFor="user_id"
-                            className="flex items-center gap-2"
-                        >
-                            <UserIcon className="h-4 w-4" />
-                            Assigned To
-                        </Label>
+                        {/* Assigned User */}
+                        <div className="space-y-2">
+                            <Label
+                                htmlFor="user_id"
+                                className="flex items-center gap-2"
+                            >
+                                <UserIcon className="h-4 w-4" />
+                                Assigned To
+                            </Label>
 
-                        <Select
-                            value={data.user_id}
-                            onValueChange={(value) => setData('user_id', value)}
-                            required
-                        >
-                            <SelectTrigger className="max-w-64 [@media(max-width:1023px)]:max-w-64 [@media(min-width:1024px)_and_(max-width:1200px)]:w-50">
-                                <SelectValue placeholder="Select user..." />
-                            </SelectTrigger>
+                            <Select
+                                value={data.user_id}
+                                onValueChange={(value) =>
+                                    setData('user_id', value)
+                                }
+                                required
+                            >
+                                <SelectTrigger className="w-80 [@media(max-width:1023px)]:max-w-64 [@media(min-width:1024px)_and_(max-width:1200px)]:w-50">
+                                    <SelectValue placeholder="Select user..." />
+                                </SelectTrigger>
 
-                            <SelectContent>
-                                {users.map((user) => (
-                                    <SelectItem
-                                        key={user.id}
-                                        value={user.id.toString()}
-                                    >
-                                        {user.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                                <SelectContent>
+                                    {users.map((user) => (
+                                        <SelectItem
+                                            key={user.id}
+                                            value={user.id.toString()}
+                                        >
+                                            {user.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
 
                     {/* Dates */}
                     <div className="flex gap-2">
                         {/* Start */}
-                        <div className="max-w-31 space-y-2 [@media(max-width:1023px)]:max-w-31 [@media(min-width:1024px)_and_(max-width:1200px)]:w-24">
+                        <div className="w-80 space-y-2 [@media(max-width:1023px)]:max-w-31 [@media(min-width:1024px)_and_(max-width:1200px)]:w-24">
                             <Label className="flex items-center gap-2">
                                 <CalendarIcon className="h-4 w-4" />
                                 Start
@@ -143,7 +151,7 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                         </div>
 
                         {/* Expiration */}
-                        <div className="max-w-31 space-y-2 [@media(max-width:1023px)]:max-w-31 [@media(min-width:1024px)_and_(max-width:1200px)]:w-24">
+                        <div className="w-80 space-y-2 [@media(max-width:1023px)]:max-w-31 [@media(min-width:1024px)_and_(max-width:1200px)]:w-24">
                             <Label className="flex items-center gap-2">
                                 <CalendarOff className="h-4 w-4" />
                                 Expiration
@@ -165,6 +173,16 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                                 </p>
                             )}
                         </div>
+                    </div>
+
+                    <div className='space-y-2'>
+                        {' '}
+                        <Label className="flex items-center gap-2"><UploadCloud className='h-4 w-4'/>File</Label>
+                        <Input
+                            id="file"
+                            type="file"
+                            className="w-80 [@media(max-width:1023px)]:max-w-64 [@media(min-width:1024px)_and_(max-width:1200px)]:w-50"
+                        />
                     </div>
 
                     {/* Submit */}
