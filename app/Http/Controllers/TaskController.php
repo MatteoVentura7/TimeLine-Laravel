@@ -39,7 +39,7 @@ class TaskController extends Controller
                 return $query->where('title', 'like', '%' . $search . '%');
             })
             ->latest()
-            ->paginate(10)
+            ->paginate(8)
             ->withQueryString();
 
         $statistc = [
