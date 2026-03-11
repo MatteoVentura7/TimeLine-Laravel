@@ -171,20 +171,20 @@ export default function DashboardActivity({
 
                 <div className="grid gap-4 md:grid-cols-4">
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardHeader className="flex flex-row items-center justify-between  ">
                             <CardTitle className="text-sm font-medium">
                                 Total Activity
                             </CardTitle>
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
 
-                        <CardContent>
+                        <CardContent >
                             <div className="text-2xl font-bold">{total}</div>
                         </CardContent>
                     </Card>
 
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardHeader className="flex flex-row items-center justify-between ">
                             <CardTitle className="text-sm font-medium">
                                 To Do
                             </CardTitle>
@@ -199,7 +199,7 @@ export default function DashboardActivity({
                     </Card>
 
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardHeader className="flex flex-row items-center justify-between ">
                             <CardTitle className="text-sm font-medium">
                                 Completed
                             </CardTitle>
@@ -214,7 +214,7 @@ export default function DashboardActivity({
                     </Card>
 
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardHeader className="flex flex-row items-center justify-between ">
                             <CardTitle className="text-sm font-medium">
                                 Completion Rate
                             </CardTitle>
