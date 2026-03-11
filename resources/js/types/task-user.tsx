@@ -9,6 +9,15 @@ export interface SubTask {
     completed: boolean;
 }
 
+export interface TaskFile {
+    id: number;
+    original_name: string;
+    mime_type: string | null;
+    size: number | null;
+    url: string;
+    created_at: string;
+}
+
 export interface Task {
     id: number;
     title: string;
@@ -21,6 +30,7 @@ export interface Task {
     expiration_iso: string | null;
     user?: User | null;
     subtasks: SubTask[];
+    files: TaskFile[];
 }
 
 export interface TaskPagination {

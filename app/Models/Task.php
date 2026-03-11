@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Models\TaskFile;
 
 class Task extends Model
 {
@@ -87,6 +88,11 @@ public function getExpirationIsoAttribute()
 public function subtasks()
 {
     return $this->hasMany(SubTask::class);
+}
+
+public function files()
+{
+    return $this->hasMany(TaskFile::class);
 }
 
 }

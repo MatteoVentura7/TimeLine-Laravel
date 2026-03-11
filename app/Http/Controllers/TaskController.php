@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\User;
+use App\Models\TaskFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Carbon\Carbon;
 
@@ -13,7 +16,7 @@ class TaskController extends Controller
 {
     public function dashboard()
     {
-        $tasks = Task::with('user','subtasks')
+        $tasks = Task::with('user','subtasks','files')
             ->latest()
             ->paginate(4);
 
@@ -34,7 +37,7 @@ class TaskController extends Controller
     {
         $search = $request->input('search', '');
 
-        $tasks = Task::with('user','subtasks')
+        $tasks = Task::with('user','subtasks','files')
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', '%' . $search . '%');
             })
@@ -63,6 +66,8 @@ class TaskController extends Controller
             'user_id' => 'nullable|exists:users,id',
             'start' => 'nullable|date',
             'expiration' => 'nullable|date|after_or_equal:start',
+            'files' => 'nullable|array',
+            'files.*' => 'file|max:20480',
         ], [
             'expiration.after_or_equal' =>
                 'La data di fine non può essere precedente alla data di inizio.',
@@ -80,7 +85,24 @@ class TaskController extends Controller
         $task->expiration = $validated['expiration'] ?? null;
         $task->save();
 
-      
+        // Handle file uploads
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $originalName = $file->getClientOriginalName();
+                $storedName   = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                $path         = $file->storeAs('task-files', $storedName, 'local');
+
+                TaskFile::create([
+                    'task_id'       => $task->id,
+                    'original_name' => $originalName,
+                    'stored_name'   => $storedName,
+                    'path'          => $path,
+                    'mime_type'     => $file->getMimeType(),
+                    'size'          => $file->getSize(),
+                ]);
+            }
+        }
+
         return redirect()->back();
     }
 

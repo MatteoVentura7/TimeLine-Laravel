@@ -1,19 +1,24 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useTaskForm } from '@/hooks/useTaskForm';
-import type { Task, User } from '@/types/task-user';
+import type { Task, TaskFile, User } from '@/types/task-user';
 import { router } from '@inertiajs/core';
 import {
     Check,
     CheckCircle2,
     Clock,
+    Download,
     Edit,
+    FileIcon,
     ListTodo,
     Loader2,
+    Paperclip,
     Save,
+    Trash2,
+    Upload,
     X,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import IncompleteSubtasksWarningModal from './InCompleteSubtasksWarningModal';
 import Modal from './modal';
 import SubTaskList from './subTaskList';
@@ -39,6 +44,56 @@ export default function TaskInfoModal({
     const [showCompletionDatePrompt, setShowCompletionDatePrompt] =
         useState(false);
     const [preserveEditMode, setPreserveEditMode] = useState(false);
+
+    // File upload state
+    const [fileUploading, setFileUploading] = useState(false);
+    const [deletingFileId, setDeletingFileId] = useState<number | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const formatFileSize = (bytes: number | null) => {
+        if (!bytes) return '';
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    };
+
+    const getFileIcon = (mimeType: string | null) => {
+        if (!mimeType) return <FileIcon className="h-4 w-4" />;
+        if (mimeType.startsWith('image/')) return <FileIcon className="h-4 w-4 text-blue-500" />;
+        if (mimeType === 'application/pdf') return <FileIcon className="h-4 w-4 text-red-500" />;
+        return <FileIcon className="h-4 w-4 text-muted-foreground" />;
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!task || !e.target.files?.length) return;
+        const files = Array.from(e.target.files);
+        setFileUploading(true);
+
+        const formData = new FormData();
+        files.forEach(file => formData.append('files[]', file));
+
+        router.post(`/tasks/${task.id}/files`, formData as any, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                router.reload({ only: ['tasks'], onFinish: () => setFileUploading(false) });
+            },
+            onError: () => setFileUploading(false),
+        });
+
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const handleFileDelete = (fileId: number) => {
+        setDeletingFileId(fileId);
+        router.delete(`/task-files/${fileId}`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                router.reload({ only: ['tasks'], onFinish: () => setDeletingFileId(null) });
+            },
+            onError: () => setDeletingFileId(null),
+        });
+    };
 
     const form = useTaskForm({ task });
 
@@ -276,6 +331,94 @@ export default function TaskInfoModal({
                             Subtasks
                         </h3>
                         <SubTaskList task={task} disabled={form.isEditing} />
+                    </div>
+
+                    {/* Separator */}
+                    <div className="border-t"></div>
+
+                    {/* Attachments */}
+                    <div>
+                        <div className="mb-4 flex items-center justify-between">
+                            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase flex items-center gap-2">
+                                <Paperclip className="h-4 w-4" />
+                                Attachments
+                                {task.files?.length > 0 && (
+                                    <Badge variant="secondary" className="ml-1 text-xs">
+                                        {task.files.length}
+                                    </Badge>
+                                )}
+                            </h3>
+                            <div>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    multiple
+                                    className="hidden"
+                                    onChange={handleFileUpload}
+                                />
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="gap-2"
+                                    disabled={fileUploading}
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    {fileUploading ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Upload className="h-4 w-4" />
+                                    )}
+                                    <span className="hidden sm:inline">Upload</span>
+                                </Button>
+                            </div>
+                        </div>
+
+                        {!task.files || task.files.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-input py-8 text-center text-muted-foreground">
+                                <Paperclip className="mb-2 h-8 w-8 opacity-40" />
+                                <p className="text-sm">No attachments yet</p>
+                                <p className="text-xs opacity-70">Upload files to attach them to this task</p>
+                            </div>
+                        ) : (
+                            <ul className="space-y-2">
+                                {task.files.map((file: TaskFile) => (
+                                    <li
+                                        key={file.id}
+                                        className="flex items-center gap-3 rounded-lg border bg-muted/30 px-3 py-2 text-sm transition-colors hover:bg-muted/60"
+                                    >
+                                        {getFileIcon(file.mime_type)}
+                                        <span className="min-w-0 flex-1 truncate font-medium">
+                                            {file.original_name}
+                                        </span>
+                                        {file.size && (
+                                            <span className="shrink-0 text-xs text-muted-foreground">
+                                                {formatFileSize(file.size)}
+                                            </span>
+                                        )}
+                                        <a
+                                            href={file.url}
+                                            download
+                                            className="shrink-0 rounded-full p-1 text-muted-foreground hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/30"
+                                            title="Download"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                        </a>
+                                        <button
+                                            onClick={() => handleFileDelete(file.id)}
+                                            disabled={deletingFileId === file.id}
+                                            className="shrink-0 rounded-full p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+                                            title="Delete"
+                                        >
+                                            {deletingFileId === file.id ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <Trash2 className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
                 </div>
             </Modal>

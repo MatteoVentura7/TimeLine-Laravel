@@ -6,6 +6,7 @@ use Laravel\Fortify\Features;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SubTaskController;
 use App\Http\Controllers\DocsController;
+use App\Http\Controllers\TaskFileController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -33,6 +34,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ------ DOCS ------- //
     Route::get('/docs/user-guide', [DocsController::class, 'userGuide'])->name('docs.userGuide');
     Route::get('/docs/technical', [DocsController::class, 'technical'])->name('docs.technical');
+
+    // ------ TASK FILES ------- //
+    Route::post('/tasks/{task}/files', [TaskFileController::class, 'store'])->name('task-files.store');
+    Route::get('/task-files/{taskFile}/download', [TaskFileController::class, 'download'])->name('task-files.download');
+    Route::delete('/task-files/{taskFile}', [TaskFileController::class, 'destroy'])->name('task-files.destroy');
 });
 
 require __DIR__ . '/settings.php';

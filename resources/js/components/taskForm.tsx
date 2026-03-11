@@ -20,12 +20,13 @@ import {
     CalendarIcon,
     CalendarOff,
     FileText,
+    Paperclip,
     Plus,
     UserIcon,
-    UploadCloud
+    X,
 } from 'lucide-react';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 
 interface TaskFormProps {
@@ -34,7 +35,7 @@ interface TaskFormProps {
 }
 
 export default function TaskForm({ users, onSuccess }: TaskFormProps) {
-    const { data, setData, post, reset, processing } = useForm({
+    const { data, setData, reset, processing } = useForm({
         title: '',
         user_id: '',
         start: '',
@@ -42,18 +43,48 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
     });
 
     const [submitted, setSubmitted] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newFiles = Array.from(e.target.files || []);
+        setSelectedFiles(prev => [...prev, ...newFiles]);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const removeFile = (index: number) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const formatFileSize = (bytes: number) => {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    };
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitted(true);
 
-        post(`/tasks${queryParams({})}`, {
+        const formData = new FormData();
+        formData.append('title', data.title);
+        formData.append('user_id', data.user_id);
+        formData.append('start', data.start);
+        formData.append('expiration', data.expiration);
+        selectedFiles.forEach(file => formData.append('files[]', file));
+
+        router.post(`/tasks${queryParams({})}`, formData as any, {
             preserveState: false,
+            forceFormData: true,
             onSuccess: () => {
                 reset();
+                setSelectedFiles([]);
                 setSubmitted(false);
                 onSuccess?.();
                 router.reload({ only: ['tasks', 'statistic'] });
+            },
+            onError: () => {
+                setSubmitted(false);
             },
         });
     };
@@ -175,14 +206,52 @@ export default function TaskForm({ users, onSuccess }: TaskFormProps) {
                         </div>
                     </div>
 
-                    <div className='space-y-2'>
-                        {' '}
-                        <Label className="flex items-center gap-2"><UploadCloud className='h-4 w-4'/>File</Label>
-                        <Input
-                            id="file"
+                    {/* File Attachments */}
+                    <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                            <Paperclip className="h-4 w-4" />
+                            Attachments
+                        </Label>
+
+                        <div
+                            className="flex w-80 cursor-pointer items-center gap-2 rounded-md border border-dashed border-input px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground [@media(max-width:1023px)]:max-w-64 [@media(min-width:1024px)_and_(max-width:1200px)]:w-50"
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            <Paperclip className="h-4 w-4 shrink-0" />
+                            <span>Click to attach files…</span>
+                        </div>
+
+                        <input
+                            ref={fileInputRef}
+                            id="files"
                             type="file"
-                            className="w-80 [@media(max-width:1023px)]:max-w-64 [@media(min-width:1024px)_and_(max-width:1200px)]:w-50"
+                            multiple
+                            className="hidden"
+                            onChange={handleFileChange}
                         />
+
+                        {selectedFiles.length > 0 && (
+                            <ul className="w-80 space-y-1 [@media(max-width:1023px)]:max-w-64 [@media(min-width:1024px)_and_(max-width:1200px)]:w-50">
+                                {selectedFiles.map((file, index) => (
+                                    <li
+                                        key={index}
+                                        className="flex items-center justify-between rounded-md bg-muted/50 px-2 py-1 text-xs"
+                                    >
+                                        <span className="min-w-0 truncate pr-2">{file.name}</span>
+                                        <span className="shrink-0 text-muted-foreground">
+                                            {formatFileSize(file.size)}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeFile(index)}
+                                            className="ml-2 shrink-0 rounded-full p-0.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
 
                     {/* Submit */}
