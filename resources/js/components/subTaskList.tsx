@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { useSubTasks } from '@/hooks/useSubTask';
-import type { Task } from '@/types/task-user';
-import { useState } from 'react';
+import type { SubTask, Task } from '@/types/task-user';
+import { useState, useEffect } from 'react';
 import ConfirmDeleteModal from './confirmDeleteModal';
 import SubTaskForm from './SubTaskForm';
 import SubTaskItem from './SubTaskItem';
+import SubtaskInfoModal from './SubTaskInfoModal';
 
 interface SubTaskListProps {
     task: Task;
@@ -15,6 +16,8 @@ export default function SubTaskList({ task, disabled }: SubTaskListProps) {
     const [open, setOpen] = useState(true);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [subtaskToDelete, setSubtaskToDelete] = useState<number | null>(null);
+    const [selectedSubtask, setSelectedSubtask] = useState<SubTask | null>(null);
+    const [infoModalOpen, setInfoModalOpen] = useState(false);
 
     const {
         subtasks,
@@ -34,12 +37,27 @@ export default function SubTaskList({ task, disabled }: SubTaskListProps) {
         setConfirmOpen(true);
     };
 
+    const handleInfo = (subtask: SubTask) => {
+        setSelectedSubtask(subtask);
+        setInfoModalOpen(true);
+    };
+
     const confirmDelete = () => {
         if (!subtaskToDelete) return;
         deleteSubTask(subtaskToDelete);
         setSubtaskToDelete(null);
         setConfirmOpen(false);
     };
+
+    // Update selectedSubtask when subtasks data changes
+    useEffect(() => {
+        if (selectedSubtask && subtasks) {
+            const updated = subtasks.find(st => st.id === selectedSubtask.id);
+            if (updated) {
+                setSelectedSubtask(updated);
+            }
+        }
+    }, [subtasks]);
 
     return (
         <>
@@ -76,6 +94,7 @@ export default function SubTaskList({ task, disabled }: SubTaskListProps) {
                                         disabled={showForm}
                                         onToggle={toggleSubTask}
                                         onDelete={handleDelete}
+                                        onInfo={handleInfo}
                                     />
                                 ))}
                             </ul>
@@ -121,6 +140,16 @@ export default function SubTaskList({ task, disabled }: SubTaskListProps) {
                     setSubtaskToDelete(null);
                 }}
                 onConfirm={confirmDelete}
+            />
+
+            {/* Subtask Info Modal */}
+            <SubtaskInfoModal
+                subtask={selectedSubtask}
+                open={infoModalOpen}
+                onClose={() => {
+                    setInfoModalOpen(false);
+                    setSelectedSubtask(null);
+                }}
             />
         </>
     );

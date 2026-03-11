@@ -7,6 +7,12 @@ export interface SubTask {
     id: number;
     title: string;
     completed: boolean;
+    task?: {
+        id: number;
+        title: string;
+    };
+    created_at: string;
+    updated_at: string;
 }
 
 export interface TaskFile {

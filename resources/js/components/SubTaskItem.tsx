@@ -1,6 +1,4 @@
-import { subtasksInfo } from '@/routes';
 import type { SubTask } from '@/types/task-user';
-import { Link } from '@inertiajs/react';
 import { CheckCircle2, Circle, Info, Trash2 } from 'lucide-react';
 
 interface SubTaskItemProps {
@@ -9,6 +7,7 @@ interface SubTaskItemProps {
     disabled: boolean;
     onToggle: (id: number) => void;
     onDelete: (id: number) => void;
+    onInfo: (subtask: SubTask) => void;
 }
 
 export default function SubTaskItem({
@@ -17,6 +16,7 @@ export default function SubTaskItem({
     disabled,
     onToggle,
     onDelete,
+    onInfo,
 }: SubTaskItemProps) {
     return (
         <li className="flex items-center justify-between gap-2  text-sm">
@@ -47,20 +47,19 @@ export default function SubTaskItem({
             </div>
 
             <div className="flex gap-2">
-                <Link
-                    as="button"
+                <button
                     disabled={disabled}
-                    href={`${subtasksInfo(subtask.id).url}?from_task=${taskId}`}
+                    onClick={() => onInfo(subtask)}
                     className="cursor-pointer rounded-sm text-sm disabled:cursor-not-allowed"
                 >
                     <Info
-                        className={`fa-solid fa-circle-info ${
+                        className={`${
                             disabled
                                 ? 'cursor-not-allowed text-gray-300'
                                 : 'text-blue-500 hover:text-blue-700'
                         }`}
                     />
-                </Link>
+                </button>
 
                 <button
                     disabled={disabled}
@@ -68,7 +67,7 @@ export default function SubTaskItem({
                     className="cursor-pointer disabled:cursor-not-allowed"
                 >
                     <Trash2
-                        className={`fa-solid fa-trash ${
+                        className={`${
                             disabled
                                 ? 'cursor-not-allowed text-gray-300'
                                 : 'text-red-500 hover:text-red-700'
