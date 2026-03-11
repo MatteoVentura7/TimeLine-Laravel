@@ -2,23 +2,30 @@ import TableUser from '@/components/tableUser';
 import TaskFormModal from '@/components/taskFormModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
 import { dashboardActivity } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import type { TaskPagination, User } from '@/types/task-user';
 import { router as Inertia } from '@inertiajs/core';
 import { Head } from '@inertiajs/react';
-import {
-    CheckCircle2,
-    ChevronLeft,
-    ChevronRight,
-    Circle,
-    Plus,
-    Search,
-    TrendingUp,
-} from 'lucide-react';
+import { CheckCircle2, Circle, Plus, Search, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -45,6 +52,7 @@ export default function DashboardActivity({
 
     useEffect(() => {
         const storedSearch = localStorage.getItem('searchTerm');
+
         if (storedSearch) {
             setSearch(storedSearch);
             setSearchMessage(`Search results for: "${storedSearch}"`);
@@ -52,6 +60,7 @@ export default function DashboardActivity({
 
         const params = new URLSearchParams(window.location.search);
         const fromTask = params.get('open_task');
+
         if (fromTask) {
             setOpenTaskId(Number(fromTask));
             const cleanUrl = window.location.pathname;
@@ -81,298 +90,326 @@ export default function DashboardActivity({
         setSearch('');
         localStorage.removeItem('searchTerm');
         setSearchMessage(null);
+
         Inertia.get(dashboardActivity().url, {}, { preserveState: true });
     };
 
     const total = statistc.todo + statistc.done;
+
     const completionRate =
         total > 0 ? Math.round((statistc.done / total) * 100) : 0;
+
+    /* ---------- pagination helper ---------- */
+
+    const getVisiblePages = () => {
+        const pages: number[] = [];
+
+        const total = tasks.last_page;
+        const current = tasks.current_page;
+
+        const maxPages = 4;
+
+        let start = Math.max(1, current - 2);
+        let end = Math.min(total, current + 2);
+
+        if (current <= 3) {
+            start = 1;
+            end = Math.min(total, maxPages);
+        }
+
+        if (current >= total - 2) {
+            start = Math.max(1, total - 4);
+            end = total;
+        }
+
+        for (let i = start; i <= end; i++) {
+            pages.push(i);
+        }
+
+        return pages;
+    };
+
+    const goToPage = (page: number) => {
+        Inertia.get(
+            dashboardActivity().url,
+            { page, search },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Activity" />
 
             <div className="space-y-6 p-6">
-                {/* Header Section */}
+                {/* Header */}
+
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight">
                             Activity Dashboard
                         </h1>
                         <p className="text-muted-foreground">
-                            Manage and track all your tasks in one place
+                            Manage and track all your tasks
                         </p>
                     </div>
+
                     <Button
                         onClick={() => setOpen(true)}
                         disabled={isEditing}
                         size="lg"
-                        className="w-full md:w-auto"
                     >
                         <Plus className="mr-2 h-4 w-4" />
                         Add Activity
                     </Button>
                 </div>
 
-                {/* Stats Cards */}
+                {/* Stats */}
+
                 <div className="grid gap-4 md:grid-cols-4">
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardHeader className="flex flex-row items-center justify-between  ">
                             <CardTitle className="text-sm font-medium">
                                 Total Activity
                             </CardTitle>
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
-                        <CardContent>
+
+                        <CardContent >
                             <div className="text-2xl font-bold">{total}</div>
-                            <p className="text-xs text-muted-foreground">
-                                All active Activity
-                            </p>
                         </CardContent>
                     </Card>
 
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardHeader className="flex flex-row items-center justify-between ">
                             <CardTitle className="text-sm font-medium">
                                 To Do
                             </CardTitle>
                             <Circle className="h-4 w-4 text-blue-500" />
                         </CardHeader>
+
                         <CardContent>
                             <div className="text-2xl font-bold text-blue-600">
-                                {statistc.todo ?? 0}
+                                {statistc.todo}
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Pending Activity
-                            </p>
                         </CardContent>
                     </Card>
 
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardHeader className="flex flex-row items-center justify-between ">
                             <CardTitle className="text-sm font-medium">
                                 Completed
                             </CardTitle>
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
                         </CardHeader>
+
                         <CardContent>
                             <div className="text-2xl font-bold text-green-600">
-                                {statistc.done ?? 0}
+                                {statistc.done}
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Finished Activity
-                            </p>
                         </CardContent>
                     </Card>
 
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardHeader className="flex flex-row items-center justify-between ">
                             <CardTitle className="text-sm font-medium">
                                 Completion Rate
                             </CardTitle>
-                            <div className="h-4 w-4 rounded-full bg-linear-to-r from-blue-500 to-green-500" />
                         </CardHeader>
+
                         <CardContent>
                             <div className="text-2xl font-bold">
                                 {completionRate}%
-                            </div>
-                            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
-                                <div
-                                    className="h-full bg-linear-to-r from-blue-500 to-green-500 transition-all duration-500"
-                                    style={{ width: `${completionRate}%` }}
-                                />
                             </div>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Task Table */}
-                <Card>
-                    <CardHeader >
-                        <CardTitle className="flex items-center gap-2 justify-between">
-                            <span >Activity <Badge className='ml-2' variant="outline">{tasks.total} total</Badge></span>
-                            
-                             {/* Search Bar */}
-                         <form
-                            onSubmit={handleSearchSubmit}
-                            className="flex gap-2"
-                        >
-                            <div className="relative flex-1">
-                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    type="text"
-                                    placeholder="Search Activity by title..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    disabled={isEditing}
-                                    className="pl-9"
-                                />
-                            </div>
-                            <Button type="submit" disabled={isEditing}>
-                                Search
-                            </Button>
-                            {search && (
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={clearSearch}
-                                    disabled={isEditing}
-                                >
-                                    Clear
-                                </Button>
-                            )}
-                        </form>
-                       
-                        </CardTitle>
-                            {searchMessage && (
-                            <div className="mt-3 flex items-center gap-2">
-                                <Badge variant="secondary">
-                                    <Search className="mr-1 h-3 w-3" />
-                                    {searchMessage}
-                                </Badge>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={clearSearch}
-                                    className="h-6 px-2"
-                                >
-                                    ×
-                                </Button>
-                            </div>
-                        )}
-                    </CardHeader>
-                
+                {/* Table */}
 
-                    <CardContent className="pt-2">
-                       
-                          <TableUser
-                        tasks={tasks.data}
-                        showEdit={true}
-                        onEditChange={setIsEditing}
-                        users={users}
-                        openTaskId={openTaskId}
-                        onTaskOpened={() => setOpenTaskId(null)}
-                    />
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                            <span>
+                                Activity
+                                <Badge className="ml-2" variant="outline">
+                                    {tasks.total} total
+                                </Badge>
+                            </span>
+
+                            <form
+                                onSubmit={handleSearchSubmit}
+                                className="flex gap-2"
+                            >
+                                <div className="relative">
+                                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
+                                    <Input
+                                        placeholder="Search activity..."
+                                        value={search}
+                                        onChange={(e) =>
+                                            setSearch(e.target.value)
+                                        }
+                                        className="pl-9"
+                                    />
+                                </div>
+
+                                <Button type="submit">Search</Button>
+
+                                {search && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={clearSearch}
+                                    >
+                                        Clear
+                                    </Button>
+                                )}
+                            </form>
+                        </CardTitle>
+                    </CardHeader>
+
+                    <CardContent>
+                        <TableUser
+                            tasks={tasks.data}
+                            showEdit={true}
+                            onEditChange={setIsEditing}
+                            users={users}
+                            openTaskId={openTaskId}
+                            onTaskOpened={() => setOpenTaskId(null)}
+                        />
                     </CardContent>
 
+                    {/* PAGINATION */}
+
                     <CardFooter >
-                    {/* Pagination */}
-                    {tasks.last_page > 1 && (
-                        <div className="pt-6 ">
-                            <div className="flex  justify-between  items-center ">
-                                <div className="text-sm text-muted-foreground">
-                                    Showing page {tasks.current_page} of{' '}
+                        {tasks.last_page > 1 && (
+                            <div className="flex w-full items-center justify-between">
+                                <div className="text-sm text-muted-foreground text-nowrap ">
+                                    Page {tasks.current_page} of{' '}
                                     {tasks.last_page}
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => {
-                                            const prevLink = tasks.links.find(
-                                                (l) =>
-                                                    l.label.includes(
-                                                        'Previous',
-                                                    ),
-                                            );
-                                            if (prevLink?.url && !isEditing) {
-                                                Inertia.get(
-                                                    prevLink.url,
-                                                    {},
-                                                    {
-                                                        preserveState: true,
-                                                        preserveScroll: true,
-                                                    },
-                                                );
-                                            }
-                                        }}
-                                        disabled={
-                                            !tasks.links.find((l) =>
-                                                l.label.includes('Previous'),
-                                            )?.url || isEditing
-                                        }
-                                    >
-                                        <ChevronLeft className="mr-1 h-4 w-4" />
-                                        Previous
-                                    </Button>
 
-                                    {tasks.links
-                                        .filter(
-                                            (link) =>
-                                                !link.label.includes(
-                                                    'Previous',
-                                                ) &&
-                                                !link.label.includes('Next'),
-                                        )
-                                        .map((link, index) => (
-                                            <Button
-                                                key={index}
-                                                variant={
-                                                    link.active
-                                                        ? 'default'
-                                                        : 'outline'
-                                                }
-                                                size="sm"
-                                                onClick={() => {
+                                <Pagination className='justify-end'>
+                                    <PaginationContent>
+                                        <PaginationItem >
+                                            <Button   
+                                        className='w-26'
+                                        size="sm"  >
+                                            <PaginationPrevious 
+                                            className='hover:bg-transparent hover:text-white'
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
                                                     if (
-                                                        link.url &&
-                                                        !isEditing
+                                                        tasks.current_page > 1
                                                     ) {
-                                                        Inertia.get(
-                                                            link.url,
-                                                            {},
-                                                            {
-                                                                preserveState: true,
-                                                                preserveScroll: true,
-                                                            },
+                                                        goToPage(
+                                                            tasks.current_page -
+                                                                1,
                                                         );
                                                     }
                                                 }}
-                                                disabled={
-                                                    !link.url || isEditing
-                                                }
-                                            >
-                                                {link.label}
+                                            />
                                             </Button>
+                                        </PaginationItem>
+
+                                        {tasks.last_page > 4 && tasks.current_page > 3 && (
+                                            <>
+                                                <PaginationItem>
+                                                    <PaginationLink
+                                                        href="#"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            goToPage(1);
+                                                        }}
+                                                    >
+                                                        1
+                                                    </PaginationLink>
+                                                </PaginationItem>
+
+                                                <PaginationItem>
+                                                    <PaginationEllipsis />
+                                                </PaginationItem>
+                                            </>
+                                        )}
+
+                                        {getVisiblePages().map((page) => (
+                                            <PaginationItem key={page}>
+                                                <PaginationLink
+                                                    href="#"
+                                                    isActive={
+                                                        page ===
+                                                        tasks.current_page
+                                                    }
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        goToPage(page);
+                                                    }}
+                                                >
+                                                    {page}
+                                                </PaginationLink>
+                                            </PaginationItem>
                                         ))}
 
-                                    <Button
-                                        variant="outline"
+                                        {tasks.last_page > 4 && tasks.current_page < tasks.last_page - 2 && (
+                                            <>
+                                                <PaginationItem>
+                                                    <PaginationEllipsis />
+                                                </PaginationItem>
+
+                                                <PaginationItem>
+                                                    
+                                                    <PaginationLink
+                                                        href="#"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            goToPage(
+                                                                tasks.last_page,
+                                                            );
+                                                        }}
+                                                    >
+                                                        {tasks.last_page}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                            </>
+                                        )}
+
+                                        <PaginationItem>
+                                            <Button   
                                         size="sm"
-                                        onClick={() => {
-                                            const nextLink = tasks.links.find(
-                                                (l) => l.label.includes('Next'),
-                                            );
-                                            if (nextLink?.url && !isEditing) {
-                                                Inertia.get(
-                                                    nextLink.url,
-                                                    {},
-                                                    {
-                                                        preserveState: true,
-                                                        preserveScroll: true,
-                                                    },
-                                                );
-                                            }
-                                        }}
-                                        disabled={
-                                            !tasks.links.find((l) =>
-                                                l.label.includes('Next'),
-                                            )?.url || isEditing
-                                        }
-                                    >
-                                        Next
-                                        <ChevronRight className="ml-1 h-4 w-4" />
-                                    </Button>
-                                </div>
+                                        className='w-24'>
+                                            <PaginationNext
+                                            className='hover:bg-transparent hover:text-white'
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+
+                                                    if (
+                                                        tasks.current_page <
+                                                        tasks.last_page
+                                                    ) {
+                                                        goToPage(
+                                                            tasks.current_page +
+                                                                1,
+                                                        );
+                                                    }
+                                                }}
+                                            />
+                                            </Button>
+                                        </PaginationItem>
+                                    </PaginationContent>
+                                </Pagination>
                             </div>
-                        </div>
-                    )}</CardFooter>
-
-                  
-
+                        )}
+                    </CardFooter>
+                   
                 </Card>
+                
 
-                {/* Create Task Modal */}
                 <TaskFormModal
                     users={users}
                     open={open}
